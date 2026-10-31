@@ -112,7 +112,7 @@ header p{margin:0 0 16px;color:var(--muted)}
   <!-- VISTA 2: DETALLE POR CIUDAD -->
   <div id="view-detail" class="view-section">
       <h2 id="detail-title" style="font:600 clamp(1.3rem,3.4vw,1.7rem)/1.2 Georgia,serif;margin:0 0 4px;">Ciudad en detalle</h2>
-      <p id="detail-desc" style="color:var(--muted);margin:0 0 12px;">Puntos clave, alojamiento y restaurantes recomendados.</p>
+      <p id="detail-desc" style="color:var(--muted);margin:0 0 12px;">Puntos clave, alojamiento, restaurantes y compras recomendadas.</p>
       <div class='mgrid'>
           <div class="mapwrap">
               <div id='mm' role='img'></div>
@@ -170,8 +170,8 @@ const E = [
  {id:11,d:"28",w:"sáb",t:"vuelo",c:["Madrid","SJO"],ti:"Vuelo E9-857 Madrid → San José",su:"Iberojet · sale 14:45",ex:"Reserva DTVMSU."}
 ];
 
-// --- DATOS DE RESTAURANTES POR CIUDAD ---
-const restaurantes = {
+// --- DATOS DE LUGARES Y TIENDAS POR CIUDAD ---
+const lugares = {
   madrid: [
     {id:1,n:'Sobrino de Botín',c:'c',d:'C. de los Cuchilleros, 17',a:40.4142,o:-3.7078,x:'Asados de cochinillo y cordero.'},
     {id:2,n:'Casa Alberto',c:'c',d:'C. de las Huertas, 18',a:40.414,o:-3.6992,x:'Taberna clásica de 1827.'},
@@ -182,7 +182,13 @@ const restaurantes = {
     {id:7,n:'Mercado de San Miguel',c:'t',d:'Plaza de San Miguel',a:40.4154,o:-3.709,x:'Puestos de tapas variadas.'},
     {id:8,n:'Casa Labra',c:'t',d:'C. de Tetuán, 12',a:40.4172,o:-3.7029,x:'Croquetas y bacalao frito.'},
     {id:9,n:'La Campana',c:'t',d:'C. de Botoneras, 6',a:40.4153,o:-3.7069,x:'Bocadillo de calamares histórico.'},
-    {id:10,n:'Chocolatería San Ginés',c:'d',d:'Pasadizo de San Ginés, 5',a:40.417,o:-3.706,x:'Churros con chocolate.'}
+    {id:10,n:'Chocolatería San Ginés',c:'d',d:'Pasadizo de San Ginés, 5',a:40.417,o:-3.706,x:'Churros con chocolate.'},
+    {id:11,n:'Zara',c:'s',d:'Gran Vía, 34',a:40.4201,o:-3.7037,x:'Ropa y moda.'},
+    {id:12,n:'Pull & Bear',c:'s',d:'Gran Vía, 31',a:40.4204,o:-3.7032,x:'Moda joven.'},
+    {id:13,n:'Lefties',c:'s',d:'Gran Vía, 32',a:40.4202,o:-3.7034,x:'Moda a buen precio.'},
+    {id:14,n:'Primark',c:'s',d:'Gran Vía, 32',a:40.4202,o:-3.7035,x:'Moda y hogar.'},
+    {id:15,n:'El Corte Inglés',c:'s',d:'Preciados, 3',a:40.4179,o:-3.7051,x:'Grandes almacenes.'},
+    {id:16,n:'Decathlon',c:'s',d:'Fuencarral, 45',a:40.4245,o:-3.7005,x:'Ropa y artículos deportivos.'}
   ],
   toledo: [
     {id:1,n:'Restaurante Adolfo',c:'c',d:'Hombre de Palo, 7',a:39.8576,o:-4.0248,x:'Alta cocina tradicional toledana.'},
@@ -194,7 +200,13 @@ const restaurantes = {
     {id:7,n:'Alfileritos 24',c:'t',d:'Calle Alfileritos, 24',a:39.8601,o:-4.0249,x:'Tapas en un entorno vanguardista.'},
     {id:8,n:'Taberna el Botero',c:'t',d:'Calle Ciudad, 5',a:39.8570,o:-4.0235,x:'Tapas creativas y buena coctelería.'},
     {id:9,n:'Lo Nuestro',c:'t',d:'Calle San Juan de Dios, 7',a:39.8583,o:-4.0210,x:'Tapas y raciones manchegas.'},
-    {id:10,n:'Obrador Santo Tomé',c:'d',d:'Plaza Zocodover, 7',a:39.8579,o:-4.0264,x:'El mazapán más famoso de Toledo.'}
+    {id:10,n:'Obrador Santo Tomé',c:'d',d:'Plaza Zocodover, 7',a:39.8579,o:-4.0264,x:'El mazapán más famoso de Toledo.'},
+    {id:11,n:'Zara',c:'s',d:'CC Luz del Tajo',a:39.8665,o:-3.9860,x:'Ropa y moda.'},
+    {id:12,n:'Pull & Bear',c:'s',d:'CC Luz del Tajo',a:39.8666,o:-3.9858,x:'Moda joven.'},
+    {id:13,n:'Lefties',c:'s',d:'CC Luz del Tajo',a:39.8664,o:-3.9859,x:'Moda a buen precio.'},
+    {id:14,n:'Primark',c:'s',d:'CC Luz del Tajo',a:39.8667,o:-3.9862,x:'Moda y hogar.'},
+    {id:15,n:'El Corte Inglés',c:'s',d:'Referencial',a:39.8580,o:-4.0250,x:'Grandes almacenes (sin centro tradicional).'},
+    {id:16,n:'Decathlon',c:'s',d:'Parque Comercial Abadía',a:39.8906,o:-4.0287,x:'Ropa y artículos deportivos.'}
   ],
   roma: [
     {id:1,n:'Trattoria Da Enzo al 29',c:'c',d:'Via dei Vascellari, 29',a:41.8847,o:12.4777,x:'Pasta carbonara y cocina romana.'},
@@ -206,7 +218,13 @@ const restaurantes = {
     {id:7,n:'Supplizio',c:'t',d:'Via dei Banchi Vecchi, 143',a:41.8967,o:12.4691,x:'Los mejores supplì (croquetas de arroz).'},
     {id:8,n:'Antico Forno Roscioli',c:'t',d:'Via dei Chiavari, 34',a:41.8947,o:12.4735,x:'Pizza al taglio clásica.'},
     {id:9,n:'Pompi Tiramisù',c:'d',d:'Via della Croce, 82',a:41.9056,o:12.4815,x:'El rey del Tiramisú en Roma.'},
-    {id:10,n:'Gelateria Giolitti',c:'d',d:'Via degli Uffici del Vicario, 40',a:41.9009,o:12.4775,x:'Heladería histórica.'}
+    {id:10,n:'Gelateria Giolitti',c:'d',d:'Via degli Uffici del Vicario, 40',a:41.9009,o:12.4775,x:'Heladería histórica.'},
+    {id:11,n:'Zara',c:'s',d:'Via del Corso, 189',a:41.9022,o:12.4795,x:'Ropa y moda.'},
+    {id:12,n:'Pull & Bear',c:'s',d:'Via del Corso, 27/28',a:41.9079,o:12.4770,x:'Moda joven.'},
+    {id:13,n:'Lefties',c:'s',d:'Maximo Shopping Center',a:41.8175,o:12.4842,x:'Moda a buen precio.'},
+    {id:14,n:'Primark',c:'s',d:'Maximo Shopping Center',a:41.8175,o:12.4842,x:'Moda y hogar.'},
+    {id:15,n:'El Corte Inglés',c:'s',d:'Referencial',a:41.9057,o:12.4823,x:'(No hay en Italia) - Referencia agregada por solicitud.'},
+    {id:16,n:'Decathlon',c:'s',d:'Via Appia Nuova, 450',a:41.8752,o:12.5225,x:'Ropa y artículos deportivos.'}
   ],
   barcelona: [
     {id:1,n:'Can Culleretes',c:'c',d:'Carrer d\'en Quintana, 5',a:41.3807,o:2.1741,x:'El restaurante más antiguo de Barcelona.'},
@@ -218,14 +236,20 @@ const restaurantes = {
     {id:7,n:'Ciudad Condal',c:'t',d:'Rambla de Catalunya, 18',a:41.3887,o:2.1672,x:'Tapas variadas y buen ambiente.'},
     {id:8,n:'La Cova Fumada',c:'t',d:'Carrer del Baluart, 56',a:41.3789,o:2.1895,x:'Lugar de origen de la "bomba" de carne.'},
     {id:9,n:'Pastisseria Hofmann',c:'d',d:'Carrer dels Flassaders, 44',a:41.3846,o:2.1816,x:'Mejor croissant de mascarpone.'},
-    {id:10,n:'Churreria San Roman',c:'d',d:'Carrer dels Banys Nous, 8',a:41.3824,o:2.1749,x:'Churros tradicionales.'}
+    {id:10,n:'Churreria San Roman',c:'d',d:'Carrer dels Banys Nous, 8',a:41.3824,o:2.1749,x:'Churros tradicionales.'},
+    {id:11,n:'Zara',c:'s',d:'Plaça de Catalunya, 5',a:41.3865,o:2.1700,x:'Ropa y moda.'},
+    {id:12,n:'Pull & Bear',c:'s',d:'Pelai, 58',a:41.3855,o:2.1678,x:'Moda joven.'},
+    {id:13,n:'Lefties',c:'s',d:'Pelai, 2',a:41.3850,o:2.1660,x:'Moda a buen precio.'},
+    {id:14,n:'Primark',c:'s',d:'Plaça de Catalunya, 23',a:41.3868,o:2.1705,x:'Moda y hogar.'},
+    {id:15,n:'El Corte Inglés',c:'s',d:'Plaça de Catalunya, 14',a:41.3875,o:2.1706,x:'Grandes almacenes.'},
+    {id:16,n:'Decathlon',c:'s',d:'Canuda, 20',a:41.3851,o:2.1724,x:'Ropa y artículos deportivos.'}
   ]
 };
 
 const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const col = {vuelo:"#2b4fd6", tren:"#b36a00", alojamiento:"#1f8a70", visita:"#b33a73"};
-const CC = {c:'#f0a640', t:'#1f8a70', d:'#b33a73'};
-const CL = {c:'Clásico', t:'Tapas', d:'Dulce'};
+const CC = {c:'#f0a640', t:'#1f8a70', d:'#b33a73', s:'#9b59b6'};
+const CL = {c:'Clásico', t:'Tapas', d:'Dulce', s:'Compras'};
 
 // Iconos
 const getTransitIcon = (t) => L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker poi-marker" style="background:${t==='vuelo'?'#2b4fd6':'#b36a00'}">${t==='vuelo'?'✈️':'🚆'}</div>`, iconSize:[26,26], iconAnchor:[13,13]});
@@ -272,13 +296,11 @@ function renderList() {
         const b = document.createElement("button"); b.className = "card"; b.style.setProperty("--c", col[e.t]);
         b.innerHTML = `<div class="d">${e.d}<small>${e.w} nov</small></div><div><div class="ti">${e.ti}</div><div class="su">${e.su}</div>${e.ex?`<div class="ex">${e.ex}</div>`:""}</div>`;
         
-        // Asignar comportamiento click a los items del itinerario
         b.querySelector('a')?.addEventListener('click', ev => ev.stopPropagation());
         b.onclick = () => {
             activeEvent = activeEvent === e.id ? null : e.id;
             renderList();
         };
-        // Estado visual de seleccionado
         if (e.id === activeEvent) b.setAttribute("aria-pressed", "true");
         
         Lst.appendChild(b);
@@ -295,9 +317,9 @@ let mc = null, ms = null;
 let detailLayerGroup = L.layerGroup().addTo(map2);
 let restMarkers = {};
 
-// Filtros Restaurantes
+// Filtros Detalle
 const mCh = document.getElementById('mc');
-[['', 'Todos'], ['c', 'Clásicos'], ['t', 'Tapas'], ['d', 'Dulce']].forEach(([k, l]) => {
+[['', 'Todos'], ['c', 'Clásicos'], ['t', 'Tapas'], ['d', 'Dulce'], ['s', 'Compras']].forEach(([k, l]) => {
     const b = document.createElement('button'); b.className = 'chip'; b.textContent = l; b.dataset.k = k;
     b.onclick = () => { mc = k || null; ms = null; mDraw(); map2.closePopup(); map2.flyTo(C[currentDetailCity.charAt(0).toUpperCase() + currentDetailCity.slice(1)], 14); };
     mCh.appendChild(b);
@@ -306,7 +328,7 @@ const mCh = document.getElementById('mc');
 function mSel(id) {
     ms = ms === id ? null : id; mDraw();
     if(ms) {
-        const r = restaurantes[currentDetailCity].find(x => x.id === ms);
+        const r = lugares[currentDetailCity].find(x => x.id === ms);
         map2.flyTo([r.a, r.o], 16, {duration: 0.8});
         restMarkers[id].openPopup();
         document.getElementById('view-detail').scrollIntoView({behavior: 'smooth', block: 'start'});
@@ -317,7 +339,7 @@ function mDraw() {
     mCh.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.k || null) === mc)));
     const mL = document.getElementById('ml'); mL.innerHTML = '';
     
-    restaurantes[currentDetailCity].forEach(r => {
+    lugares[currentDetailCity].forEach(r => {
         const visible = !mc || r.c === mc;
         if(visible) detailLayerGroup.addLayer(restMarkers[r.id]); else detailLayerGroup.removeLayer(restMarkers[r.id]);
         
@@ -336,7 +358,6 @@ function renderDetailCity(cityKey) {
     currentDetailCity = cityKey; mc = null; ms = null;
     detailLayerGroup.clearLayers(); restMarkers = {};
     
-    // Airbnb Marker
     if(airbnbs[cityKey]) {
         const a = airbnbs[cityKey];
         const m = L.marker([a.lat, a.lng], {icon: airbnbIcon, zIndexOffset: 1000}).addTo(detailLayerGroup);
@@ -344,15 +365,13 @@ function renderDetailCity(cityKey) {
         m.on('click', () => map2.flyTo([a.lat, a.lng], 16));
     }
     
-    // Transit POIs Marker
     transitPOIs.filter(p => p.city === cityKey).forEach(poi => {
         const m = L.marker([poi.lat, poi.lng], {icon: getTransitIcon(poi.type)}).addTo(detailLayerGroup);
         m.bindPopup(`<h3>${poi.name}</h3>`);
         m.on('click', () => map2.flyTo([poi.lat, poi.lng], 15));
     });
 
-    // Restaurant Markers
-    restaurantes[cityKey].forEach(r => {
+    lugares[cityKey].forEach(r => {
         const m = L.marker([r.a, r.o], {icon: getRestIcon(r.c, r.id)}).addTo(detailLayerGroup);
         m.bindPopup(`<h3>${r.n}</h3><p style="margin:0 0 6px 0">${r.d}</p><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n+', '+r.d+', '+cityKey)}'>Ver en Maps ↗</a>`);
         m.on('click', () => mSel(r.id));
