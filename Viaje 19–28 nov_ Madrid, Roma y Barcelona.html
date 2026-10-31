@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Viaje 19–28 nov: Madrid, Roma, Barcelona</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E✈️%3C/text%3E%3C/svg%3E">
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+/* Variables base (Light) */
+:root{--bg:#f3f6f4;--card:#fff;--text:#14313b;--muted:#5b717a;--line:#d5e0e0;--fl:#2b4fd6;--tr:#b36a00;--st:#1f8a70;--vi:#b33a73;--chip:#e3ecec;--chip-on:#14313b;--chip-on-t:#fff}
+
+/* Variables explícitas para Dark Mode */
+:root[data-theme="dark"]{--bg:#0d1a20;--card:#14262e;--text:#e4eef0;--muted:#8fa6ae;--line:#233a44;--fl:#7b9bff;--tr:#f0a640;--st:#4fcfa8;--vi:#f07ab0;--chip:#1c313b;--chip-on:#e4eef0;--chip-on-t:#0d1a20}
+:root[data-theme="dark"] .leaflet-tile-pane { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
+
+@media (prefers-color-scheme:dark){
+    :root:not([data-theme="light"]){--bg:#0d1a20;--card:#14262e;--text:#e4eef0;--muted:#8fa6ae;--line:#233a44;--fl:#7b9bff;--tr:#f0a640;--st:#4fcfa8;--vi:#f07ab0;--chip:#1c313b;--chip-on:#e4eef0;--chip-on-t:#0d1a20}
+    :root:not([data-theme="light"]) .leaflet-tile-pane { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
+}
+
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",sans-serif; transition: background 0.3s, color 0.3s;}
+header{position:relative; padding:20px 18px 0px;max-width:1100px;margin:0 auto}
+h1{font:600 clamp(1.5rem,4vw,2.1rem)/1.15 Georgia,"Iowan Old Style",serif;margin:0 0 4px; padding-right: 45px;}
+header p{margin:0 0 16px;color:var(--muted)}
+
+/* Pestañas Principales */
+.main-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 18px; scrollbar-width: none; }
+.main-tabs::-webkit-scrollbar { display: none; }
+.tab-btn { background: transparent; border: none; padding: 8px 16px; font: inherit; font-weight: 600; font-size: 1.05rem; color: var(--muted); cursor: pointer; border-radius: 8px; white-space: nowrap; transition: background 0.2s, color 0.2s; }
+.tab-btn:hover { background: var(--chip); }
+.tab-btn.active { background: var(--text); color: var(--bg); }
+.tab-btn:focus-visible { outline: 3px solid var(--fl); outline-offset: 2px; }
+
+/* Contenedores de Vistas */
+.view-section { display: none; max-width:1100px; margin:0 auto; padding:0 18px 32px; }
+.view-section.active-view { display: block; }
+#view-general.active-view { display: grid; grid-template-columns:1.25fr 1fr; gap:18px; }
+@media (max-width:820px){ #view-general.active-view { grid-template-columns:1fr; } }
+
+.mapwrap{position:sticky;top:8px;align-self:start;z-index:10}
+@media (max-width:820px){.mapwrap{position:static}}
+
+.theme-toggle { position: absolute; top: 18px; right: 18px; background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 50%; width: 40px; height: 40px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, background 0.3s; padding: 0;}
+.theme-toggle:hover { transform: scale(1.1); }
+
+/* Leaflet Mapas */
+#map, #mm { width: 100%; height: 480px; border-radius: 14px; border: 1px solid var(--line); background: var(--bg); z-index: 1;}
+.leaflet-popup-content-wrapper { background: var(--card); color: var(--text); border-radius: 8px; border: 1px solid var(--line); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+.leaflet-popup-tip { background: var(--card); }
+.leaflet-popup-content { margin: 12px; font-family: inherit; font-size: 0.9rem; }
+.leaflet-popup-content h3 { margin: 0 0 4px 0; font-size: 1.05rem; }
+.leaflet-popup-content a { color: var(--fl); font-weight: bold; text-decoration: none; }
+
+.city-marker { font-weight: bold; font-size: 13px; color: #14313b; text-shadow: 2px 2px 0 #fff, -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff; white-space: nowrap;}
+.city-marker::before { content: ''; display: block; width: 14px; height: 14px; background: #fff; border: 3px solid #14313b; border-radius: 50%; position: absolute; left: -7px; top: 18px; box-shadow: 0 0 4px rgba(0,0,0,0.3); transition: transform 0.2s;}
+.city-marker.on::before { background: #14313b; transform: scale(1.3); }
+
+.rest-marker { width: 26px !important; height: 26px !important; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 12px; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,0.4); transition: transform 0.2s; cursor: pointer;}
+.rest-marker:hover { transform: scale(1.15); }
+.rest-marker.on { transform: scale(1.2); border-color: #14313b; }
+.airbnb-marker, .poi-marker { font-size: 14px; }
+
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin:8px 2px 0;font-size:.82rem;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-right:5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{border:0;background:var(--chip);color:var(--text);padding:7px 13px;border-radius:99px;font:inherit;font-size:.9rem;cursor:pointer;min-height:36px;}
+.chip[aria-pressed="true"]{background:var(--chip-on);color:var(--chip-on-t)}
+.card{display:grid;grid-template-columns:56px 1fr;gap:10px;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-left:5px solid var(--c);border-radius:12px;padding:11px 12px;margin-bottom:9px;cursor:pointer;transition: box-shadow 0.2s;}
+.card[aria-pressed="true"]{box-shadow:0 0 0 2px var(--c);}
+.d{font:600 1.15rem/1.1 Georgia,serif;text-align:center}.d small{display:block;font:500 .72rem system-ui;color:var(--muted);margin-top:2px}
+.ti{font-weight:600}.su{color:var(--muted);font-size:.88rem}
+.ex{display:none;margin-top:6px;font-size:.88rem;border-top:1px solid var(--line);padding-top:6px}
+.card[aria-pressed="true"] .ex{display:block}
+.empty{color:var(--muted);padding:10px}
+.mgrid{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;align-items:start}
+@media (max-width:820px){.mgrid{grid-template-columns:1fr}}
+.ex a{color:var(--fl);font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <h1>Europa 2026</h1>
+  <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">🌙</button>
+  <p>19 al 28 de noviembre · Madrid, Toledo, Roma y Barcelona.</p>
+  
+  <nav class="main-tabs">
+    <button class="tab-btn active" data-target="general">Viaje General</button>
+    <button class="tab-btn" data-target="madrid">Madrid</button>
+    <button class="tab-btn" data-target="toledo">Toledo</button>
+    <button class="tab-btn" data-target="roma">Roma</button>
+    <button class="tab-btn" data-target="barcelona">Barcelona</button>
+  </nav>
+</header>
+
+<main>
+  <!-- VISTA 1: VIAJE GENERAL -->
+  <div id="view-general" class="view-section active-view">
+      <section class="mapwrap" aria-label="Mapa del viaje">
+        <div id="map" role="img" aria-label="Mapa interactivo"></div>
+        <div class="legend"><span><i style="border-color:var(--fl)"></i>Vuelo</span><span><i style="border-color:var(--tr);border-top-style:dashed"></i>Tren</span><span>🏠 Airbnb</span><span>✈️ Aeropuerto</span><span>🚆 Estación</span></div>
+      </section>
+      <section aria-label="Eventos">
+        <div class="chips" id="chips" role="group"></div>
+        <div id="list"></div>
+      </section>
+  </div>
+
+  <!-- VISTA 2: DETALLE POR CIUDAD -->
+  <div id="view-detail" class="view-section">
+      <h2 id="detail-title" style="font:600 clamp(1.3rem,3.4vw,1.7rem)/1.2 Georgia,serif;margin:0 0 4px;">Ciudad en detalle</h2>
+      <p id="detail-desc" style="color:var(--muted);margin:0 0 12px;">Puntos clave, alojamiento y restaurantes recomendados.</p>
+      <div class='mgrid'>
+          <div class="mapwrap">
+              <div id='mm' role='img'></div>
+          </div>
+          <div>
+              <div class='chips' id='mc' role='group'></div>
+              <div id='ml'></div>
+          </div>
+      </div>
+  </div>
+</main>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+// --- TEMA OSCURO/CLARO ---
+const themeToggle = document.getElementById('themeToggle');
+const isSystemDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
+const isCurrentDark = () => document.documentElement.getAttribute('data-theme') === 'dark' || (!document.documentElement.hasAttribute('data-theme') && isSystemDark());
+themeToggle.textContent = isCurrentDark() ? '☀️' : '🌙';
+themeToggle.addEventListener('click', () => {
+    const newTheme = isCurrentDark() ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', newTheme);
+    themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+});
+
+// --- DATOS DEL VIAJE ---
+const C = { Madrid: [40.4168, -3.7038], Toledo: [39.8628, -4.0273], Roma: [41.9028, 12.4964], Barcelona: [41.3874, 2.1686], SJO: [10.002, -84.211] };
+const airbnbs = {
+    madrid: {lat: 40.4168, lng: -3.7038, ti: "Airbnb en Madrid", su: "Habitación Doble Confort (Moises)"},
+    roma: {lat: 41.8955, lng: 12.5038, ti: "Airbnb en Roma", su: "Piazza Vittorio (Wei) - Via Napoleone III, 99"},
+    barcelona: {lat: 41.3746, lng: 2.1360, ti: "Airbnb en Barcelona", su: "Cerca de Sants - C. d’Almeria, 34"}
+};
+const transitPOIs = [
+    { id: 't1', city: 'madrid', name: "Aeropuerto Madrid-Barajas", type: "vuelo", lat: 40.4719, lng: -3.5626 },
+    { id: 't2', city: 'roma', name: "Aeropuerto Roma-Fiumicino", type: "vuelo", lat: 41.7999, lng: 12.2462 },
+    { id: 't3', city: 'barcelona', name: "Aeropuerto Barcelona-El Prat", type: "vuelo", lat: 41.2974, lng: 2.0833 },
+    { id: 't4', city: 'sjo', name: "Aeropuerto Juan Santamaría", type: "vuelo", lat: 10.002, lng: -84.211 },
+    { id: 't5', city: 'madrid', name: "Estación Madrid-Atocha", type: "tren", lat: 40.4065, lng: -3.6895 },
+    { id: 't6', city: 'toledo', name: "Estación de Toledo", type: "tren", lat: 39.8625, lng: -4.0111 },
+    { id: 't7', city: 'barcelona', name: "Estación Barcelona-Sants", type: "tren", lat: 41.3790, lng: 2.1401 }
+];
+const getPoi = (id) => { const p = transitPOIs.find(x => x.id === id); return [p.lat, p.lng]; };
+
+const E = [
+ {id:1,d:"19",w:"jue",t:"vuelo",c:["SJO","Madrid"],ti:"Vuelo E9-858 San José → Madrid",su:"Iberojet · sale 20:00",ex:"Reserva DTVMSU. Tarifa BASIC, sin maleta facturada ni asiento."},
+ {id:2,d:"20",w:"vie",t:"alojamiento",c:["Madrid"],ti:"Airbnb en Madrid",su:"Habitación Doble Confort", lat: airbnbs.madrid.lat, lng: airbnbs.madrid.lng, ex:"Ver <a href='https://mail.google.com/mail/#all/1a13f33cac728194' target='_blank'>correo de reserva ↗</a>"},
+ {id:3,d:"21",w:"sáb",t:"tren",c:["Madrid","Toledo"],ti:"Tren Madrid-Atocha → Toledo",su:"Sale 8:15, llega 8:49"},
+ {id:4,d:"21",w:"sáb",t:"tren",c:["Toledo","Madrid"],ti:"Tren Toledo → Madrid-Atocha",su:"Sale 16:25, llega 16:59"},
+ {id:5,d:"22",w:"dom",t:"vuelo",c:["Madrid","Roma"],ti:"Vuelo UX1041 Madrid → Roma",su:"Air Europa · sale 12:40",ex:"Reserva 98WDUN."},
+ {id:6,d:"22",w:"dom",t:"alojamiento",c:["Roma"],ti:"Airbnb en Roma",su:"Piazza Vittorio", lat: airbnbs.roma.lat, lng: airbnbs.roma.lng, ex:"Via Napoleone III, 99. Ver <a href='https://mail.google.com/mail/#all/1a13e957a315f815' target='_blank'>correo de reserva ↗</a>"},
+ {id:7,d:"23",w:"lun",t:"visita",c:["Roma"],ti:"Museos Vaticanos",su:"Entrada a las 15:30"},
+ {id:8,d:"25",w:"mié",t:"vuelo",c:["Roma","Barcelona"],ti:"Vuelo AZ76 Roma → Barcelona",su:"ITA Airways · sale 14:05",ex:"Reserva Z2YG5I. Solo equipaje de mano (8 kg)."},
+ {id:9,d:"25",w:"mié",t:"alojamiento",c:["Barcelona"],ti:"Airbnb en Barcelona",su:"Cerca de Sants", lat: airbnbs.barcelona.lat, lng: airbnbs.barcelona.lng, ex:"C. d’Almeria, 34. Ver <a href='https://mail.google.com/mail/#all/1a14f85d802ed6e6' target='_blank'>correo de reserva ↗</a>"},
+ {id:10,d:"28",w:"sáb",t:"tren",c:["Barcelona","Madrid"],ti:"Tren Barcelona-Sants → Madrid-Atocha",su:"Sale 6:35, llega 9:52"},
+ {id:11,d:"28",w:"sáb",t:"vuelo",c:["Madrid","SJO"],ti:"Vuelo E9-857 Madrid → San José",su:"Iberojet · sale 14:45",ex:"Reserva DTVMSU."}
+];
+
+// --- DATOS DE RESTAURANTES POR CIUDAD ---
+const restaurantes = {
+  madrid: [
+    {id:1,n:'Sobrino de Botín',c:'c',d:'C. de los Cuchilleros, 17',a:40.4142,o:-3.7078,x:'Asados de cochinillo y cordero.'},
+    {id:2,n:'Casa Alberto',c:'c',d:'C. de las Huertas, 18',a:40.414,o:-3.6992,x:'Taberna clásica de 1827.'},
+    {id:3,n:'Posada de la Villa',c:'c',d:'C. de la Cava Baja, 9',a:40.4121,o:-3.7092,x:'Sopa castellana y asados.'},
+    {id:4,n:'Taberna de Pedraza',c:'c',d:'C. de Recoletos, 4',a:40.4216,o:-3.6914,x:'Famoso por su tortilla estilo Betanzos.'},
+    {id:5,n:'Lhardy',c:'c',d:'Carrera de San Jerónimo, 8',a:40.4166,o:-3.7013,x:'El cocido y consomé más clásico.'},
+    {id:6,n:'Taberna La Bola',c:'c',d:'C. de la Bola, 5',a:40.421,o:-3.7118,x:'Cocido madrileño en olla de barro.'},
+    {id:7,n:'Mercado de San Miguel',c:'t',d:'Plaza de San Miguel',a:40.4154,o:-3.709,x:'Puestos de tapas variadas.'},
+    {id:8,n:'Casa Labra',c:'t',d:'C. de Tetuán, 12',a:40.4172,o:-3.7029,x:'Croquetas y bacalao frito.'},
+    {id:9,n:'La Campana',c:'t',d:'C. de Botoneras, 6',a:40.4153,o:-3.7069,x:'Bocadillo de calamares histórico.'},
+    {id:10,n:'Chocolatería San Ginés',c:'d',d:'Pasadizo de San Ginés, 5',a:40.417,o:-3.706,x:'Churros con chocolate.'}
+  ],
+  toledo: [
+    {id:1,n:'Restaurante Adolfo',c:'c',d:'Hombre de Palo, 7',a:39.8576,o:-4.0248,x:'Alta cocina tradicional toledana.'},
+    {id:2,n:'Restaurante Casa Aurelio',c:'c',d:'Plaza del Ayuntamiento, 4',a:39.8572,o:-4.0253,x:'Clásico, famoso por la perdiz.'},
+    {id:3,n:'Víctor Sánchez-Beato',c:'c',d:'Calle del Alamillo del Tránsito, 9',a:39.8560,o:-4.0280,x:'Cocina de autor e innovación.'},
+    {id:4,n:'Cuchara de Palo',c:'c',d:'Calle Santa Fe, 1',a:39.8582,o:-4.0215,x:'Cocina manchega tradicional.'},
+    {id:5,n:'La Abadía',c:'t',d:'Plaza San Nicolás, 3',a:39.8596,o:-4.0246,x:'Cervecería en una antigua cueva.'},
+    {id:6,n:'Cervecería El Trébol',c:'t',d:'Calle de Santa Fe, 1',a:39.8592,o:-4.0232,x:'Famoso por su "Bomba Toledana".'},
+    {id:7,n:'Alfileritos 24',c:'t',d:'Calle Alfileritos, 24',a:39.8601,o:-4.0249,x:'Tapas en un entorno vanguardista.'},
+    {id:8,n:'Taberna el Botero',c:'t',d:'Calle Ciudad, 5',a:39.8570,o:-4.0235,x:'Tapas creativas y buena coctelería.'},
+    {id:9,n:'Lo Nuestro',c:'t',d:'Calle San Juan de Dios, 7',a:39.8583,o:-4.0210,x:'Tapas y raciones manchegas.'},
+    {id:10,n:'Obrador Santo Tomé',c:'d',d:'Plaza Zocodover, 7',a:39.8579,o:-4.0264,x:'El mazapán más famoso de Toledo.'}
+  ],
+  roma: [
+    {id:1,n:'Trattoria Da Enzo al 29',c:'c',d:'Via dei Vascellari, 29',a:41.8847,o:12.4777,x:'Pasta carbonara y cocina romana.'},
+    {id:2,n:'Roscioli Salumeria',c:'c',d:'Via dei Giubbonari, 21',a:41.8941,o:12.4740,x:'Amatriciana y selección de quesos.'},
+    {id:3,n:'Tonnarello',c:'c',d:'Via della Paglia, 1',a:41.8893,o:12.4697,x:'Trattoria popular en Trastevere.'},
+    {id:4,n:'Osteria da Fortunata',c:'c',d:'Via del Pellegrino, 11',a:41.8956,o:12.4722,x:'Pasta fresca hecha a mano.'},
+    {id:5,n:'Pizzeria Da Baffetto',c:'c',d:'Via del Governo Vecchio, 114',a:41.8986,o:12.4705,x:'Pizza romana de masa fina.'},
+    {id:6,n:'Trapizzino',c:'t',d:'Piazza Trilussa, 46',a:41.8899,o:12.4694,x:'Street food: bolsillos de pizza.'},
+    {id:7,n:'Supplizio',c:'t',d:'Via dei Banchi Vecchi, 143',a:41.8967,o:12.4691,x:'Los mejores supplì (croquetas de arroz).'},
+    {id:8,n:'Antico Forno Roscioli',c:'t',d:'Via dei Chiavari, 34',a:41.8947,o:12.4735,x:'Pizza al taglio clásica.'},
+    {id:9,n:'Pompi Tiramisù',c:'d',d:'Via della Croce, 82',a:41.9056,o:12.4815,x:'El rey del Tiramisú en Roma.'},
+    {id:10,n:'Gelateria Giolitti',c:'d',d:'Via degli Uffici del Vicario, 40',a:41.9009,o:12.4775,x:'Heladería histórica.'}
+  ],
+  barcelona: [
+    {id:1,n:'Can Culleretes',c:'c',d:'Carrer d\'en Quintana, 5',a:41.3807,o:2.1741,x:'El restaurante más antiguo de Barcelona.'},
+    {id:2,n:'7 Portes',c:'c',d:'Passeig d\'Isabel II, 14',a:41.3820,o:2.1834,x:'Famoso por su paella y arroces.'},
+    {id:3,n:'Bar Cañete',c:'c',d:'Carrer de la Unió, 17',a:41.3791,o:2.1732,x:'Clásico renovado y raciones de calidad.'},
+    {id:4,n:'Cervecería Catalana',c:'t',d:'Carrer de Mallorca, 236',a:41.3923,o:2.1609,x:'Tapas clásicas siempre concurridas.'},
+    {id:5,n:'El Xampanyet',c:'t',d:'Carrer de Montcada, 22',a:41.3839,o:2.1818,x:'Tapas, anchoas y cava en el Born.'},
+    {id:6,n:'Quimet & Quimet',c:'t',d:'Carrer del Poeta Cabanyes, 25',a:41.3742,o:2.1643,x:'Montaditos y conservas espectaculares.'},
+    {id:7,n:'Ciudad Condal',c:'t',d:'Rambla de Catalunya, 18',a:41.3887,o:2.1672,x:'Tapas variadas y buen ambiente.'},
+    {id:8,n:'La Cova Fumada',c:'t',d:'Carrer del Baluart, 56',a:41.3789,o:2.1895,x:'Lugar de origen de la "bomba" de carne.'},
+    {id:9,n:'Pastisseria Hofmann',c:'d',d:'Carrer dels Flassaders, 44',a:41.3846,o:2.1816,x:'Mejor croissant de mascarpone.'},
+    {id:10,n:'Churreria San Roman',c:'d',d:'Carrer dels Banys Nous, 8',a:41.3824,o:2.1749,x:'Churros tradicionales.'}
+  ]
+};
+
+const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+const col = {vuelo:"#2b4fd6", tren:"#b36a00", alojamiento:"#1f8a70", visita:"#b33a73"};
+const CC = {c:'#f0a640', t:'#1f8a70', d:'#b33a73'};
+const CL = {c:'Clásico', t:'Tapas', d:'Dulce'};
+
+// Iconos
+const getTransitIcon = (t) => L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker poi-marker" style="background:${t==='vuelo'?'#2b4fd6':'#b36a00'}">${t==='vuelo'?'✈️':'🚆'}</div>`, iconSize:[26,26], iconAnchor:[13,13]});
+const airbnbIcon = L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker airbnb-marker" style="background:#1f8a70">🏠</div>`, iconSize:[26,26], iconAnchor:[13,13]});
+const getRestIcon = (c, id) => L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker" style="background:${CC[c]}">${id}</div>`, iconSize:[26,26], iconAnchor:[13,13]});
+
+// --- MAPA 1: GENERAL ---
+const map1 = L.map('map').setView([40.5, -4], 4);
+L.tileLayer(tileUrl, { attribution: '&copy; OpenStreetMap' }).addTo(map1);
+let activeCity = null, activeEvent = null;
+
+// Rutas
+[{type:'vuelo',p:[getPoi('t4'),getPoi('t1')]}, {type:'tren',p:[getPoi('t5'),getPoi('t6')]}, {type:'vuelo',p:[getPoi('t1'),getPoi('t2')]}, {type:'vuelo',p:[getPoi('t2'),getPoi('t3')]}, {type:'tren',p:[getPoi('t7'),getPoi('t5')]}].forEach(r => {
+    L.polyline(r.p, {color: col[r.type], weight:3, dashArray: r.type==='tren'?'6, 6':null, opacity:0.8}).addTo(map1);
+});
+
+const cityMarkers = {};
+Object.keys(C).forEach(c => {
+    const m = L.marker(C[c], {icon: L.divIcon({className:'city-marker', html:`<div style="transform:translate(10px,-24px)">${c}</div>`, iconSize:[0,0]})}).addTo(map1);
+    m.on('click', () => setCity(activeCity === c ? null : c));
+    cityMarkers[c] = m;
+});
+
+// Chips Filtro General
+const chipsContainer = document.getElementById("chips");
+["Todos", "SJO", "Madrid", "Toledo", "Roma", "Barcelona"].forEach(n => {
+    const b = document.createElement("button"); b.className = "chip"; b.textContent = n;
+    b.onclick = () => setCity(n === "Todos" ? null : n); b.dataset.n = n; chipsContainer.appendChild(b);
+});
+
+function setCity(c) {
+    activeCity = c; activeEvent = null;
+    chipsContainer.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.n==="Todos" && !activeCity) || b.dataset.n===activeCity)));
+    Object.keys(cityMarkers).forEach(n => { const el = cityMarkers[n].getElement(); if(el) el.classList.toggle('on', n===activeCity); });
+    if(c) map1.flyTo(C[c], c==='SJO'?6:7, {duration:1}); else map1.flyTo([40.5, -4], 4, {duration:1});
+    renderList();
+}
+
+function renderList() {
+    const Lst = document.getElementById("list"); Lst.innerHTML = "";
+    const items = E.filter(e => !activeCity || e.c.includes(activeCity));
+    if(!items.length) { Lst.innerHTML = '<p class="empty">No hay eventos.</p>'; return; }
+    items.forEach(e => {
+        const b = document.createElement("button"); b.className = "card"; b.style.setProperty("--c", col[e.t]);
+        b.innerHTML = `<div class="d">${e.d}<small>${e.w} nov</small></div><div><div class="ti">${e.ti}</div><div class="su">${e.su}</div>${e.ex?`<div class="ex">${e.ex}</div>`:""}</div>`;
+        
+        // Asignar comportamiento click a los items del itinerario
+        b.querySelector('a')?.addEventListener('click', ev => ev.stopPropagation());
+        b.onclick = () => {
+            activeEvent = activeEvent === e.id ? null : e.id;
+            renderList();
+        };
+        // Estado visual de seleccionado
+        if (e.id === activeEvent) b.setAttribute("aria-pressed", "true");
+        
+        Lst.appendChild(b);
+    });
+}
+setCity(null);
+
+// --- MAPA 2: DETALLE DINÁMICO ---
+const map2 = L.map('mm').setView([40.417, -3.702], 13);
+L.tileLayer(tileUrl, { attribution: '&copy; OpenStreetMap' }).addTo(map2);
+
+let currentDetailCity = 'madrid';
+let mc = null, ms = null;
+let detailLayerGroup = L.layerGroup().addTo(map2);
+let restMarkers = {};
+
+// Filtros Restaurantes
+const mCh = document.getElementById('mc');
+[['', 'Todos'], ['c', 'Clásicos'], ['t', 'Tapas'], ['d', 'Dulce']].forEach(([k, l]) => {
+    const b = document.createElement('button'); b.className = 'chip'; b.textContent = l; b.dataset.k = k;
+    b.onclick = () => { mc = k || null; ms = null; mDraw(); map2.closePopup(); map2.flyTo(C[currentDetailCity.charAt(0).toUpperCase() + currentDetailCity.slice(1)], 14); };
+    mCh.appendChild(b);
+});
+
+function mSel(id) {
+    ms = ms === id ? null : id; mDraw();
+    if(ms) {
+        const r = restaurantes[currentDetailCity].find(x => x.id === ms);
+        map2.flyTo([r.a, r.o], 16, {duration: 0.8});
+        restMarkers[id].openPopup();
+        document.getElementById('view-detail').scrollIntoView({behavior: 'smooth', block: 'start'});
+    } else map2.closePopup();
+}
+
+function mDraw() {
+    mCh.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.k || null) === mc)));
+    const mL = document.getElementById('ml'); mL.innerHTML = '';
+    
+    restaurantes[currentDetailCity].forEach(r => {
+        const visible = !mc || r.c === mc;
+        if(visible) detailLayerGroup.addLayer(restMarkers[r.id]); else detailLayerGroup.removeLayer(restMarkers[r.id]);
+        
+        const el = restMarkers[r.id].getElement();
+        if(el) { const mInner = el.querySelector('.rest-marker'); if(mInner) mInner.classList.toggle('on', r.id === ms); }
+        if(!visible) return;
+        
+        const d = document.createElement('div'); d.className = 'card'; d.style.setProperty('--c', CC[r.c]); d.setAttribute('aria-pressed', String(r.id === ms));
+        d.innerHTML = `<div class='d'>${r.id}<small>${CL[r.c]}</small></div><div><div class='ti'>${r.n}</div><div class='su'>${r.d}</div><div class='ex'>${r.x}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n+', '+r.d+', '+currentDetailCity)}'>Ver en Maps ↗</a></div></div>`;
+        d.querySelector('a').onclick = e => e.stopPropagation(); d.onclick = () => mSel(r.id);
+        mL.appendChild(d);
+    });
+}
+
+function renderDetailCity(cityKey) {
+    currentDetailCity = cityKey; mc = null; ms = null;
+    detailLayerGroup.clearLayers(); restMarkers = {};
+    
+    // Airbnb Marker
+    if(airbnbs[cityKey]) {
+        const a = airbnbs[cityKey];
+        const m = L.marker([a.lat, a.lng], {icon: airbnbIcon, zIndexOffset: 1000}).addTo(detailLayerGroup);
+        m.bindPopup(`<h3>${a.ti}</h3><p>${a.su}</p>`);
+        m.on('click', () => map2.flyTo([a.lat, a.lng], 16));
+    }
+    
+    // Transit POIs Marker
+    transitPOIs.filter(p => p.city === cityKey).forEach(poi => {
+        const m = L.marker([poi.lat, poi.lng], {icon: getTransitIcon(poi.type)}).addTo(detailLayerGroup);
+        m.bindPopup(`<h3>${poi.name}</h3>`);
+        m.on('click', () => map2.flyTo([poi.lat, poi.lng], 15));
+    });
+
+    // Restaurant Markers
+    restaurantes[cityKey].forEach(r => {
+        const m = L.marker([r.a, r.o], {icon: getRestIcon(r.c, r.id)}).addTo(detailLayerGroup);
+        m.bindPopup(`<h3>${r.n}</h3><p style="margin:0 0 6px 0">${r.d}</p><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n+', '+r.d+', '+cityKey)}'>Ver en Maps ↗</a>`);
+        m.on('click', () => mSel(r.id));
+        restMarkers[r.id] = m;
+    });
+
+    const CityCap = cityKey.charAt(0).toUpperCase() + cityKey.slice(1);
+    map2.flyTo(C[CityCap], cityKey==='toledo'? 15 : 13, {duration: 0});
+    mDraw();
+}
+
+// --- LOGICA DE PESTAÑAS ---
+const tabs = document.querySelectorAll('.tab-btn');
+const viewGeneral = document.getElementById('view-general');
+const viewDetail = document.getElementById('view-detail');
+const detailTitle = document.getElementById('detail-title');
+
+tabs.forEach(btn => {
+    btn.addEventListener('click', () => {
+        tabs.forEach(t => t.classList.remove('active'));
+        btn.classList.add('active');
+        const target = btn.dataset.target;
+        
+        if (target === 'general') {
+            viewGeneral.classList.add('active-view'); viewDetail.classList.remove('active-view');
+            setTimeout(() => map1.invalidateSize(), 50);
+        } else {
+            viewGeneral.classList.remove('active-view'); viewDetail.classList.add('active-view');
+            detailTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1) + " en detalle";
+            renderDetailCity(target);
+            setTimeout(() => map2.invalidateSize(), 50);
+        }
+    });
+});
+
+// Inicializar la pestaña por defecto
+setTimeout(() => { map1.invalidateSize(); map2.invalidateSize(); }, 200);
+</script>
+</body>
+</html>
