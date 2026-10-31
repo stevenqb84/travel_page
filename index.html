@@ -155,9 +155,9 @@ themeToggle.addEventListener('click', () => {
 // --- DATOS DEL VIAJE ---
 const C = { Madrid: [40.4168, -3.7038], Toledo: [39.8628, -4.0273], Roma: [41.9028, 12.4964], Barcelona: [41.3874, 2.1686], SJO: [10.002, -84.211] };
 const airbnbs = {
-    madrid: {lat: 40.4123, lng: -3.6663, ti: "Airbnb en Madrid", su: "Habitación Doble Confort (Moises)"},
-    roma: {lat: 41.8955, lng: 12.5038, ti: "Airbnb en Roma", su: "Piazza Vittorio (Wei) - Via Napoleone III, 99"},
-    barcelona: {lat: 41.3746, lng: 2.1360, ti: "Airbnb en Barcelona", su: "Cerca de Sants - C. d’Almeria, 34"}
+    madrid: {lat: 40.4123, lng: -3.6663, ti: "Airbnb en Madrid", su: "Habitación Doble Confort (Moises)", pdf: "airbnb_madrid.pdf"},
+    roma: {lat: 41.8955, lng: 12.5038, ti: "Airbnb en Roma", su: "Piazza Vittorio (Wei) - Via Napoleone III, 99", pdf: "airbnb_rome.pdf"},
+    barcelona: {lat: 41.3746, lng: 2.1360, ti: "Airbnb en Barcelona", su: "Cerca de Sants - C. d’Almeria, 34", pdf: "airbnb_barcelona.pdf"}
 };
 const transitPOIs = [
     { id: 't1', city: 'madrid', name: "Aeropuerto Madrid-Barajas", type: "vuelo", lat: 40.4719, lng: -3.5626 },
@@ -172,14 +172,14 @@ const getPoi = (id) => { const p = transitPOIs.find(x => x.id === id); return [p
 
 const E = [
  {id:1,d:"19",w:"jue",t:"vuelo",c:["SJO","Madrid"],ti:"Vuelo E9-858 San José → Madrid",su:"Iberojet · sale 20:00",ex:"Reserva DTVMSU. Tarifa BASIC, sin maleta facturada ni asiento."},
- {id:2,d:"20",w:"vie",t:"alojamiento",c:["Madrid"],ti:"Airbnb en Madrid",su:"Habitación Doble Confort", lat: airbnbs.madrid.lat, lng: airbnbs.madrid.lng, ex:"Ver <a href='https://mail.google.com/mail/#all/1a13f33cac728194' target='_blank'>correo de reserva ↗</a>"},
+ {id:2,d:"20",w:"vie",t:"alojamiento",c:["Madrid"],ti:"Airbnb en Madrid",su:"Habitación Doble Confort", lat: airbnbs.madrid.lat, lng: airbnbs.madrid.lng, ex:`Ver comprobante offline: <a href='airbnb_madrid.pdf' target='_blank'>airbnb_madrid.pdf ↗</a>`},
  {id:3,d:"21",w:"sáb",t:"tren",c:["Madrid","Toledo"],ti:"Tren Madrid-Atocha → Toledo",su:"Sale 8:15, llega 8:49"},
  {id:4,d:"21",w:"sáb",t:"tren",c:["Toledo","Madrid"],ti:"Tren Toledo → Madrid-Atocha",su:"Sale 16:25, llega 16:59"},
  {id:5,d:"22",w:"dom",t:"vuelo",c:["Madrid","Roma"],ti:"Vuelo UX1041 Madrid → Roma",su:"Air Europa · sale 12:40",ex:"Reserva 98WDUN."},
- {id:6,d:"22",w:"dom",t:"alojamiento",c:["Roma"],ti:"Airbnb en Roma",su:"Piazza Vittorio", lat: airbnbs.roma.lat, lng: airbnbs.roma.lng, ex:"Via Napoleone III, 99. Ver <a href='https://mail.google.com/mail/#all/1a13e957a315f815' target='_blank'>correo de reserva ↗</a>"},
+ {id:6,d:"22",w:"dom",t:"alojamiento",c:["Roma"],ti:"Airbnb en Roma",su:"Piazza Vittorio", lat: airbnbs.roma.lat, lng: airbnbs.roma.lng, ex:`Ver comprobante offline: <a href='airbnb_rome.pdf' target='_blank'>airbnb_rome.pdf ↗</a>`},
  {id:7,d:"23",w:"lun",t:"visita",c:["Roma"],ti:"Museos Vaticanos",su:"Entrada a las 15:30"},
  {id:8,d:"25",w:"mié",t:"vuelo",c:["Roma","Barcelona"],ti:"Vuelo AZ76 Roma → Barcelona",su:"ITA Airways · sale 14:05",ex:"Reserva Z2YG5I. Solo equipaje de mano (8 kg)."},
- {id:9,d:"25",w:"mié",t:"alojamiento",c:["Barcelona"],ti:"Airbnb en Barcelona",su:"Cerca de Sants", lat: airbnbs.barcelona.lat, lng: airbnbs.barcelona.lng, ex:"C. d’Almeria, 34. Ver <a href='https://mail.google.com/mail/#all/1a14f85d802ed6e6' target='_blank'>correo de reserva ↗</a>"},
+ {id:9,d:"25",w:"mié",t:"alojamiento",c:["Barcelona"],ti:"Airbnb en Barcelona",su:"Cerca de Sants", lat: airbnbs.barcelona.lat, lng: airbnbs.barcelona.lng, ex:`Ver comprobante offline: <a href='airbnb_barcelona.pdf' target='_blank'>airbnb_barcelona.pdf ↗</a>`},
  {id:10,d:"28",w:"sáb",t:"tren",c:["Barcelona","Madrid"],ti:"Tren Barcelona-Sants → Madrid-Atocha",su:"Sale 6:35, llega 9:52"},
  {id:11,d:"28",w:"sáb",t:"vuelo",c:["Madrid","SJO"],ti:"Vuelo E9-857 Madrid → San José",su:"Iberojet · sale 14:45",ex:"Reserva DTVMSU."}
 ];
@@ -395,7 +395,7 @@ function renderList() {
         const b = document.createElement("button"); b.className = "card"; b.style.setProperty("--c", col[e.t]);
         b.innerHTML = `<div class="d">${e.d}<small>${e.w} nov</small></div><div><div class="ti">${e.ti}</div><div class="su">${e.su}</div>${e.ex?`<div class="ex">${e.ex}</div>`:""}</div>`;
         
-        b.querySelector('a')?.addEventListener('click', ev => ev.stopPropagation());
+        b.querySelectorAll('a')?.forEach(a => a.addEventListener('click', ev => ev.stopPropagation()));
         b.onclick = () => {
             activeEvent = activeEvent === e.id ? null : e.id;
             renderList();
@@ -477,7 +477,7 @@ function mDraw() {
         
         const d = document.createElement('div'); d.className = 'card'; d.style.setProperty('--c', CC[r.c]); d.setAttribute('aria-pressed', String(r.id === ms));
         d.innerHTML = `<div class='d'>${r.id}<small>${CL[r.c]}</small></div><div><div class='ti'>${r.n}</div><div class='su'>${r.d}</div><div class='ex'>${r.x}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n+', '+r.d+', '+currentDetailCity)}'>Ver en Maps ↗</a></div></div>`;
-        d.querySelector('a').onclick = e => e.stopPropagation(); d.onclick = () => mSel(r.id);
+        d.querySelectorAll('a').forEach(a => a.onclick = e => e.stopPropagation()); d.onclick = () => mSel(r.id);
         mL.appendChild(d);
     });
 }
@@ -499,7 +499,7 @@ function renderDetailCity(cityKey) {
     if(airbnbs[cityKey] && showPins) {
         const a = airbnbs[cityKey];
         const m = L.marker([a.lat, a.lng], {icon: airbnbIcon, zIndexOffset: 1000}).addTo(detailLayerGroup);
-        m.bindPopup(`<h3>${a.ti}</h3><p>${a.su}</p>`);
+        m.bindPopup(`<h3>${a.ti}</h3><p>${a.su}</p><p style="margin-top:6px"><a href="${a.pdf}" target="_blank">📄 Ver PDF offline ↗</a></p>`);
         m.on('click', () => map2.flyTo([a.lat, a.lng], 16));
     }
     
