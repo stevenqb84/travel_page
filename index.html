@@ -71,7 +71,7 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 /* Pestañas Principales tipo Cápsula Moderna */
 .main-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 24px; scrollbar-width: none; }
 .main-tabs::-webkit-scrollbar { display: none; }
-.tab-btn { background: var(--card); border: 1px solid var(--line); padding: 10px 20px; font: inherit; font-weight: 600; font-size: 0.95rem; color: var(--text); cursor: pointer; border-radius: 99px; white-space: nowrap; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+.tab-btn { background: var(--card); border: 1px solid var(--line); padding: 10px 20px; font: inherit; font-weight: 600; font-size: 0.95rem; color: var(--text); cursor: pointer; border-radius: 99px; transition: all 0.2s ease; }
 .tab-btn:hover { border-color: var(--muted); }
 .tab-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
 .tab-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
@@ -85,7 +85,7 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 .mapwrap{position:sticky;top:20px;align-self:start;z-index:10}
 @media (max-width:820px){.mapwrap{position:static}}
 
-.theme-toggle { background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 50%; width: 40px; height: 40px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s, background 0.3s; padding: 0; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
+.theme-toggle { background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 50%; width: 40px; height: 40px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease; }
 .theme-toggle:hover { transform: scale(1.05); }
 
 /* Leaflet Mapas */
@@ -96,11 +96,11 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 .leaflet-popup-content h3 { margin: 0 0 6px 0; font-size: 1.1rem; font-weight: 700; }
 .leaflet-popup-content a { color: var(--accent-dark); font-weight: bold; text-decoration: none; }
 
-.city-marker { font-weight: 700; font-size: 13px; color: var(--text); text-shadow: 2px 2px 0 var(--card), -2px -2px 0 var(--card), 2px -2px 0 var(--card), -2px 2px 0 var(--card); white-space: nowrap;}
-.city-marker::before { content: ''; display: block; width: 14px; height: 14px; background: var(--card); border: 3px solid var(--text); border-radius: 50%; position: absolute; left: -7px; top: 18px; box-shadow: 0 0 6px rgba(0,0,0,0.2); transition: transform 0.2s;}
+.city-marker { font-weight: 700; font-size: 13px; color: var(--text); text-shadow: 2px 2px 0 var(--card), -2px -2px 0 var(--card), 2px -2px 0 var(--card), -2px 2px 0 var(--card); white-space: nowrap; position: relative; }
+.city-marker::before { content: ''; display: block; width: 14px; height: 14px; background: var(--card); border: 3px solid var(--text); border-radius: 50%; position: absolute; left: -7px; top: 18px; box-shadow: 0 0 0 4px rgba(0,0,0,0.02); }
 .city-marker.on::before { background: var(--accent); border-color: var(--accent); transform: scale(1.4); }
 
-.rest-marker { width: 28px !important; height: 28px !important; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; border: 2px solid var(--card); box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s; cursor: pointer;}
+.rest-marker { width: 28px !important; height: 28px !important; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; border: 2px solid rgba(255,255,255,0.7); transition: transform 0.2s ease, border-color 0.2s ease; }
 .rest-marker:hover { transform: scale(1.15); }
 .rest-marker.on { transform: scale(1.25); border-color: var(--accent); }
 .airbnb-marker, .poi-marker { font-size: 14px; }
@@ -109,15 +109,15 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 .legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-right:5px}
 
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.chip{border:1px solid var(--line);background:var(--card);color:var(--text);padding:8px 16px;border-radius:99px;font:inherit;font-size:.9rem;cursor:pointer;min-height:38px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s;}
+.chip{border:1px solid var(--line);background:var(--card);color:var(--text);padding:8px 16px;border-radius:99px;font:inherit;font-size:.9rem;cursor:pointer;min-height:38px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
 .chip:hover { border-color: var(--muted); }
 .chip[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
 
 /* Tarjetas Estilo Web Moderna */
-.card{display:grid;grid-template-columns:85px 1fr;gap:14px;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:12px;cursor:pointer;box-shadow: var(--shadow); transition: transform 0.2s, border-color 0.2s;}
+.card{display:grid;grid-template-columns:85px 1fr;gap:14px;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:12px;cursor:pointer;transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
 .card:hover { transform: translateY(-2px); border-color: var(--muted); }
 .card[aria-pressed="true"]{border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent);}
-.d{font:700 1rem/1.1 system-ui,sans-serif;text-align:center; display:flex; flex-direction:column; justify-content:center; background:var(--chip); border-radius: 14px; padding: 6px;}.d small{display:block;font:600 0.65rem system-ui;color:var(--muted);margin-top:2px; text-transform: uppercase;}
+.d{font:700 1rem/1.1 system-ui,sans-serif;text-align:center; display:flex; flex-direction:column; justify-content:center; background:var(--chip); border-radius: 14px; padding: 6px;}.d small{display:block;font-size:.7rem; font-weight:600; margin-top:4px; opacity:0.85;}
 .ti{font-weight:700; font-size: 1.05rem; margin-bottom: 2px;}
 .su{color:var(--muted);font-size:.9rem}
 .ex{display:none;margin-top:10px;font-size:.9rem;border-top:1px solid var(--line);padding-top:10px}
@@ -130,11 +130,65 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 
 /* Controles de Búsqueda */
 .search-controls { display:flex; gap:10px; margin-bottom:16px; }
-.search-input { flex:1; padding:12px 18px; border:1px solid var(--line); border-radius:99px; font:inherit; font-size:0.95rem; background:var(--card); color:var(--text); outline:none; box-shadow: var(--shadow); transition: border-color 0.2s; }
+.search-input { flex:1; padding:12px 18px; border:1px solid var(--line); border-radius:99px; font:inherit; font-size:0.95rem; background:var(--card); color:var(--text); outline:none; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
 .search-input:focus { border-color: var(--accent); }
-.btn-toggle-pins { background:var(--text); color:var(--bg); padding:12px 20px; border-radius:99px; font:inherit; font-size:0.9rem; font-weight:600; border:none; cursor:pointer; transition: opacity 0.2s; white-space:nowrap; box-shadow: var(--shadow); }
+.btn-toggle-pins { background:var(--text); color:var(--bg); padding:12px 20px; border-radius:99px; font:inherit; font-size:0.9rem; font-weight:600; border:none; cursor:pointer; transition: opacity 0.2s ease; }
 .btn-toggle-pins:hover { opacity:0.85; }
 .btn-toggle-pins.off { background:var(--chip); color:var(--text); border: 1px solid var(--line); }
+
+.add-place-panel {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 16px;
+    margin: 0 0 18px;
+    box-shadow: var(--shadow);
+}
+.add-place-header {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:10px;
+    margin-bottom: 12px;
+    font-size: 0.9rem;
+    color: var(--muted);
+}
+.add-place-header strong { color: var(--text); font-size: 1rem; }
+.add-place-form { display:grid; gap:10px; }
+.add-place-fields { display:grid; grid-template-columns: 1.5fr 1.5fr 0.8fr; gap:10px; }
+.add-place-fields.secondary { grid-template-columns: 1fr 1fr 1fr; }
+.add-place-form input,
+.add-place-form select,
+.add-place-form button {
+    border-radius: 12px;
+    font: inherit;
+    font-size: 0.94rem;
+}
+.add-place-form input,
+.add-place-form select {
+    width:100%;
+    background: var(--bg);
+    color: var(--text);
+    border: 1px solid var(--line);
+    padding: 12px 14px;
+    outline:none;
+}
+.add-place-form input:focus,
+.add-place-form select:focus { border-color: var(--accent); }
+.btn-add-place {
+    background: var(--text);
+    color: var(--bg);
+    border: none;
+    padding: 12px 16px;
+    cursor:pointer;
+    font-weight:700;
+}
+.btn-add-place:hover { opacity: 0.9; }
+@media (max-width:760px){
+    .add-place-fields,
+    .add-place-fields.secondary { grid-template-columns: 1fr; }
+    .search-controls { flex-direction: column; }
+}
 </style>
 </head>
 <body>
@@ -160,7 +214,7 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
   <div id="view-general" class="view-section active-view">
       <section class="mapwrap" aria-label="Mapa del viaje">
         <div id="map" role="img" aria-label="Mapa interactivo"></div>
-        <div class="legend"><span><i style="border-color:var(--fl)"></i>Vuelo</span><span><i style="border-color:var(--tr);border-top-style:dashed"></i>Tren</span><span>🏠 Alojamiento</span><span>✈️ Aeropuerto</span><span>🚆 Estación</span></div>
+        <div class="legend"><span><i style="border-color:var(--fl)"></i>Vuelo</span><span><i style="border-color:var(--tr);border-top-style:dashed"></i>Tren</span><span>🏠 Alojamiento</span><span>📍 Visitas</span></div>
       </section>
       <section aria-label="Eventos">
         <div class="chips" id="chips" role="group"></div>
@@ -182,6 +236,31 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
                   <input type="text" id="search-box" class="search-input" placeholder="Buscar lugares, ej: 'Zara'..." autocomplete="off">
                   <button id="toggle-pins" class="btn-toggle-pins">Ocultar Pines</button>
               </div>
+
+              <div class="add-place-panel">
+                <div class="add-place-header">
+                  <strong>Agregar lugar</strong>
+                  <span>Se guarda en este navegador</span>
+                </div>
+                <form id="add-place-form" class="add-place-form">
+                  <div class="add-place-fields">
+                    <input id="place-name" name="place-name" type="text" placeholder="Nombre del lugar" required>
+                    <input id="place-address" name="place-address" type="text" placeholder="Dirección o barrio" required>
+                    <select id="place-category" name="place-category">
+                      <option value="c">Clásico</option>
+                      <option value="t">Tapas</option>
+                      <option value="d">Dulce</option>
+                      <option value="s">Compras</option>
+                    </select>
+                  </div>
+                  <div class="add-place-fields secondary">
+                    <input id="place-lat" name="place-lat" type="number" step="any" placeholder="Latitud (opcional)">
+                    <input id="place-lng" name="place-lng" type="number" step="any" placeholder="Longitud (opcional)">
+                    <button type="submit" class="btn-add-place">Agregar</button>
+                  </div>
+                </form>
+              </div>
+
               <div class='chips' id='mc' role='group'></div>
               <div id='ml'></div>
           </div>
@@ -318,8 +397,6 @@ const lugares = {
     {id:8,n:'Casa Labra',c:'t',d:'C. de Tetuán, 12',a:40.4172,o:-3.7029,x:'Croquetas y bacalao frito.'},
     {id:9,n:'La Campana',c:'t',d:'C. de Botoneras, 6',a:40.4153,o:-3.7069,x:'Bocadillo de calamares.'},
     {id:10,n:'Chocolatería San Ginés',c:'d',d:'Pasadizo de San Ginés, 5',a:40.417,o:-3.706,x:'Churros con chocolate.'},
-    
-    // ZARA MADRID
     {id:11,n:'Zara',c:'s',d:'Plaza de España, 8',a:40.4234,o:-3.7122,x:'Megatienda Edificio España.'},
     {id:12,n:'Zara',c:'s',d:'Gran Vía, 34',a:40.4201,o:-3.7037,x:'Zara Centro Histórico.'},
     {id:13,n:'Zara',c:'s',d:'Calle de la Princesa, 58',a:40.4300,o:-3.7150,x:'Zara zona Argüelles.'},
@@ -330,39 +407,29 @@ const lugares = {
     {id:18,n:'Zara',c:'s',d:'CC La Vaguada',a:40.4788,o:-3.7045,x:'Zara Norte Vaguada.'},
     {id:19,n:'Zara',c:'s',d:'CC Islazul',a:40.3638,o:-3.7540,x:'Zara Carabanchel Sur.'},
     {id:20,n:'Zara',c:'s',d:'CC Plenilunio',a:40.4485,o:-3.5785,x:'Zara Este Plenilunio.'},
-    
-    // PULL & BEAR MADRID
     {id:21,n:'Pull & Bear',c:'s',d:'Gran Vía, 31',a:40.4204,o:-3.7032,x:'Pull & Bear Centro.'},
     {id:22,n:'Pull & Bear',c:'s',d:'Calle de Hermosilla, 14',a:40.4260,o:-3.6860,x:'Pull & Bear Salamanca.'},
     {id:23,n:'Pull & Bear',c:'s',d:'CC Príncipe Pío',a:40.4215,o:-3.7196,x:'Pull & Bear Estación.'},
     {id:24,n:'Pull & Bear',c:'s',d:'CC La Vaguada',a:40.4788,o:-3.7045,x:'Pull & Bear Vaguada.'},
     {id:25,n:'Pull & Bear',c:'s',d:'CC Islazul',a:40.3638,o:-3.7540,x:'Pull & Bear Islazul.'},
     {id:26,n:'Pull & Bear',c:'s',d:'CC Plenilunio',a:40.4485,o:-3.5785,x:'Pull & Bear Plenilunio.'},
-    
-    // LEFTIES MADRID
     {id:27,n:'Lefties',c:'s',d:'Gran Vía, 32',a:40.4202,o:-3.7034,x:'Lefties Gran Vía Digital Store.'},
     {id:28,n:'Lefties',c:'s',d:'Calle Montera, 25',a:40.4185,o:-3.7022,x:'Lefties Puerta del Sol.'},
     {id:29,n:'Lefties',c:'s',d:'Calle de la Princesa, 63',a:40.4310,o:-3.7160,x:'Lefties Argüelles.'},
     {id:30,n:'Lefties',c:'s',d:'CC La Vaguada',a:40.4788,o:-3.7045,x:'Lefties Vaguada.'},
     {id:31,n:'Lefties',c:'s',d:'CC Islazul',a:40.3638,o:-3.7540,x:'Lefties Sur.'},
     {id:32,n:'Lefties',c:'s',d:'CC Plenilunio',a:40.4485,o:-3.5785,x:'Lefties Este.'},
-    
-    // PRIMARK MADRID
     {id:33,n:'Primark',c:'s',d:'Gran Vía, 32',a:40.4202,o:-3.7035,x:'Primark Edificio Telefónica.'},
     {id:34,n:'Primark',c:'s',d:'Conde de Peñalver, 8',a:40.4248,o:-3.6760,x:'Primark Barrio Salamanca.'},
     {id:35,n:'Primark',c:'s',d:'CC Plenilunio',a:40.4485,o:-3.5785,x:'Primark Plenilunio.'},
     {id:36,n:'Primark',c:'s',d:'CC Islazul',a:40.3638,o:-3.7540,x:'Primark Carabanchel.'},
     {id:37,n:'Primark',c:'s',d:'CC La Vaguada',a:40.4788,o:-3.7045,x:'Primark Barrio del Pilar.'},
-    
-    // EL CORTE INGLÉS MADRID
     {id:38,n:'El Corte Inglés',c:'s',d:'Preciados, 3',a:40.4179,o:-3.7051,x:'ECI Sol/Callao.'},
     {id:39,n:'El Corte Inglés',c:'s',d:'Calle de la Princesa, 56',a:40.4305,o:-3.7155,x:'ECI Princesa.'},
     {id:40,n:'El Corte Inglés',c:'s',d:'Calle de Serrano, 47',a:40.4280,o:-3.6870,x:'ECI Serrano (Lujo).'},
     {id:41,n:'El Corte Inglés',c:'s',d:'Paseo de la Castellana, 85',a:40.4533,o:-3.6908,x:'ECI Nuevos Ministerios (Flagship).'},
     {id:42,n:'El Corte Inglés',c:'s',d:'Calle de Goya, 76',a:40.4251,o:-3.6745,x:'ECI Goya.'},
     {id:43,n:'El Corte Inglés',c:'s',d:'Méndez Álvaro, 74',a:40.3958,o:-3.6764,x:'ECI Méndez Álvaro.'},
-    
-    // DECATHLON MADRID
     {id:44,n:'Decathlon',c:'s',d:'Calle del Arenal, 28',a:40.4172,o:-3.7075,x:'Decathlon City Ópera.'},
     {id:45,n:'Decathlon',c:'s',d:'Calle de Fuencarral, 45',a:40.4245,o:-3.7005,x:'Decathlon City Malasaña.'},
     {id:46,n:'Decathlon',c:'s',d:'Calle de la Princesa, 41',a:40.4285,o:-3.7145,x:'Decathlon City Princesa.'},
@@ -398,8 +465,8 @@ const lugares = {
     {id:8,n:'Antico Forno Roscioli',c:'t',d:'Via dei Chiavari, 34',a:41.8947,o:12.4735,x:'Pizza al taglio.'},
     {id:9,n:'Pompi Tiramisù',c:'d',d:'Via della Croce, 82',a:41.9056,o:12.4815,x:'Tiramisú clásico.'},
     {id:10,n:'Gelateria Giolitti',c:'d',d:'Via Uffici del Vicario',a:41.9009,o:12.4775,x:'Heladería histórica.'},
-    {id:11,n:'Coliseo (Monumento)',c:'c',d:'Piazza del Colosseo',a:41.8902,o:12.4922,x:'Visita al Coliseo y Foro Romano. <a href="https://drive.google.com/file/d/1vkYlBakRN343LTWv3oVpkv77P6QY2AT-/view?usp=drivesdk" target="_blank" rel="noopener">Ver Ticket Coliseo ↗</a>'},
-    {id:12,n:'Museos Vaticanos',c:'c',d:'Viale Vaticano',a:41.9065,o:12.4536,x:'Visita a los Museos Vaticanos. <a href="https://drive.google.com/file/d/1AiQfXrcqWe9NwRWjALbplgbw9SEI5rHG/view?usp=drivesdk" target="_blank" rel="noopener">Ver Tickets Vaticano ↗</a>'},
+    {id:11,n:'Coliseo (Monumento)',c:'c',d:'Piazza del Colosseo',a:41.8902,o:12.4922,x:'Visita al Coliseo y Foro Romano.'},
+    {id:12,n:'Museos Vaticanos',c:'c',d:'Viale Vaticano',a:41.9065,o:12.4536,x:'Visita a los Museos Vaticanos.'},
     {id:13,n:'Zara',c:'s',d:'Via del Corso, 189',a:41.9022,o:12.4795,x:'Zara Via del Corso.'},
     {id:14,n:'Zara',c:'s',d:'Via Nazionale, 51',a:41.9008,o:12.4925,x:'Zara Via Nazionale.'},
     {id:15,n:'Zara',c:'s',d:'CC Porta di Roma',a:41.9575,o:12.5110,x:'Zara CC Porta di Roma.'},
@@ -421,8 +488,6 @@ const lugares = {
     {id:8,n:'La Cova Fumada',c:'t',d:'Carrer del Baluart, 56',a:41.3789,o:2.1895,x:'Origen de la bomba.'},
     {id:9,n:'Pastisseria Hofmann',c:'d',d:'Carrer Flassaders, 44',a:41.3846,o:2.1816,x:'Croissants de mascarpone.'},
     {id:10,n:'Churreria San Roman',c:'d',d:'Banys Nous, 8',a:41.3824,o:2.1749,x:'Churros tradicionales.'},
-    
-    // ZARA BARCELONA
     {id:11,n:'Zara',c:'s',d:'Plaça de Catalunya, 5',a:41.3865,o:2.1700,x:'Zara Flagship Plaça Catalunya.'},
     {id:12,n:'Zara',c:'s',d:'Passeig de Gràcia, 16',a:41.3892,o:2.1675,x:'Zara Gràcia Sur.'},
     {id:13,n:'Zara',c:'s',d:'Rambla de Catalunya, 67',a:41.3915,o:2.1620,x:'Zara Eixample.'},
@@ -431,34 +496,24 @@ const lugares = {
     {id:16,n:'Zara',c:'s',d:'CC Glòries',a:41.4035,o:2.1870,x:'Zara Les Glòries.'},
     {id:17,n:'Zara',c:'s',d:'CC Diagonal Mar',a:41.4072,o:2.2155,x:'Zara Diagonal Mar.'},
     {id:18,n:'Zara',c:'s',d:'CC La Maquinista',a:41.4402,o:2.1995,x:'Zara La Maquinista.'},
-    
-    // PULL & BEAR BARCELONA
     {id:19,n:'Pull & Bear',c:'s',d:'Carrer de Pelai, 58',a:41.3855,o:2.1678,x:'Pull & Bear Pelai.'},
     {id:20,n:'Pull & Bear',c:'s',d:'Portal de l\'Àngel, 42',a:41.3862,o:2.1728,x:'Pull & Bear Barri Gòtic.'},
     {id:21,n:'Pull & Bear',c:'s',d:'CC L\'Illa Diagonal',a:41.3895,o:2.1332,x:'Pull & Bear L\'Illa.'},
     {id:22,n:'Pull & Bear',c:'s',d:'CC Glòries',a:41.4035,o:2.1870,x:'Pull & Bear Glòries.'},
     {id:23,n:'Pull & Bear',c:'s',d:'CC Diagonal Mar',a:41.4072,o:2.2155,x:'Pull & Bear Diagonal Mar.'},
     {id:24,n:'Pull & Bear',c:'s',d:'CC La Maquinista',a:41.4402,o:2.1995,x:'Pull & Bear La Maquinista.'},
-    
-    // LEFTIES BARCELONA
     {id:25,n:'Lefties',c:'s',d:'Carrer de Pelai, 2',a:41.3850,o:2.1660,x:'Lefties Pelai Centro.'},
     {id:26,n:'Lefties',c:'s',d:'CC Glòries',a:41.4035,o:2.1870,x:'Lefties Sant Martí.'},
     {id:27,n:'Lefties',c:'s',d:'CC Diagonal Mar',a:41.4072,o:2.2155,x:'Lefties Diagonal Mar.'},
     {id:28,n:'Lefties',c:'s',d:'CC La Maquinista',a:41.4402,o:2.1995,x:'Lefties Sant Andreu.'},
     {id:29,n:'Lefties',c:'s',d:'Maremagnum',a:41.3755,o:2.1818,x:'Lefties Port Vell.'},
-    
-    // PRIMARK BARCELONA
     {id:30,n:'Primark',c:'s',d:'Plaça de Catalunya, 23',a:41.3868,o:2.1705,x:'Primark Plaça Catalunya.'},
     {id:31,n:'Primark',c:'s',d:'CC L\'Illa Diagonal',a:41.3890,o:2.1330,x:'Primark L\'Illa.'},
     {id:32,n:'Primark',c:'s',d:'CC Diagonal Mar',a:41.4072,o:2.2155,x:'Primark Diagonal Mar.'},
     {id:33,n:'Primark',c:'s',d:'CC La Maquinista',a:41.4402,o:2.1995,x:'Primark La Maquinista.'},
-    
-    // EL CORTE INGLÉS BARCELONA
     {id:34,n:'El Corte Inglés',c:'s',d:'Plaça de Catalunya, 14',a:41.3875,o:2.1706,x:'ECI Principal BCN.'},
     {id:35,n:'El Corte Inglés',c:'s',d:'Avinguda Diagonal, 617',a:41.3898,o:2.1378,x:'ECI Diagonal / María Cristina.'},
     {id:36,n:'El Corte Inglés',c:'s',d:'Can Dragó (Av. Meridiana, 350)',a:41.4335,o:2.1822,x:'ECI Can Dragó Norte.'},
-    
-    // DECATHLON BARCELONA
     {id:37,n:'Decathlon',c:'s',d:'Carrer de la Canuda, 20',a:41.3851,o:2.1724,x:'Decathlon City Ciutat Vella.'},
     {id:38,n:'Decathlon',c:'s',d:'Gran de Gràcia, 54',a:41.4010,o:2.1550,x:'Decathlon City Gràcia.'},
     {id:39,n:'Decathlon',c:'s',d:'CC L\'Illa Diagonal',a:41.3892,o:2.1335,x:'Decathlon L\'Illa.'},
@@ -466,6 +521,29 @@ const lugares = {
     {id:41,n:'Decathlon',c:'s',d:'CC Diagonal Mar',a:41.4072,o:2.2155,x:'Decathlon Diagonal Mar.'},
     {id:42,n:'Decathlon',c:'s',d:'CC La Maquinista',a:41.4402,o:2.1995,x:'Decathlon La Maquinista.'}
   ]
+};
+
+const CUSTOM_PLACES_KEY = 'travel-page-custom-places-v1';
+const readCustomPlaces = () => {
+    try {
+        const raw = localStorage.getItem(CUSTOM_PLACES_KEY);
+        return raw ? JSON.parse(raw) : {};
+    } catch {
+        return {};
+    }
+};
+const writeCustomPlaces = (data) => {
+    localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(data));
+};
+const getCityPlaces = (cityKey) => {
+    const base = lugares[cityKey] || [];
+    const custom = readCustomPlaces()[cityKey] || [];
+    return [...base, ...custom];
+};
+const getNextCustomId = () => {
+    const all = Object.values(readCustomPlaces()).flat();
+    const ids = all.map(p => Number(p.id) || 0);
+    return ids.length ? Math.max(...ids) + 1 : 9000;
 };
 
 const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
@@ -484,7 +562,7 @@ L.tileLayer(tileUrl, { attribution: '&copy; OpenStreetMap' }).addTo(map1);
 let activeCity = null, activeEvent = null;
 
 // Rutas
-[{type:'vuelo',p:[getPoi('t4'),getPoi('t1')]}, {type:'tren',p:[getPoi('t5'),getPoi('t6')]}, {type:'vuelo',p:[getPoi('t1'),getPoi('t2')]}, {type:'vuelo',p:[getPoi('t2'),getPoi('t3')]}, {type:'tren',p:[getPoi('t7'),getPoi('t5')]}].forEach(r => {
+[{type:'vuelo',p:[getPoi('t4'),getPoi('t1')]}, {type:'tren',p:[getPoi('t5'),getPoi('t6')]}, {type:'vuelo',p:[getPoi('t1'),getPoi('t2')]}, {type:'vuelo',p:[getPoi('t2'),getPoi('t3')]}, {type:'tren',p:[getPoi('t5'),getPoi('t7')]}].forEach(r => {
     L.polyline(r.p, {color: col[r.type], weight:3, dashArray: r.type==='tren'?'6, 6':null, opacity:0.8}).addTo(map1);
 });
 
@@ -541,7 +619,6 @@ let restMarkers = {};
 let searchTerm = '';
 let showPins = true;
 
-// Filtros Chips Detalle
 const mCh = document.getElementById('mc');
 [['', 'Todos'], ['c', 'Clásicos'], ['t', 'Tapas'], ['d', 'Dulce'], ['s', 'Compras']].forEach(([k, l]) => {
     const b = document.createElement('button'); b.className = 'chip'; b.textContent = l; b.dataset.k = k;
@@ -549,43 +626,40 @@ const mCh = document.getElementById('mc');
     mCh.appendChild(b);
 });
 
-// Lógica Búsqueda
 const searchBox = document.getElementById('search-box');
 searchBox.addEventListener('input', (e) => {
     searchTerm = e.target.value.toLowerCase();
     mDraw();
 });
 
-// Lógica Ocultar Pines
 const togglePinsBtn = document.getElementById('toggle-pins');
 togglePinsBtn.addEventListener('click', () => {
     showPins = !showPins;
     togglePinsBtn.textContent = showPins ? 'Ocultar Pines' : 'Mostrar Pines';
-    if (!showPins) {
-        togglePinsBtn.classList.add('off');
-    } else {
-        togglePinsBtn.classList.remove('off');
-    }
+    if (!showPins) togglePinsBtn.classList.add('off'); else togglePinsBtn.classList.remove('off');
     mDraw();
 });
 
 function mSel(id) {
     ms = ms === id ? null : id; mDraw();
     if(ms) {
-        const r = lugares[currentDetailCity].find(x => x.id === ms);
-        map2.flyTo([r.a, r.o], 16, {duration: 0.8});
-        restMarkers[id].openPopup();
-        document.getElementById('view-detail').scrollIntoView({behavior: 'smooth', block: 'start'});
+        const r = getCityPlaces(currentDetailCity).find(x => x.id === ms);
+        if(r) {
+            map2.flyTo([r.a, r.o], 16, {duration: 0.8});
+            if (restMarkers[id]) restMarkers[id].openPopup();
+            document.getElementById('view-detail').scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
     } else map2.closePopup();
 }
 
 function mDraw() {
     mCh.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.k || null) === mc)));
     const mL = document.getElementById('ml'); mL.innerHTML = '';
-    
-    lugares[currentDetailCity].forEach(r => {
+    const cityPlaces = getCityPlaces(currentDetailCity);
+
+    cityPlaces.forEach(r => {
         const matchCategory = !mc || r.c === mc;
-        const matchSearch = r.n.toLowerCase().includes(searchTerm) || r.x.toLowerCase().includes(searchTerm) || r.d.toLowerCase().includes(searchTerm);
+        const matchSearch = r.n.toLowerCase().includes(searchTerm) || (r.x || '').toLowerCase().includes(searchTerm) || (r.d || '').toLowerCase().includes(searchTerm);
         const visible = matchCategory && matchSearch;
         
         if (visible && showPins) {
@@ -594,12 +668,12 @@ function mDraw() {
             detailLayerGroup.removeLayer(restMarkers[r.id]);
         }
         
-        const el = restMarkers[r.id].getElement();
+        const el = restMarkers[r.id] ? restMarkers[r.id].getElement() : null;
         if(el) { const mInner = el.querySelector('.rest-marker'); if(mInner) mInner.classList.toggle('on', r.id === ms); }
         if(!visible) return;
         
         const d = document.createElement('div'); d.className = 'card'; d.style.setProperty('--c', CC[r.c]); d.setAttribute('aria-pressed', String(r.id === ms));
-        d.innerHTML = `<div class='d'>${r.id}<small>${CL[r.c]}</small></div><div><div class='ti'>${r.n}</div><div class='su'>${r.d}</div><div class='ex'>${r.x}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n+', '+r.d+', '+currentDetailCity)}'>Ver en Maps ↗</a></div></div>`;
+        d.innerHTML = `<div class='d'>${r.id}<small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${r.n}</div><div class='su'>${r.d}</div><div class='ex'>${r.x || 'Lugar añadido manualmente'}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a></div></div>`;
         d.querySelectorAll('a').forEach(a => a.onclick = e => e.stopPropagation()); d.onclick = () => mSel(r.id);
         mL.appendChild(d);
     });
@@ -609,16 +683,15 @@ function renderDetailCity(cityKey) {
     currentDetailCity = cityKey; 
     mc = null; 
     ms = null;
-    
-    // Resetear controles
     searchTerm = '';
     searchBox.value = '';
     showPins = true;
     togglePinsBtn.textContent = 'Ocultar Pines';
     togglePinsBtn.classList.remove('off');
-    
     detailLayerGroup.clearLayers(); restMarkers = {};
-    
+
+    const cityPlaces = getCityPlaces(cityKey);
+
     if(airbnbs[cityKey] && showPins) {
         const a = airbnbs[cityKey];
         const m = L.marker([a.lat, a.lng], {icon: airbnbIcon, zIndexOffset: 1000}).addTo(detailLayerGroup);
@@ -627,7 +700,7 @@ function renderDetailCity(cityKey) {
         m.bindPopup(`<h3>${a.ti}</h3><p>${a.su}</p><br>${pdfLinks}`);
         m.on('click', () => map2.flyTo([a.lat, a.lng], 16));
     }
-    
+
     transitPOIs.filter(p => p.city === cityKey).forEach(poi => {
         if(showPins){
             const m = L.marker([poi.lat, poi.lng], {icon: getTransitIcon(poi.type)}).addTo(detailLayerGroup);
@@ -636,9 +709,9 @@ function renderDetailCity(cityKey) {
         }
     });
 
-    lugares[cityKey].forEach(r => {
+    cityPlaces.forEach(r => {
         const m = L.marker([r.a, r.o], {icon: getRestIcon(r.c, r.id)});
-        m.bindPopup(`<h3>${r.n}</h3><p style="margin:0 0 6px 0">${r.d}</p>${r.x}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n+', '+r.d+', '+cityKey)}'>Ver en Maps ↗</a>`);
+        m.bindPopup(`<h3>${r.n}</h3><p style="margin:0 0 6px 0">${r.d}</p>${r.x || 'Lugar añadido manualmente'}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`);
         m.on('click', () => mSel(r.id));
         restMarkers[r.id] = m;
     });
@@ -647,6 +720,42 @@ function renderDetailCity(cityKey) {
     map2.flyTo(C[CityCap], cityKey==='toledo'? 15 : 13, {duration: 0});
     mDraw();
 }
+
+const addPlaceForm = document.getElementById('add-place-form');
+const placeNameInput = document.getElementById('place-name');
+const placeAddressInput = document.getElementById('place-address');
+const placeCategoryInput = document.getElementById('place-category');
+const placeLatInput = document.getElementById('place-lat');
+const placeLngInput = document.getElementById('place-lng');
+
+addPlaceForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const name = placeNameInput.value.trim();
+    const address = placeAddressInput.value.trim();
+    const category = placeCategoryInput.value;
+    if (!name || !address) return;
+
+    const cityKey = currentDetailCity;
+    const customPlaces = readCustomPlaces();
+    const cityCenter = C[cityKey.charAt(0).toUpperCase() + cityKey.slice(1)] || [40.41, -3.7];
+    const parsedLat = placeLatInput.value !== '' ? Number(placeLatInput.value) : cityCenter[0] + (Math.random() - 0.5) * 0.02;
+    const parsedLng = placeLngInput.value !== '' ? Number(placeLngInput.value) : cityCenter[1] + (Math.random() - 0.5) * 0.02;
+
+    const newPlace = {
+        id: getNextCustomId(),
+        n: name,
+        c: category,
+        d: address,
+        a: Number.isFinite(parsedLat) ? parsedLat : cityCenter[0],
+        o: Number.isFinite(parsedLng) ? parsedLng : cityCenter[1],
+        x: 'Lugar añadido por el usuario.'
+    };
+
+    customPlaces[cityKey] = [...(customPlaces[cityKey] || []), newPlace];
+    writeCustomPlaces(customPlaces);
+    addPlaceForm.reset();
+    renderDetailCity(cityKey);
+});
 
 // --- LOGICA DE PESTAÑAS ---
 const tabs = document.querySelectorAll('.tab-btn');
@@ -672,7 +781,6 @@ tabs.forEach(btn => {
     });
 });
 
-// Inicializar la pestaña por defecto
 setTimeout(() => { map1.invalidateSize(); map2.invalidateSize(); }, 200);
 </script>
 </body>
