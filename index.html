@@ -3,10 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Itinerario de Viaje · Europa</title>
+<title>Itinerario y Guía Privada · Europa</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E✈️%3C/text%3E%3C/svg%3E">
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- Librería QRCode.js para generar códigos QR locales sin internet -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <style>
 /* Variables base estilo Editorial / Minimalista */
 :root{
@@ -47,15 +49,6 @@
 }
 :root[data-theme="dark"] .leaflet-tile-pane { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
 
-@media (prefers-color-scheme:dark){
-    :root:not([data-theme="light"]){
-        --bg: #121619; --card: #1b2227; --text: #f3f4f6; --muted: #9ca3af; --line: #2a343d;
-        --accent: #2ecc71; --accent-dark: #27ae60; --chip: #242e35; --chip-on: #f3f4f6; --chip-on-t: #121619;
-        --shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-    :root:not([data-theme="light"]) .leaflet-tile-pane { filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%); }
-}
-
 :root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 *,*::before,*::after{box-sizing:inherit}
 body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; transition: background 0.3s, color 0.3s;}
@@ -68,15 +61,12 @@ header{position:relative; padding:30px 20px 10px;max-width:1150px;margin:0 auto}
 h1{font:700 clamp(1.8rem,4vw,2.6rem)/1.15 system-ui,-apple-system,sans-serif;margin:0 0 8px; letter-spacing: -1px;}
 header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 
-/* Pestañas Principales tipo Cápsula Moderna */
 .main-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 24px; scrollbar-width: none; }
 .main-tabs::-webkit-scrollbar { display: none; }
-.tab-btn { background: var(--card); border: 1px solid var(--line); padding: 10px 20px; font: inherit; font-weight: 600; font-size: 0.95rem; color: var(--text); cursor: pointer; border-radius: 99px; transition: all 0.2s ease; }
+.tab-btn { background: var(--card); border: 1px solid var(--line); padding: 10px 20px; font: inherit; font-weight: 600; font-size: 0.95rem; color: var(--text); cursor: pointer; border-radius: 99px; white-space: nowrap; transition: all 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
 .tab-btn:hover { border-color: var(--muted); }
 .tab-btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
-.tab-btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 
-/* Contenedores de Vistas */
 .view-section { display: none; max-width:1150px; margin:0 auto; padding:0 20px 40px; }
 .view-section.active-view { display: block; }
 #view-general.active-view { display: grid; grid-template-columns:1.25fr 1fr; gap:24px; }
@@ -85,22 +75,20 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 .mapwrap{position:sticky;top:20px;align-self:start;z-index:10}
 @media (max-width:820px){.mapwrap{position:static}}
 
-.theme-toggle { background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 50%; width: 40px; height: 40px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease; }
+.theme-toggle { background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 50%; width: 40px; height: 40px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.05);}
 .theme-toggle:hover { transform: scale(1.05); }
 
-/* Leaflet Mapas */
 #map, #mm { width: 100%; height: 500px; border-radius: 24px; border: 1px solid var(--line); background: var(--bg); z-index: 1; box-shadow: var(--shadow);}
 .leaflet-popup-content-wrapper { background: var(--card); color: var(--text); border-radius: 16px; border: 1px solid var(--line); box-shadow: var(--shadow); }
 .leaflet-popup-tip { background: var(--card); }
 .leaflet-popup-content { margin: 14px; font-family: inherit; font-size: 0.92rem; }
 .leaflet-popup-content h3 { margin: 0 0 6px 0; font-size: 1.1rem; font-weight: 700; }
-.leaflet-popup-content a { color: var(--accent-dark); font-weight: bold; text-decoration: none; }
 
-.city-marker { font-weight: 700; font-size: 13px; color: var(--text); text-shadow: 2px 2px 0 var(--card), -2px -2px 0 var(--card), 2px -2px 0 var(--card), -2px 2px 0 var(--card); white-space: nowrap; position: relative; }
-.city-marker::before { content: ''; display: block; width: 14px; height: 14px; background: var(--card); border: 3px solid var(--text); border-radius: 50%; position: absolute; left: -7px; top: 18px; box-shadow: 0 0 0 4px rgba(0,0,0,0.02); }
+.city-marker { font-weight: 700; font-size: 13px; color: var(--text); text-shadow: 2px 2px 0 var(--card), -2px -2px 0 var(--card), 2px -2px 0 var(--card), -2px 2px 0 var(--card); white-space: nowrap;}
+.city-marker::before { content: ''; display: block; width: 14px; height: 14px; background: var(--card); border: 3px solid var(--text); border-radius: 50%; position: absolute; left: -7px; top: 18px; box-shadow: 0 0 6px rgba(0,0,0,0.2); transition: transform 0.2s;}
 .city-marker.on::before { background: var(--accent); border-color: var(--accent); transform: scale(1.4); }
 
-.rest-marker { width: 28px !important; height: 28px !important; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; border: 2px solid rgba(255,255,255,0.7); transition: transform 0.2s ease, border-color 0.2s ease; }
+.rest-marker { width: 28px !important; height: 28px !important; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; border: 2px solid var(--card); box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.2s; cursor: pointer;}
 .rest-marker:hover { transform: scale(1.15); }
 .rest-marker.on { transform: scale(1.25); border-color: var(--accent); }
 .airbnb-marker, .poi-marker { font-size: 14px; }
@@ -109,15 +97,15 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 .legend i{display:inline-block;width:18px;height:0;border-top:3px solid;vertical-align:middle;margin-right:5px}
 
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
-.chip{border:1px solid var(--line);background:var(--card);color:var(--text);padding:8px 16px;border-radius:99px;font:inherit;font-size:.9rem;cursor:pointer;min-height:38px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
+.chip{border:1px solid var(--line);background:var(--card);color:var(--text);padding:8px 16px;border-radius:99px;font:inherit;font-size:.9rem;cursor:pointer;min-height:38px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); transition: all 0.2s;}
 .chip:hover { border-color: var(--muted); }
 .chip[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
 
-/* Tarjetas Estilo Web Moderna */
-.card{display:grid;grid-template-columns:85px 1fr;gap:14px;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:12px;cursor:pointer;transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+.card{display:grid;grid-template-columns:85px 1fr;gap:14px;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:12px;cursor:pointer;box-shadow: var(--shadow); transition: transform 0.2s, border-color 0.2s;}
 .card:hover { transform: translateY(-2px); border-color: var(--muted); }
 .card[aria-pressed="true"]{border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent);}
-.d{font:700 1rem/1.1 system-ui,sans-serif;text-align:center; display:flex; flex-direction:column; justify-content:center; background:var(--chip); border-radius: 14px; padding: 6px;}.d small{display:block;font-size:.7rem; font-weight:600; margin-top:4px; opacity:0.85;}
+.d{font:700 1rem/1.1 system-ui,sans-serif;text-align:center; display:flex; flex-direction:column; justify-content:center; background:var(--chip); border-radius: 14px; padding: 6px;}
+.d small{display:block;font:600 0.65rem system-ui;color:var(--muted);margin-top:2px; text-transform: uppercase;}
 .ti{font-weight:700; font-size: 1.05rem; margin-bottom: 2px;}
 .su{color:var(--muted);font-size:.9rem}
 .ex{display:none;margin-top:10px;font-size:.9rem;border-top:1px solid var(--line);padding-top:10px}
@@ -126,79 +114,27 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 .mgrid{display:grid;grid-template-columns:1.25fr 1fr;gap:24px;align-items:start}
 @media (max-width:820px){.mgrid{grid-template-columns:1fr}}
 .ex a{color:var(--accent-dark);font-weight:600;display:inline-block;margin-right:12px; text-decoration: none;}
-.ex a:hover { text-decoration: underline; }
 
-/* Controles de Búsqueda */
+/* Estilo para los códigos QR en el mapa general */
+.qr-box { margin-top: 10px; padding: 10px; background: var(--bg); border-radius: 12px; display: inline-flex; flex-direction: column; align-items: center; gap: 6px; }
+.qr-code-render { background: #fff; padding: 8px; border-radius: 8px; display: inline-block; }
+.qr-code-render img { display: block; }
+.qr-label { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+
 .search-controls { display:flex; gap:10px; margin-bottom:16px; }
-.search-input { flex:1; padding:12px 18px; border:1px solid var(--line); border-radius:99px; font:inherit; font-size:0.95rem; background:var(--card); color:var(--text); outline:none; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
-.search-input:focus { border-color: var(--accent); }
-.btn-toggle-pins { background:var(--text); color:var(--bg); padding:12px 20px; border-radius:99px; font:inherit; font-size:0.9rem; font-weight:600; border:none; cursor:pointer; transition: opacity 0.2s ease; }
-.btn-toggle-pins:hover { opacity:0.85; }
+.search-input { flex:1; padding:12px 18px; border:1px solid var(--line); border-radius:99px; font:inherit; font-size:0.95rem; background:var(--card); color:var(--text); outline:none; box-shadow: var(--shadow); }
+.btn-toggle-pins { background:var(--text); color:var(--bg); padding:12px 20px; border-radius:99px; font:inherit; font-size:0.9rem; font-weight:600; border:none; cursor:pointer; white-space:nowrap; box-shadow: var(--shadow); }
 .btn-toggle-pins.off { background:var(--chip); color:var(--text); border: 1px solid var(--line); }
-
-.add-place-panel {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    padding: 16px;
-    margin: 0 0 18px;
-    box-shadow: var(--shadow);
-}
-.add-place-header {
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    margin-bottom: 12px;
-    font-size: 0.9rem;
-    color: var(--muted);
-}
-.add-place-header strong { color: var(--text); font-size: 1rem; }
-.add-place-form { display:grid; gap:10px; }
-.add-place-fields { display:grid; grid-template-columns: 1.5fr 1.5fr 0.8fr; gap:10px; }
-.add-place-fields.secondary { grid-template-columns: 1fr 1fr 1fr; }
-.add-place-form input,
-.add-place-form select,
-.add-place-form button {
-    border-radius: 12px;
-    font: inherit;
-    font-size: 0.94rem;
-}
-.add-place-form input,
-.add-place-form select {
-    width:100%;
-    background: var(--bg);
-    color: var(--text);
-    border: 1px solid var(--line);
-    padding: 12px 14px;
-    outline:none;
-}
-.add-place-form input:focus,
-.add-place-form select:focus { border-color: var(--accent); }
-.btn-add-place {
-    background: var(--text);
-    color: var(--bg);
-    border: none;
-    padding: 12px 16px;
-    cursor:pointer;
-    font-weight:700;
-}
-.btn-add-place:hover { opacity: 0.9; }
-@media (max-width:760px){
-    .add-place-fields,
-    .add-place-fields.secondary { grid-template-columns: 1fr; }
-    .search-controls { flex-direction: column; }
-}
 </style>
 </head>
 <body>
 <header>
   <div class="header-top">
-      <div class="logo-area"><div class="logo-badge">✈️</div> Viaje Europa</div>
+      <div class="logo-area"><div class="logo-badge">✈️</div> Viaje Europa (Privado)</div>
       <button id="themeToggle" class="theme-toggle" aria-label="Cambiar tema">🌙</button>
   </div>
-  <h1>Itinerario y Guía de Viaje</h1>
-  <p>Madrid, Toledo, Roma y Barcelona.</p>
+  <h1>Itinerario y Guía Interactiva</h1>
+  <p>Madrid, Toledo, Roma y Barcelona. Incluye lugares de interés de tu Excel.</p>
   
   <nav class="main-tabs">
     <button class="tab-btn active" data-target="general">Viaje General</button>
@@ -210,11 +146,11 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 </header>
 
 <main>
-  <!-- VISTA 1: VIAJE GENERAL -->
+  <!-- VISTA 1: VIAJE GENERAL CON DATOS PRIVADOS -->
   <div id="view-general" class="view-section active-view">
       <section class="mapwrap" aria-label="Mapa del viaje">
         <div id="map" role="img" aria-label="Mapa interactivo"></div>
-        <div class="legend"><span><i style="border-color:var(--fl)"></i>Vuelo</span><span><i style="border-color:var(--tr);border-top-style:dashed"></i>Tren</span><span>🏠 Alojamiento</span><span>📍 Visitas</span></div>
+        <div class="legend"><span><i style="border-color:var(--fl)"></i>Vuelo</span><span><i style="border-color:var(--tr);border-top-style:dashed"></i>Tren</span><span>🏠 Alojamiento</span><span>✈️ Aeropuerto</span><span>🚆 Estación</span></div>
       </section>
       <section aria-label="Eventos">
         <div class="chips" id="chips" role="group"></div>
@@ -224,8 +160,8 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 
   <!-- VISTA 2: DETALLE POR CIUDAD -->
   <div id="view-detail" class="view-section">
-      <h2 id="detail-title" style="font:700 clamp(1.4rem,3.5vw,1.9rem)/1.2 system-ui,sans-serif;margin:0 0 6px; letter-spacing: -0.5px;">Ciudad en detalle</h2>
-      <p id="detail-desc" style="color:var(--muted);margin:0 0 16px;">Puntos clave, alojamiento, restaurantes y tiendas detalladas.</p>
+      <h2 id="detail-title" style="font:700 clamp(1.4rem,3.5vw,1.9rem)/1.2 system-ui,sans-serif;margin:0 0 6px;">Ciudad en detalle</h2>
+      <p id="detail-desc" style="color:var(--muted);margin:0 0 16px;">Puntos clave, alojamiento, lugares de interés, restaurantes y tiendas.</p>
       
       <div class='mgrid'>
           <div class="mapwrap">
@@ -233,34 +169,10 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
           </div>
           <div>
               <div class="search-controls">
-                  <input type="text" id="search-box" class="search-input" placeholder="Buscar lugares, ej: 'Zara'..." autocomplete="off">
+                  <input type="text" id="search-box" class="search-input" placeholder="Buscar lugares, ej: 'Sagrada Familia'..." autocomplete="off">
                   <button id="toggle-pins" class="btn-toggle-pins">Ocultar Pines</button>
               </div>
-
-              <div class="add-place-panel">
-                <div class="add-place-header">
-                  <strong>Agregar lugar</strong>
-                  <span>Se guarda en este navegador</span>
-                </div>
-                <form id="add-place-form" class="add-place-form">
-                  <div class="add-place-fields">
-                    <input id="place-name" name="place-name" type="text" placeholder="Nombre del lugar" required>
-                    <input id="place-address" name="place-address" type="text" placeholder="Dirección o barrio" required>
-                    <select id="place-category" name="place-category">
-                      <option value="c">Clásico</option>
-                      <option value="t">Tapas</option>
-                      <option value="d">Dulce</option>
-                      <option value="s">Compras</option>
-                    </select>
-                  </div>
-                  <div class="add-place-fields secondary">
-                    <input id="place-lat" name="place-lat" type="number" step="any" placeholder="Latitud (opcional)">
-                    <input id="place-lng" name="place-lng" type="number" step="any" placeholder="Longitud (opcional)">
-                    <button type="submit" class="btn-add-place">Agregar</button>
-                  </div>
-                </form>
-              </div>
-
+              <!-- AQUI SE AÑADE EL CHIP DE LUGARES DE INTERÉS -->
               <div class='chips' id='mc' role='group'></div>
               <div id='ml'></div>
           </div>
@@ -281,23 +193,12 @@ themeToggle.addEventListener('click', () => {
     themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
 });
 
-// --- DATOS DEL VIAJE ---
+// --- DATOS DEL VIAJE Y EVENTOS REALES (PRIVADOS) ---
 const C = { Madrid: [40.4168, -3.7038], Toledo: [39.8628, -4.0273], Roma: [41.9028, 12.4964], Barcelona: [41.3874, 2.1686], SJO: [10.002, -84.211] };
 const airbnbs = {
-    madrid: {
-        lat: 40.4150, lng: -3.6700, ti: "Alojamiento en Madrid", su: "Zona Retiro", 
-        pdf: "https://drive.google.com/file/d/1E48FsJy5JVdmaC7LV8Kge-_VeCVdiqQw/view?usp=drivesdk",
-        pdfDetail: "https://drive.google.com/file/d/1rv2c1YdiHc1XTSJnGIKUo66aqoGCdINy/view?usp=drivesdk"
-    },
-    roma: {
-        lat: 41.8960, lng: 12.5000, ti: "Alojamiento en Roma", su: "Zona Esquilino", 
-        pdf: "https://drive.google.com/file/d/1rv5Ky_Ws1QkEdI8fPUQEJzyvII-ZJ6t1/view?usp=drivesdk"
-    },
-    barcelona: {
-        lat: 41.3780, lng: 2.1380, ti: "Alojamiento en Barcelona", su: "Zona Sants", 
-        pdf: "https://drive.google.com/file/d/1ujQHlSp-wZSWLekezssdOxiiEBzjNBlP/view?usp=drivesdk",
-        pdfDetail: "https://drive.google.com/file/d/1b7OdrzW8mHXmv3_Db0poVIiSBSlhSOWB/view?usp=drivesdk"
-    }
+    madrid: { lat: 40.4150, lng: -3.6700, ti: "Alojamiento Madrid", su: "Zona Retiro (Bonsai Escalante)" },
+    roma: { lat: 41.8960, lng: 12.5000, ti: "Alojamiento Roma", su: "Zona Esquilino" },
+    barcelona: { lat: 41.3780, lng: 2.1380, ti: "Alojamiento Barcelona", su: "Zona Sants" }
 };
 const transitPOIs = [
     { id: 't1', city: 'madrid', name: "Aeropuerto Madrid-Barajas", type: "vuelo", lat: 40.4719, lng: -3.5626 },
@@ -312,257 +213,112 @@ const getPoi = (id) => { const p = transitPOIs.find(x => x.id === id); return [p
 
 const E = [
  {
-    id: 1, d: "Día 1", w: "Salida", t: "vuelo", c: ["SJO", "Madrid"],
+    id: 1, d: "Nov 20", w: "Salida", t: "vuelo", c: ["SJO", "Madrid"],
     ti: "Vuelo San José → Madrid",
-    su: "Trayecto inicial transatlántico",
-    ex: `Tarifa estándar. <a href="https://drive.google.com/file/d/1ULegU-5TnCEljHckjE-Z_t2h9Hkp8D_N/view?usp=drivesdk" target="_blank" rel="noopener">Ver Recibo General ↗</a>`
+    su: "Salida nocturna transatlántica",
+    qrText: "VUELO-SJO-MAD",
+    qrLabel: "Referencia de Vuelo",
+    ex: `Pasajeros: José Steven Quirós Barrantes & Karla Isabel Herrera Guerrero.<br><a href="https://drive.google.com/file/d/1ULegU-5TnCEljHckjE-Z_t2h9Hkp8D_N/view?usp=drivesdk" target="_blank">Ver Recibo General ↗</a>`
  },
  {
-    id: 2, d: "Día 2", w: "Madrid", t: "alojamiento", c: ["Madrid"],
-    ti: "Llegada y Alojamiento en Madrid",
-    su: "Zona Retiro", lat: airbnbs.madrid.lat, lng: airbnbs.madrid.lng,
-    ex: `<a href="${airbnbs.madrid.pdf}" target="_blank" rel="noopener">Ver Comprobante Airbnb ↗</a> | <a href="${airbnbs.madrid.pdfDetail}" target="_blank" rel="noopener">Ver Guía y Detalles ↗</a>`
+    id: 2, d: "Nov 21", w: "Madrid", t: "alojamiento", c: ["Madrid"],
+    ti: "Alojamiento en Madrid", su: "Zona Retiro",
+    qrText: "AIRBNB-MADRID", qrLabel: "Check-in Airbnb",
+    ex: `<a href="https://drive.google.com/file/d/1E48FsJy5JVdmaC7LV8Kge-_VeCVdiqQw/view?usp=drivesdk" target="_blank">Ver Comprobante ↗</a>`
  },
  {
-    id: 3, d: "Día 3", w: "Toledo", t: "tren", c: ["Madrid", "Toledo"],
-    ti: "Excursión en Tren a Toledo",
-    su: "Ida y vuelta en Alta Velocidad",
-    ex: `<a href="https://drive.google.com/file/d/1eWoOGHCfGTcyVK2IjrtKxiggruYv32hM/view?usp=drivesdk" target="_blank" rel="noopener">Ver Billete Renfe ↗</a>`
+    id: 3, d: "Nov 21", w: "Toledo", t: "tren", c: ["Madrid", "Toledo"],
+    ti: "Tren a Toledo (49B7WV)",
+    su: "Ida: 08:15 | Vuelta: 16:25",
+    qrText: "LOC-RENFE-49B7WV-TOLEDO", qrLabel: "Tornos Renfe",
+    ex: `Coche 4, Plazas 9A y 9B (Ida) | Coche 1, 6B y 6C (Vuelta).<br><a href="https://drive.google.com/file/d/1eWoOGHCfGTcyVK2IjrtKxiggruYv32hM/view?usp=drivesdk" target="_blank">Ver Billete ↗</a>`
  },
  {
-    id: 4, d: "Día 4", w: "Madrid", t: "vuelo", c: ["Madrid", "Roma"],
-    ti: "Vuelo Madrid → Roma",
-    su: "Vuelo directo a Italia",
-    ex: `Vuelo directo. 
-         <br><b>Ver billete por pasajero:</b> 
-         <a href="https://drive.google.com/file/d/1yvGb-E-ylQCWXuUBRWzo4mMmGAC49j4e/view?usp=drivesdk" target="_blank" rel="noopener">K ↗</a> | 
-         <a href="https://drive.google.com/file/d/1NLs-B_Xiqff38LG9zidzNFy1sOzD1xhd/view?usp=drivesdk" target="_blank" rel="noopener">S ↗</a>`
+    id: 4, d: "Nov 24", w: "Madrid", t: "vuelo", c: ["Madrid", "Roma"],
+    ti: "Vuelo Madrid → Roma", su: "Directo a Fiumicino",
+    qrText: "VUELO-MAD-FCO", qrLabel: "Pase de embarque",
+    ex: `Pasajeros: José S. y Karla I.<br><a href="https://drive.google.com/file/d/1yvGb-E-ylQCWXuUBRWzo4mMmGAC49j4e/view?usp=drivesdk" target="_blank">Ticket K ↗</a> | <a href="https://drive.google.com/file/d/1NLs-B_Xiqff38LG9zidzNFy1sOzD1xhd/view?usp=drivesdk" target="_blank">Ticket S ↗</a>`
  },
  {
-    id: 5, d: "Día 4", w: "Roma", t: "alojamiento", c: ["Roma"],
-    ti: "Alojamiento en Roma",
-    su: "Zona Esquilino", lat: airbnbs.roma.lat, lng: airbnbs.roma.lng,
-    ex: `<a href="${airbnbs.roma.pdf}" target="_blank" rel="noopener">Ver Airbnb ↗</a>`
+    id: 5, d: "Nov 27", w: "Barcelona", t: "vuelo", c: ["Roma", "Barcelona"],
+    ti: "Vuelo Roma → Barcelona", su: "Localizador Z2YG5I",
+    qrText: "VUELO-ITA-Z2YG5I", qrLabel: "Embarque ITA",
+    ex: `Equipaje de mano.<br><a href="https://drive.google.com/file/d/1gnpBX3aKR-imJshkjk6EsSDqIWhI_pQV/view?usp=drivesdk" target="_blank">Ver comprobante ↗</a>`
  },
  {
-    id: 6, d: "Día 5", w: "Roma", t: "visita", c: ["Roma"],
-    ti: "Museos Vaticanos",
-    su: "Visita cultural programada",
-    ex: `<a href="https://drive.google.com/file/d/1AiQfXrcqWe9NwRWjALbplgbw9SEI5rHG/view?usp=drivesdk" target="_blank" rel="noopener">Ver Tickets Vaticano (PDF) ↗</a>`
- },
- {
-    id: 7, d: "Día 6", w: "Roma", t: "visita", c: ["Roma"],
-    ti: "Coliseo, Foro Romano y Palatino",
-    su: "Recorrido histórico matutino",
-    ex: `<a href="https://drive.google.com/file/d/1vkYlBakRN343LTWv3oVpkv77P6QY2AT-/view?usp=drivesdk" target="_blank" rel="noopener">Ver Tickets Coliseo (PDF) ↗</a>`
- },
- {
-    id: 8, d: "Día 7", w: "Barcelona", t: "vuelo", c: ["Roma", "Barcelona"],
-    ti: "Vuelo Roma → Barcelona",
-    su: "Trayecto a Cataluña",
-    ex: `Equipaje de mano. 
-         <br><b>Ver billete:</b> 
-         <a href="https://drive.google.com/file/d/1gnpBX3aKR-imJshkjk6EsSDqIWhI_pQV/view?usp=drivesdk" target="_blank" rel="noopener">Ver comprobante ↗</a>`
- },
- {
-    id: 9, d: "Día 7", w: "Barcelona", t: "alojamiento", c: ["Barcelona"],
-    ti: "Alojamiento en Barcelona",
-    su: "Zona Sants", lat: airbnbs.barcelona.lat, lng: airbnbs.barcelona.lng,
-    ex: `<a href="${airbnbs.barcelona.pdf}" target="_blank" rel="noopener">Ver Comprobante Airbnb ↗</a> | <a href="${airbnbs.barcelona.pdfDetail}" target="_blank" rel="noopener">Ver Guía y Detalles ↗</a>`
- },
- {
-    id: 10, d: "Día 10", w: "Madrid", t: "tren", c: ["Barcelona", "Madrid"],
-    ti: "Tren Barcelona → Madrid",
-    su: "Regreso en alta velocidad",
-    ex: `<a href="https://drive.google.com/file/d/1K0D1ud-ldkbzaRYPDJKuPk09u4yIOXqj/view?usp=drivesdk" target="_blank" rel="noopener">Ver Billete Renfe ↗</a>`
- },
- {
-    id: 11, d: "Día 10", w: "Regreso", t: "vuelo", c: ["Madrid", "SJO"],
-    ti: "Vuelo Madrid → San José",
-    su: "Vuelo de retorno",
-    ex: `<a href="https://drive.google.com/file/d/1ULegU-5TnCEljHckjE-Z_t2h9Hkp8D_N/view?usp=drivesdk" target="_blank" rel="noopener">Ver Recibo General ↗</a>`
+    id: 6, d: "Nov 28", w: "Madrid", t: "tren", c: ["Barcelona", "Madrid"],
+    ti: "Tren Barcelona → Madrid", su: "Regreso alta velocidad",
+    qrText: "TREN-BCN-MAD", qrLabel: "Control Renfe",
+    ex: `<a href="https://drive.google.com/file/d/1K0D1ud-ldkbzaRYPDJKuPk09u4yIOXqj/view?usp=drivesdk" target="_blank">Ver Billete ↗</a>`
  }
 ];
 
-// --- LUGARES Y BÚSQUEDA EXHAUSTIVA DE TIENDAS ---
+// --- NUEVOS LUGARES DE INTERÉS DESDE TU EXCEL ---
 const lugares = {
   madrid: [
     {id:1,n:'Sobrino de Botín',c:'c',d:'C. de los Cuchilleros, 17',a:40.4142,o:-3.7078,x:'Asados tradicionales.'},
-    {id:2,n:'Casa Alberto',c:'c',d:'C. de las Huertas, 18',a:40.414,o:-3.6992,x:'Taberna clásica de 1827.'},
-    {id:3,n:'Posada de la Villa',c:'c',d:'C. de la Cava Baja, 9',a:40.4121,o:-3.7092,x:'Sopa castellana y asados.'},
-    {id:4,n:'Taberna de Pedraza',c:'c',d:'C. de Recoletos, 4',a:40.4216,o:-3.6914,x:'Tortilla de Betanzos.'},
-    {id:5,n:'Lhardy',c:'c',d:'Carrera de San Jerónimo, 8',a:40.4166,o:-3.7013,x:'Consomé y cocido clásico.'},
-    {id:6,n:'Taberna La Bola',c:'c',d:'C. de la Bola, 5',a:40.421,o:-3.7118,x:'Cocido en puchero de barro.'},
-    {id:7,n:'Mercado de San Miguel',c:'t',d:'Plaza de San Miguel',a:40.4154,o:-3.709,x:'Tapas gourmet.'},
-    {id:8,n:'Casa Labra',c:'t',d:'C. de Tetuán, 12',a:40.4172,o:-3.7029,x:'Croquetas y bacalao frito.'},
-    {id:9,n:'La Campana',c:'t',d:'C. de Botoneras, 6',a:40.4153,o:-3.7069,x:'Bocadillo de calamares.'},
-    {id:10,n:'Chocolatería San Ginés',c:'d',d:'Pasadizo de San Ginés, 5',a:40.417,o:-3.706,x:'Churros con chocolate.'},
-    {id:11,n:'Zara',c:'s',d:'Plaza de España, 8',a:40.4234,o:-3.7122,x:'Megatienda Edificio España.'},
-    {id:12,n:'Zara',c:'s',d:'Gran Vía, 34',a:40.4201,o:-3.7037,x:'Zara Centro Histórico.'},
-    {id:13,n:'Zara',c:'s',d:'Calle de la Princesa, 58',a:40.4300,o:-3.7150,x:'Zara zona Argüelles.'},
-    {id:14,n:'Zara',c:'s',d:'Calle de Serrano, 23',a:40.4243,o:-3.6873,x:'Zara Milla de Oro.'},
-    {id:15,n:'Zara',c:'s',d:'Conde de Peñalver, 16',a:40.4258,o:-3.6766,x:'Zara Barrio Salamanca.'},
-    {id:16,n:'Zara',c:'s',d:'Orense, 4',a:40.4485,o:-3.6953,x:'Zara Nuevos Ministerios.'},
-    {id:17,n:'Zara',c:'s',d:'CC Príncipe Pío',a:40.4215,o:-3.7196,x:'Zara Príncipe Pío.'},
-    {id:18,n:'Zara',c:'s',d:'CC La Vaguada',a:40.4788,o:-3.7045,x:'Zara Norte Vaguada.'},
-    {id:19,n:'Zara',c:'s',d:'CC Islazul',a:40.3638,o:-3.7540,x:'Zara Carabanchel Sur.'},
-    {id:20,n:'Zara',c:'s',d:'CC Plenilunio',a:40.4485,o:-3.5785,x:'Zara Este Plenilunio.'},
-    {id:21,n:'Pull & Bear',c:'s',d:'Gran Vía, 31',a:40.4204,o:-3.7032,x:'Pull & Bear Centro.'},
-    {id:22,n:'Pull & Bear',c:'s',d:'Calle de Hermosilla, 14',a:40.4260,o:-3.6860,x:'Pull & Bear Salamanca.'},
-    {id:23,n:'Pull & Bear',c:'s',d:'CC Príncipe Pío',a:40.4215,o:-3.7196,x:'Pull & Bear Estación.'},
-    {id:24,n:'Pull & Bear',c:'s',d:'CC La Vaguada',a:40.4788,o:-3.7045,x:'Pull & Bear Vaguada.'},
-    {id:25,n:'Pull & Bear',c:'s',d:'CC Islazul',a:40.3638,o:-3.7540,x:'Pull & Bear Islazul.'},
-    {id:26,n:'Pull & Bear',c:'s',d:'CC Plenilunio',a:40.4485,o:-3.5785,x:'Pull & Bear Plenilunio.'},
-    {id:27,n:'Lefties',c:'s',d:'Gran Vía, 32',a:40.4202,o:-3.7034,x:'Lefties Gran Vía Digital Store.'},
-    {id:28,n:'Lefties',c:'s',d:'Calle Montera, 25',a:40.4185,o:-3.7022,x:'Lefties Puerta del Sol.'},
-    {id:29,n:'Lefties',c:'s',d:'Calle de la Princesa, 63',a:40.4310,o:-3.7160,x:'Lefties Argüelles.'},
-    {id:30,n:'Lefties',c:'s',d:'CC La Vaguada',a:40.4788,o:-3.7045,x:'Lefties Vaguada.'},
-    {id:31,n:'Lefties',c:'s',d:'CC Islazul',a:40.3638,o:-3.7540,x:'Lefties Sur.'},
-    {id:32,n:'Lefties',c:'s',d:'CC Plenilunio',a:40.4485,o:-3.5785,x:'Lefties Este.'},
-    {id:33,n:'Primark',c:'s',d:'Gran Vía, 32',a:40.4202,o:-3.7035,x:'Primark Edificio Telefónica.'},
-    {id:34,n:'Primark',c:'s',d:'Conde de Peñalver, 8',a:40.4248,o:-3.6760,x:'Primark Barrio Salamanca.'},
-    {id:35,n:'Primark',c:'s',d:'CC Plenilunio',a:40.4485,o:-3.5785,x:'Primark Plenilunio.'},
-    {id:36,n:'Primark',c:'s',d:'CC Islazul',a:40.3638,o:-3.7540,x:'Primark Carabanchel.'},
-    {id:37,n:'Primark',c:'s',d:'CC La Vaguada',a:40.4788,o:-3.7045,x:'Primark Barrio del Pilar.'},
-    {id:38,n:'El Corte Inglés',c:'s',d:'Preciados, 3',a:40.4179,o:-3.7051,x:'ECI Sol/Callao.'},
-    {id:39,n:'El Corte Inglés',c:'s',d:'Calle de la Princesa, 56',a:40.4305,o:-3.7155,x:'ECI Princesa.'},
-    {id:40,n:'El Corte Inglés',c:'s',d:'Calle de Serrano, 47',a:40.4280,o:-3.6870,x:'ECI Serrano (Lujo).'},
-    {id:41,n:'El Corte Inglés',c:'s',d:'Paseo de la Castellana, 85',a:40.4533,o:-3.6908,x:'ECI Nuevos Ministerios (Flagship).'},
-    {id:42,n:'El Corte Inglés',c:'s',d:'Calle de Goya, 76',a:40.4251,o:-3.6745,x:'ECI Goya.'},
-    {id:43,n:'El Corte Inglés',c:'s',d:'Méndez Álvaro, 74',a:40.3958,o:-3.6764,x:'ECI Méndez Álvaro.'},
-    {id:44,n:'Decathlon',c:'s',d:'Calle del Arenal, 28',a:40.4172,o:-3.7075,x:'Decathlon City Ópera.'},
-    {id:45,n:'Decathlon',c:'s',d:'Calle de Fuencarral, 45',a:40.4245,o:-3.7005,x:'Decathlon City Malasaña.'},
-    {id:46,n:'Decathlon',c:'s',d:'Calle de la Princesa, 41',a:40.4285,o:-3.7145,x:'Decathlon City Princesa.'},
-    {id:47,n:'Decathlon',c:'s',d:'Ortega y Gasset, 22',a:40.4304,o:-3.6826,x:'Decathlon City Salamanca.'},
-    {id:48,n:'Decathlon',c:'s',d:'CC Alcalá Norte',a:40.4395,o:-3.6354,x:'Decathlon Este Ciudad.'},
-    {id:49,n:'Decathlon',c:'s',d:'CC Islazul',a:40.3638,o:-3.7540,x:'Decathlon Sur Islazul.'}
+    {id:2,n:'Mercado de San Miguel',c:'t',d:'Plaza de San Miguel',a:40.4154,o:-3.709,x:'Tapas gourmet.'},
+    {id:3,n:'Zara',c:'s',d:'Gran Vía, 34',a:40.4201,o:-3.7037,x:'Zara Centro.'}
   ],
   toledo: [
     {id:1,n:'Restaurante Adolfo',c:'c',d:'Hombre de Palo, 7',a:39.8576,o:-4.0248,x:'Alta cocina toledana.'},
-    {id:2,n:'Casa Aurelio',c:'c',d:'Plaza del Ayuntamiento, 4',a:39.8572,o:-4.0253,x:'Perdiz estofada.'},
-    {id:3,n:'Víctor Sánchez-Beato',c:'c',d:'Alamillo del Tránsito, 9',a:39.8560,o:-4.0280,x:'Cocina de autor.'},
-    {id:4,n:'Cuchara de Palo',c:'c',d:'Calle Santa Fe, 1',a:39.8582,o:-4.0215,x:'Comida manchega.'},
-    {id:5,n:'La Abadía',c:'t',d:'Plaza San Nicolás, 3',a:39.8596,o:-4.0246,x:'Cervecería en cueva.'},
-    {id:6,n:'Cervecería El Trébol',c:'t',d:'Calle de Santa Fe, 1',a:39.8592,o:-4.0232,x:'Bomba toledana.'},
-    {id:7,n:'Alfileritos 24',c:'t',d:'Calle Alfileritos, 24',a:39.8601,o:-4.0249,x:'Tapas vanguardistas.'},
-    {id:8,n:'Taberna el Botero',c:'t',d:'Calle Ciudad, 5',a:39.8570,o:-4.0235,x:'Tapas y coctelería.'},
-    {id:9,n:'Lo Nuestro',c:'t',d:'San Juan de Dios, 7',a:39.8583,o:-4.0210,x:'Raciones manchegas.'},
-    {id:10,n:'Obrador Santo Tomé',c:'d',d:'Plaza Zocodover, 7',a:39.8579,o:-4.0264,x:'Mazapán artesano.'},
-    {id:11,n:'Zara',c:'s',d:'CC Luz del Tajo',a:39.8665,o:-3.9860,x:'Zara en CC Luz del Tajo.'},
-    {id:12,n:'Pull & Bear',c:'s',d:'CC Luz del Tajo',a:39.8666,o:-3.9858,x:'Pull & Bear Luz del Tajo.'},
-    {id:13,n:'Lefties',c:'s',d:'CC Luz del Tajo',a:39.8664,o:-3.9859,x:'Lefties Luz del Tajo.'},
-    {id:14,n:'Primark',c:'s',d:'CC Luz del Tajo',a:39.8667,o:-3.9862,x:'Primark Luz del Tajo.'},
-    {id:15,n:'Decathlon',c:'s',d:'Parque Comercial Abadía',a:39.8906,o:-4.0287,x:'Decathlon Toledo norte.'}
+    {id:2,n:'Obrador Santo Tomé',c:'d',d:'Plaza Zocodover, 7',a:39.8579,o:-4.0264,x:'Mazapán.'}
   ],
   roma: [
     {id:1,n:'Trattoria Da Enzo al 29',c:'c',d:'Via dei Vascellari, 29',a:41.8847,o:12.4777,x:'Carbonara auténtica.'},
-    {id:2,n:'Roscioli Salumeria',c:'c',d:'Via dei Giubbonari, 21',a:41.8941,o:12.4740,x:'Amatriciana y quesos.'},
-    {id:3,n:'Tonnarello',c:'c',d:'Via della Paglia, 1',a:41.8893,o:12.4697,x:'Pasta en Trastevere.'},
-    {id:4,n:'Osteria da Fortunata',c:'c',d:'Via del Pellegrino, 11',a:41.8956,o:12.4722,x:'Pasta fresca a mano.'},
-    {id:5,n:'Pizzeria Da Baffetto',c:'c',d:'Via del Governo Vecchio',a:41.8986,o:12.4705,x:'Pizza romana fina.'},
-    {id:6,n:'Trapizzino',c:'t',d:'Piazza Trilussa, 46',a:41.8899,o:12.4694,x:'Street food pizzero.'},
-    {id:7,n:'Supplizio',c:'t',d:'Via dei Banchi Vecchi',a:41.8967,o:12.4691,x:'Supplì romanos.'},
-    {id:8,n:'Antico Forno Roscioli',c:'t',d:'Via dei Chiavari, 34',a:41.8947,o:12.4735,x:'Pizza al taglio.'},
-    {id:9,n:'Pompi Tiramisù',c:'d',d:'Via della Croce, 82',a:41.9056,o:12.4815,x:'Tiramisú clásico.'},
-    {id:10,n:'Gelateria Giolitti',c:'d',d:'Via Uffici del Vicario',a:41.9009,o:12.4775,x:'Heladería histórica.'},
-    {id:11,n:'Coliseo (Monumento)',c:'c',d:'Piazza del Colosseo',a:41.8902,o:12.4922,x:'Visita al Coliseo y Foro Romano.'},
-    {id:12,n:'Museos Vaticanos',c:'c',d:'Viale Vaticano',a:41.9065,o:12.4536,x:'Visita a los Museos Vaticanos.'},
-    {id:13,n:'Zara',c:'s',d:'Via del Corso, 189',a:41.9022,o:12.4795,x:'Zara Via del Corso.'},
-    {id:14,n:'Zara',c:'s',d:'Via Nazionale, 51',a:41.9008,o:12.4925,x:'Zara Via Nazionale.'},
-    {id:15,n:'Zara',c:'s',d:'CC Porta di Roma',a:41.9575,o:12.5110,x:'Zara CC Porta di Roma.'},
-    {id:16,n:'Pull & Bear',c:'s',d:'Via del Corso, 27/28',a:41.9079,o:12.4770,x:'Pull & Bear Via del Corso.'},
-    {id:17,n:'Pull & Bear',c:'s',d:'CC Roma Est',a:41.9215,o:12.6360,x:'Pull & Bear Roma Est.'},
-    {id:18,n:'Primark',c:'s',d:'CC Maximo Shopping Center',a:41.8175,o:12.4842,x:'Primark Maximo.'},
-    {id:19,n:'Primark',c:'s',d:'CC Roma Est',a:41.9212,o:12.6358,x:'Primark Roma Est.'},
-    {id:20,n:'Decathlon',c:'s',d:'Via Appia Nuova, 450',a:41.8752,o:12.5225,x:'Decathlon Appia.'},
-    {id:21,n:'Decathlon',c:'s',d:'Fiumicino Parco Commerciale',a:41.7915,o:12.2350,x:'Decathlon Fiumicino.'}
+    {id:2,n:'Trapizzino',c:'t',d:'Piazza Trilussa, 46',a:41.8899,o:12.4694,x:'Street food.'},
+    {id:3,n:'Giolitti',c:'d',d:'Via Uffici del Vicario',a:41.9009,o:12.4775,x:'Heladería histórica.'},
+    
+    // LUGARES DE INTERÉS (EXCEL IMG_8920.png)
+    {id:101,n:'Plaza de España',c:'v',d:'Escaleras de la Plaza',a:41.9059,o:12.4827,x:'Domingo 22: Famosas escalinatas.'},
+    {id:102,n:'Fontana Di Trevi',c:'v',d:'Piazza di Trevi',a:41.9009,o:12.4833,x:'Domingo 22: Lanzar la moneda.'},
+    {id:103,n:'Plaza Navona',c:'v',d:'Piazza Navona',a:41.8992,o:12.4731,x:'Domingo 22: Ideal para cenar.'},
+    {id:104,n:'Panteón de Roma',c:'v',d:'Piazza della Rotonda',a:41.8986,o:12.4769,x:'Lunes 23: Templo romano.'},
+    {id:105,n:'Campo de Fiori',c:'v',d:'Piazza Campo de Fiori',a:41.8956,o:12.4722,x:'Lunes 23: Mercado, para snackear.'},
+    {id:106,n:'Castillo Sant\'Angelo',c:'v',d:'Lungotevere Castello',a:41.9030,o:12.4663,x:'Lunes 23: Fortaleza papal.'},
+    {id:107,n:'Museo Vaticano',c:'v',d:'Viale Vaticano',a:41.9065,o:12.4536,x:'Lunes 23: 15:30 (Reservado).'},
+    {id:108,n:'Barrio Trastevere',c:'v',d:'Trastevere',a:41.8899,o:12.4694,x:'Lunes 23: Caminar por el barrio.'},
+    {id:109,n:'Coliseo romano',c:'v',d:'Piazza del Colosseo',a:41.8902,o:12.4922,x:'Martes 24: 8:30 (Reservado).'},
+    {id:110,n:'Barrio de Monti',c:'v',d:'Rione Monti',a:41.8945,o:12.4926,x:'Martes 24: Almorzar en Monti.'},
+    {id:111,n:'Via dei Fori Imperiali',c:'v',d:'Fori Imperiali',a:41.8929,o:12.4868,x:'Martes 24: Avenida sobre ruinas.'},
+    {id:112,n:'Piazza Venezia',c:'v',d:'Piazza Venezia',a:41.8958,o:12.4825,x:'Martes 24: Monumento a Víctor Manuel II.'},
+    {id:113,n:'Piazza del Campidoglio',c:'v',d:'Campidoglio',a:41.8933,o:12.4827,x:'Martes 24: Colina Capitolina.'}
   ],
   barcelona: [
-    {id:1,n:'Can Culleretes',c:'c',d:'Carrer d\'en Quintana, 5',a:41.3807,o:2.1741,x:'Restaurante centenario.'},
-    {id:2,n:'7 Portes',c:'c',d:'Passeig d\'Isabel II, 14',a:41.3820,o:2.1834,x:'Paellas y arroces.'},
-    {id:3,n:'Bar Cañete',c:'c',d:'Carrer de la Unió, 17',a:41.3791,o:2.1732,x:'Tapas de calidad.'},
-    {id:4,n:'Cervecería Catalana',c:'t',d:'Carrer de Mallorca, 236',a:41.3923,o:2.1609,x:'Tapas emblemáticas.'},
-    {id:5,n:'El Xampanyet',c:'t',d:'Carrer de Montcada, 22',a:41.3839,o:2.1818,x:'Cava y anchoas.'},
-    {id:6,n:'Quimet & Quimet',c:'t',d:'Poeta Cabanyes, 25',a:41.3742,o:2.1643,x:'Montaditos y conservas.'},
-    {id:7,n:'Ciudad Condal',c:'t',d:'Rambla de Catalunya, 18',a:41.3887,o:2.1672,x:'Tapas y montaditos.'},
-    {id:8,n:'La Cova Fumada',c:'t',d:'Carrer del Baluart, 56',a:41.3789,o:2.1895,x:'Origen de la bomba.'},
-    {id:9,n:'Pastisseria Hofmann',c:'d',d:'Carrer Flassaders, 44',a:41.3846,o:2.1816,x:'Croissants de mascarpone.'},
-    {id:10,n:'Churreria San Roman',c:'d',d:'Banys Nous, 8',a:41.3824,o:2.1749,x:'Churros tradicionales.'},
-    {id:11,n:'Zara',c:'s',d:'Plaça de Catalunya, 5',a:41.3865,o:2.1700,x:'Zara Flagship Plaça Catalunya.'},
-    {id:12,n:'Zara',c:'s',d:'Passeig de Gràcia, 16',a:41.3892,o:2.1675,x:'Zara Gràcia Sur.'},
-    {id:13,n:'Zara',c:'s',d:'Rambla de Catalunya, 67',a:41.3915,o:2.1620,x:'Zara Eixample.'},
-    {id:14,n:'Zara',c:'s',d:'Avinguda Diagonal, 584',a:41.3912,o:2.1435,x:'Zara Diagonal Eixample.'},
-    {id:15,n:'Zara',c:'s',d:'CC L\'Illa Diagonal',a:41.3895,o:2.1332,x:'Zara L\'Illa.'},
-    {id:16,n:'Zara',c:'s',d:'CC Glòries',a:41.4035,o:2.1870,x:'Zara Les Glòries.'},
-    {id:17,n:'Zara',c:'s',d:'CC Diagonal Mar',a:41.4072,o:2.2155,x:'Zara Diagonal Mar.'},
-    {id:18,n:'Zara',c:'s',d:'CC La Maquinista',a:41.4402,o:2.1995,x:'Zara La Maquinista.'},
-    {id:19,n:'Pull & Bear',c:'s',d:'Carrer de Pelai, 58',a:41.3855,o:2.1678,x:'Pull & Bear Pelai.'},
-    {id:20,n:'Pull & Bear',c:'s',d:'Portal de l\'Àngel, 42',a:41.3862,o:2.1728,x:'Pull & Bear Barri Gòtic.'},
-    {id:21,n:'Pull & Bear',c:'s',d:'CC L\'Illa Diagonal',a:41.3895,o:2.1332,x:'Pull & Bear L\'Illa.'},
-    {id:22,n:'Pull & Bear',c:'s',d:'CC Glòries',a:41.4035,o:2.1870,x:'Pull & Bear Glòries.'},
-    {id:23,n:'Pull & Bear',c:'s',d:'CC Diagonal Mar',a:41.4072,o:2.2155,x:'Pull & Bear Diagonal Mar.'},
-    {id:24,n:'Pull & Bear',c:'s',d:'CC La Maquinista',a:41.4402,o:2.1995,x:'Pull & Bear La Maquinista.'},
-    {id:25,n:'Lefties',c:'s',d:'Carrer de Pelai, 2',a:41.3850,o:2.1660,x:'Lefties Pelai Centro.'},
-    {id:26,n:'Lefties',c:'s',d:'CC Glòries',a:41.4035,o:2.1870,x:'Lefties Sant Martí.'},
-    {id:27,n:'Lefties',c:'s',d:'CC Diagonal Mar',a:41.4072,o:2.2155,x:'Lefties Diagonal Mar.'},
-    {id:28,n:'Lefties',c:'s',d:'CC La Maquinista',a:41.4402,o:2.1995,x:'Lefties Sant Andreu.'},
-    {id:29,n:'Lefties',c:'s',d:'Maremagnum',a:41.3755,o:2.1818,x:'Lefties Port Vell.'},
-    {id:30,n:'Primark',c:'s',d:'Plaça de Catalunya, 23',a:41.3868,o:2.1705,x:'Primark Plaça Catalunya.'},
-    {id:31,n:'Primark',c:'s',d:'CC L\'Illa Diagonal',a:41.3890,o:2.1330,x:'Primark L\'Illa.'},
-    {id:32,n:'Primark',c:'s',d:'CC Diagonal Mar',a:41.4072,o:2.2155,x:'Primark Diagonal Mar.'},
-    {id:33,n:'Primark',c:'s',d:'CC La Maquinista',a:41.4402,o:2.1995,x:'Primark La Maquinista.'},
-    {id:34,n:'El Corte Inglés',c:'s',d:'Plaça de Catalunya, 14',a:41.3875,o:2.1706,x:'ECI Principal BCN.'},
-    {id:35,n:'El Corte Inglés',c:'s',d:'Avinguda Diagonal, 617',a:41.3898,o:2.1378,x:'ECI Diagonal / María Cristina.'},
-    {id:36,n:'El Corte Inglés',c:'s',d:'Can Dragó (Av. Meridiana, 350)',a:41.4335,o:2.1822,x:'ECI Can Dragó Norte.'},
-    {id:37,n:'Decathlon',c:'s',d:'Carrer de la Canuda, 20',a:41.3851,o:2.1724,x:'Decathlon City Ciutat Vella.'},
-    {id:38,n:'Decathlon',c:'s',d:'Gran de Gràcia, 54',a:41.4010,o:2.1550,x:'Decathlon City Gràcia.'},
-    {id:39,n:'Decathlon',c:'s',d:'CC L\'Illa Diagonal',a:41.3892,o:2.1335,x:'Decathlon L\'Illa.'},
-    {id:40,n:'Decathlon',c:'s',d:'CC Glòries',a:41.4035,o:2.1870,x:'Decathlon Glòries.'},
-    {id:41,n:'Decathlon',c:'s',d:'CC Diagonal Mar',a:41.4072,o:2.2155,x:'Decathlon Diagonal Mar.'},
-    {id:42,n:'Decathlon',c:'s',d:'CC La Maquinista',a:41.4402,o:2.1995,x:'Decathlon La Maquinista.'}
+    {id:1,n:'7 Portes',c:'c',d:'Passeig d\'Isabel II, 14',a:41.3820,o:2.1834,x:'Paellas emblemáticas.'},
+    {id:2,n:'Cervecería Catalana',c:'t',d:'Carrer de Mallorca, 236',a:41.3923,o:2.1609,x:'Tapas.'},
+    
+    // LUGARES DE INTERÉS (EXCEL IMG_8920.png)
+    {id:101,n:'Mercado de la Boquería',c:'v',d:'La Rambla, 91',a:41.3817,o:2.1717,x:'Miércoles 25.'},
+    {id:102,n:'Barrio Gótico',c:'v',d:'Barri Gòtic',a:41.3826,o:2.1769,x:'Miércoles 25: Caminar.'},
+    {id:103,n:'Catedral de Barcelona',c:'v',d:'Pla de la Seu, s/n',a:41.3839,o:2.1761,x:'Miércoles 25.'},
+    {id:104,n:'Sagrada Familia',c:'v',d:'Carrer de Mallorca, 401',a:41.4036,o:2.1743,x:'Jueves 26: 9:00am.'},
+    {id:105,n:'Park Güell',c:'v',d:'Gràcia',a:41.4144,o:2.1526,x:'Jueves 26: 35min en Metro.'},
+    {id:106,n:'Passeig de Gràcia + Eixample',c:'v',d:'Passeig de Gràcia',a:41.3916,o:2.1649,x:'Jueves 26: Casa Batlló, etc. (Opciones al mar si no entran).'},
+    {id:107,n:'El Born (Sta Ma del Mar)',c:'v',d:'Plaça de Santa Maria, 1',a:41.3838,o:2.1820,x:'Jueves 26: 20 min en Metro hacia El Born.'},
+    {id:108,n:'Playa Barceloneta',c:'v',d:'Passeig Marítim',a:41.3784,o:2.1925,x:'Jueves 26: 4:00pm.'},
+    {id:109,n:'Paseo Marítimo',c:'v',d:'Passeig Marítim de la Barceloneta',a:41.3792,o:2.1947,x:'Jueves 26: Caminata frente al mar.'},
+    {id:110,n:'Monserrat',c:'v',d:'Macizo de Montserrat',a:41.5933,o:1.8344,x:'Viernes 27: Hiking a Monserrat.'}
   ]
-};
-
-const CUSTOM_PLACES_KEY = 'travel-page-custom-places-v1';
-const readCustomPlaces = () => {
-    try {
-        const raw = localStorage.getItem(CUSTOM_PLACES_KEY);
-        return raw ? JSON.parse(raw) : {};
-    } catch {
-        return {};
-    }
-};
-const writeCustomPlaces = (data) => {
-    localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(data));
-};
-const getCityPlaces = (cityKey) => {
-    const base = lugares[cityKey] || [];
-    const custom = readCustomPlaces()[cityKey] || [];
-    return [...base, ...custom];
-};
-const getNextCustomId = () => {
-    const all = Object.values(readCustomPlaces()).flat();
-    const ids = all.map(p => Number(p.id) || 0);
-    return ids.length ? Math.max(...ids) + 1 : 9000;
 };
 
 const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const col = {vuelo:"#2b4fd6", tren:"#d35400", alojamiento:"#16a085", visita:"#8e44ad"};
-const CC = {c:'#d35400', t:'#16a085', d:'#8e44ad', s:'#2980b9'};
-const CL = {c:'Clásico', t:'Tapas', d:'Dulce', s:'Compras'};
 
-// Iconos
+// COLORES PARA CHIPS Y PINES (Se añadió 'v' naranja para Interés)
+const CC = {c:'#d35400', t:'#16a085', d:'#8e44ad', s:'#2980b9', v:'#e67e22'};
+const CL = {c:'Clásico', t:'Tapas', d:'Dulce', s:'Compras', v:'Interés'};
+
 const getTransitIcon = (t) => L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker poi-marker" style="background:${t==='vuelo'?'#2b4fd6':'#d35400'}">${t==='vuelo'?'✈️':'🚆'}</div>`, iconSize:[28,28], iconAnchor:[14,14]});
 const airbnbIcon = L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker airbnb-marker" style="background:#16a085">🏠</div>`, iconSize:[28,28], iconAnchor:[14,14]});
-const getRestIcon = (c, id) => L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker" style="background:${CC[c]}">${id}</div>`, iconSize:[28,28], iconAnchor:[14,14]});
+const getRestIcon = (c, id) => L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker" style="background:${CC[c]}">${id > 100 ? '📍' : id}</div>`, iconSize:[28,28], iconAnchor:[14,14]}); // Los lugares de interés usan icono '📍'
 
 // --- MAPA 1: GENERAL ---
 const map1 = L.map('map').setView([40.5, -4], 4);
 L.tileLayer(tileUrl, { attribution: '&copy; OpenStreetMap' }).addTo(map1);
 let activeCity = null, activeEvent = null;
 
-// Rutas
-[{type:'vuelo',p:[getPoi('t4'),getPoi('t1')]}, {type:'tren',p:[getPoi('t5'),getPoi('t6')]}, {type:'vuelo',p:[getPoi('t1'),getPoi('t2')]}, {type:'vuelo',p:[getPoi('t2'),getPoi('t3')]}, {type:'tren',p:[getPoi('t5'),getPoi('t7')]}].forEach(r => {
+[{type:'vuelo',p:[getPoi('t4'),getPoi('t1')]}, {type:'tren',p:[getPoi('t5'),getPoi('t6')]}, {type:'vuelo',p:[getPoi('t1'),getPoi('t2')]}, {type:'vuelo',p:[getPoi('t2'),getPoi('t3')]}, {type:'tren',p:[getPoi('t7'),getPoi('t5')]}].forEach(r => {
     L.polyline(r.p, {color: col[r.type], weight:3, dashArray: r.type==='tren'?'6, 6':null, opacity:0.8}).addTo(map1);
 });
 
@@ -573,7 +329,6 @@ Object.keys(C).forEach(c => {
     cityMarkers[c] = m;
 });
 
-// Chips Filtro General
 const chipsContainer = document.getElementById("chips");
 ["Todos", "SJO", "Madrid", "Toledo", "Roma", "Barcelona"].forEach(n => {
     const b = document.createElement("button"); b.className = "chip"; b.textContent = n;
@@ -594,21 +349,38 @@ function renderList() {
     if(!items.length) { Lst.innerHTML = '<p class="empty">No hay eventos.</p>'; return; }
     items.forEach(e => {
         const b = document.createElement("button"); b.className = "card"; b.style.setProperty("--c", col[e.t]);
-        b.innerHTML = `<div class="d">${e.d}<small>${e.w}</small></div><div><div class="ti">${e.ti}</div><div class="su">${e.su}</div>${e.ex?`<div class="ex">${e.ex}</div>`:""}</div>`;
+        
+        let qrHtml = "";
+        if(e.qrText) {
+            qrHtml = `<div class="qr-box">
+                <span class="qr-label">${e.qrLabel}</span>
+                <div class="qr-code-render" id="qr-target-${e.id}"></div>
+            </div>`;
+        }
+
+        b.innerHTML = `<div class="d">${e.d}<small>${e.w}</small></div><div><div class="ti">${e.ti}</div><div class="su">${e.su}</div>${e.ex?`<div class="ex">${e.ex}${qrHtml}</div>`:""}</div>`;
         
         b.querySelectorAll('a')?.forEach(a => a.addEventListener('click', ev => ev.stopPropagation()));
         b.onclick = () => {
             activeEvent = activeEvent === e.id ? null : e.id;
             renderList();
+            
+            if(activeEvent === e.id && e.qrText) {
+                setTimeout(() => {
+                    const container = document.getElementById(`qr-target-${e.id}`);
+                    if(container && container.innerHTML.trim() === "") {
+                        new QRCode(container, { text: e.qrText, width: 120, height: 120, colorDark : "#1a1a1a", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.M });
+                    }
+                }, 50);
+            }
         };
         if (e.id === activeEvent) b.setAttribute("aria-pressed", "true");
-        
         Lst.appendChild(b);
     });
 }
 setCity(null);
 
-// --- MAPA 2: DETALLE DINÁMICO CON BÚSQUEDA Y PINES TOGGLE ---
+// --- MAPA 2: DETALLE DINÁMICO ---
 const map2 = L.map('mm').setView([40.417, -3.702], 13);
 L.tileLayer(tileUrl, { attribution: '&copy; OpenStreetMap' }).addTo(map2);
 
@@ -619,47 +391,42 @@ let restMarkers = {};
 let searchTerm = '';
 let showPins = true;
 
+// FILTROS CHIPS DETALLE (Incluye 'v' para Interés)
 const mCh = document.getElementById('mc');
-[['', 'Todos'], ['c', 'Clásicos'], ['t', 'Tapas'], ['d', 'Dulce'], ['s', 'Compras']].forEach(([k, l]) => {
+[['', 'Todos'], ['v', '📍 Interés'], ['c', 'Clásicos'], ['t', 'Tapas'], ['d', 'Dulce'], ['s', 'Compras']].forEach(([k, l]) => {
     const b = document.createElement('button'); b.className = 'chip'; b.textContent = l; b.dataset.k = k;
     b.onclick = () => { mc = k || null; ms = null; mDraw(); map2.closePopup(); map2.flyTo(C[currentDetailCity.charAt(0).toUpperCase() + currentDetailCity.slice(1)], 14); };
     mCh.appendChild(b);
 });
 
 const searchBox = document.getElementById('search-box');
-searchBox.addEventListener('input', (e) => {
-    searchTerm = e.target.value.toLowerCase();
-    mDraw();
-});
+searchBox.addEventListener('input', (e) => { searchTerm = e.target.value.toLowerCase(); mDraw(); });
 
 const togglePinsBtn = document.getElementById('toggle-pins');
 togglePinsBtn.addEventListener('click', () => {
     showPins = !showPins;
     togglePinsBtn.textContent = showPins ? 'Ocultar Pines' : 'Mostrar Pines';
-    if (!showPins) togglePinsBtn.classList.add('off'); else togglePinsBtn.classList.remove('off');
+    togglePinsBtn.classList.toggle('off', !showPins);
     mDraw();
 });
 
 function mSel(id) {
     ms = ms === id ? null : id; mDraw();
     if(ms) {
-        const r = getCityPlaces(currentDetailCity).find(x => x.id === ms);
-        if(r) {
-            map2.flyTo([r.a, r.o], 16, {duration: 0.8});
-            if (restMarkers[id]) restMarkers[id].openPopup();
-            document.getElementById('view-detail').scrollIntoView({behavior: 'smooth', block: 'start'});
-        }
+        const r = lugares[currentDetailCity].find(x => x.id === ms);
+        map2.flyTo([r.a, r.o], id===110 && currentDetailCity==='barcelona' ? 12 : 16, {duration: 0.8}); // Ajuste de zoom si es Montserrat
+        restMarkers[id].openPopup();
+        document.getElementById('view-detail').scrollIntoView({behavior: 'smooth', block: 'start'});
     } else map2.closePopup();
 }
 
 function mDraw() {
     mCh.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.k || null) === mc)));
     const mL = document.getElementById('ml'); mL.innerHTML = '';
-    const cityPlaces = getCityPlaces(currentDetailCity);
-
-    cityPlaces.forEach(r => {
+    
+    lugares[currentDetailCity].forEach(r => {
         const matchCategory = !mc || r.c === mc;
-        const matchSearch = r.n.toLowerCase().includes(searchTerm) || (r.x || '').toLowerCase().includes(searchTerm) || (r.d || '').toLowerCase().includes(searchTerm);
+        const matchSearch = r.n.toLowerCase().includes(searchTerm) || r.x.toLowerCase().includes(searchTerm) || r.d.toLowerCase().includes(searchTerm);
         const visible = matchCategory && matchSearch;
         
         if (visible && showPins) {
@@ -668,39 +435,30 @@ function mDraw() {
             detailLayerGroup.removeLayer(restMarkers[r.id]);
         }
         
-        const el = restMarkers[r.id] ? restMarkers[r.id].getElement() : null;
+        const el = restMarkers[r.id].getElement();
         if(el) { const mInner = el.querySelector('.rest-marker'); if(mInner) mInner.classList.toggle('on', r.id === ms); }
         if(!visible) return;
         
         const d = document.createElement('div'); d.className = 'card'; d.style.setProperty('--c', CC[r.c]); d.setAttribute('aria-pressed', String(r.id === ms));
-        d.innerHTML = `<div class='d'>${r.id}<small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${r.n}</div><div class='su'>${r.d}</div><div class='ex'>${r.x || 'Lugar añadido manualmente'}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a></div></div>`;
+        d.innerHTML = `<div class='d'>${r.id > 100 ? '📍' : r.id}<small>${CL[r.c]}</small></div><div><div class='ti'>${r.n}</div><div class='su'>${r.d}</div><div class='ex'>${r.x}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n+', '+r.d+', '+currentDetailCity)}'>Ver en Maps ↗</a></div></div>`;
         d.querySelectorAll('a').forEach(a => a.onclick = e => e.stopPropagation()); d.onclick = () => mSel(r.id);
         mL.appendChild(d);
     });
 }
 
 function renderDetailCity(cityKey) {
-    currentDetailCity = cityKey; 
-    mc = null; 
-    ms = null;
-    searchTerm = '';
-    searchBox.value = '';
-    showPins = true;
-    togglePinsBtn.textContent = 'Ocultar Pines';
-    togglePinsBtn.classList.remove('off');
+    currentDetailCity = cityKey; mc = null; ms = null;
+    searchTerm = ''; searchBox.value = ''; showPins = true;
+    togglePinsBtn.textContent = 'Ocultar Pines'; togglePinsBtn.classList.remove('off');
     detailLayerGroup.clearLayers(); restMarkers = {};
-
-    const cityPlaces = getCityPlaces(cityKey);
-
+    
     if(airbnbs[cityKey] && showPins) {
         const a = airbnbs[cityKey];
         const m = L.marker([a.lat, a.lng], {icon: airbnbIcon, zIndexOffset: 1000}).addTo(detailLayerGroup);
-        let pdfLinks = `<a href="${a.pdf}" target="_blank" rel="noopener">Ver comprobante ↗</a>`;
-        if(a.pdfDetail) pdfLinks += ` | <a href="${a.pdfDetail}" target="_blank" rel="noopener">Ver Guía y Detalles ↗</a>`;
-        m.bindPopup(`<h3>${a.ti}</h3><p>${a.su}</p><br>${pdfLinks}`);
+        m.bindPopup(`<h3>${a.ti}</h3><p>${a.su}</p>`);
         m.on('click', () => map2.flyTo([a.lat, a.lng], 16));
     }
-
+    
     transitPOIs.filter(p => p.city === cityKey).forEach(poi => {
         if(showPins){
             const m = L.marker([poi.lat, poi.lng], {icon: getTransitIcon(poi.type)}).addTo(detailLayerGroup);
@@ -709,55 +467,17 @@ function renderDetailCity(cityKey) {
         }
     });
 
-    cityPlaces.forEach(r => {
+    lugares[cityKey].forEach(r => {
         const m = L.marker([r.a, r.o], {icon: getRestIcon(r.c, r.id)});
-        m.bindPopup(`<h3>${r.n}</h3><p style="margin:0 0 6px 0">${r.d}</p>${r.x || 'Lugar añadido manualmente'}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`);
+        m.bindPopup(`<h3>${r.n}</h3><p style="margin:0 0 6px 0">${r.d}</p>${r.x}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n+', '+r.d+', '+cityKey)}'>Abrir Maps ↗</a>`);
         m.on('click', () => mSel(r.id));
         restMarkers[r.id] = m;
     });
 
-    const CityCap = cityKey.charAt(0).toUpperCase() + cityKey.slice(1);
-    map2.flyTo(C[CityCap], cityKey==='toledo'? 15 : 13, {duration: 0});
+    map2.flyTo(C[cityKey.charAt(0).toUpperCase() + cityKey.slice(1)], cityKey==='toledo'? 15 : 13, {duration: 0});
     mDraw();
 }
 
-const addPlaceForm = document.getElementById('add-place-form');
-const placeNameInput = document.getElementById('place-name');
-const placeAddressInput = document.getElementById('place-address');
-const placeCategoryInput = document.getElementById('place-category');
-const placeLatInput = document.getElementById('place-lat');
-const placeLngInput = document.getElementById('place-lng');
-
-addPlaceForm.addEventListener('submit', (event) => {
-    event.preventDefault();
-    const name = placeNameInput.value.trim();
-    const address = placeAddressInput.value.trim();
-    const category = placeCategoryInput.value;
-    if (!name || !address) return;
-
-    const cityKey = currentDetailCity;
-    const customPlaces = readCustomPlaces();
-    const cityCenter = C[cityKey.charAt(0).toUpperCase() + cityKey.slice(1)] || [40.41, -3.7];
-    const parsedLat = placeLatInput.value !== '' ? Number(placeLatInput.value) : cityCenter[0] + (Math.random() - 0.5) * 0.02;
-    const parsedLng = placeLngInput.value !== '' ? Number(placeLngInput.value) : cityCenter[1] + (Math.random() - 0.5) * 0.02;
-
-    const newPlace = {
-        id: getNextCustomId(),
-        n: name,
-        c: category,
-        d: address,
-        a: Number.isFinite(parsedLat) ? parsedLat : cityCenter[0],
-        o: Number.isFinite(parsedLng) ? parsedLng : cityCenter[1],
-        x: 'Lugar añadido por el usuario.'
-    };
-
-    customPlaces[cityKey] = [...(customPlaces[cityKey] || []), newPlace];
-    writeCustomPlaces(customPlaces);
-    addPlaceForm.reset();
-    renderDetailCity(cityKey);
-});
-
-// --- LOGICA DE PESTAÑAS ---
 const tabs = document.querySelectorAll('.tab-btn');
 const viewGeneral = document.getElementById('view-general');
 const viewDetail = document.getElementById('view-detail');
