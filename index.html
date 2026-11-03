@@ -237,7 +237,7 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
   <div id="view-general" class="view-section active-view">
       <section class="mapwrap" aria-label="Mapa del viaje">
         <div id="map" role="img" aria-label="Mapa interactivo"></div>
-        <div class="legend"><span><i style="border-color:var(--fl)"></i>Vuelo</span><span><i style="border-color:var(--tr);border-top-style:dashed"></i>Tren</span><span>🏠 Alojamiento</span><span>📍 Visitas</span><span>· los pines aparecen al acercar el mapa</span></div>
+        <div class="legend"><span><i style="border-color:var(--fl)"></i>Vuelo</span><span><i style="border-color:var(--tr);border-top-style:dashed"></i>Tren</span><span>🏠 Alojamiento</span><span>🏛️ Visitas</span><span>· los pines aparecen al acercar el mapa</span></div>
       </section>
       <section aria-label="Eventos">
         <div class="chips" id="chips" role="group"></div>
@@ -271,11 +271,11 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
                     <input id="place-name" name="place-name" type="text" placeholder="Nombre del lugar" required>
                     <input id="place-address" name="place-address" type="text" placeholder="Dirección o barrio" required>
                     <select id="place-category" name="place-category">
-                      <option value="c">Clásico</option>
-                      <option value="t">Tapas</option>
-                      <option value="d">Dulce</option>
-                      <option value="v">Visita</option>
-                      <option value="s">Compras</option>
+                      <option value="c">🍽️ Clásico</option>
+                      <option value="t">🍷 Tapas</option>
+                      <option value="d">🍰 Dulce</option>
+                      <option value="v">🏛️ Visita</option>
+                      <option value="s">🛍️ Compras</option>
                     </select>
                   </div>
                   <div class="add-place-fields secondary">
@@ -468,7 +468,10 @@ const lugares = {
     {id:46,n:'Decathlon',c:'s',d:'Calle de la Princesa, 41',a:40.4285,o:-3.7145,x:'Decathlon City Princesa.'},
     {id:47,n:'Decathlon',c:'s',d:'Ortega y Gasset, 22',a:40.4304,o:-3.6826,x:'Decathlon City Salamanca.'},
     {id:48,n:'Decathlon',c:'s',d:'CC Alcalá Norte',a:40.4395,o:-3.6354,x:'Decathlon Este Ciudad.'},
-    {id:49,n:'Decathlon',c:'s',d:'CC Islazul',a:40.3638,o:-3.7540,x:'Decathlon Sur Islazul.'}
+    {id:49,n:'Decathlon',c:'s',d:'CC Islazul',a:40.3638,o:-3.7540,x:'Decathlon Sur Islazul.'},
+    {id:50,n:'Templo de Debod',c:'v',d:'C. de Ferraz, 1',a:40.424,o:-3.7178,x:'Viernes 20 · A 20 min a pie, pasando por el Palacio Real y los Jardines Sabatini. Última entrada 7:30.'},
+    {id:51,n:'Palacio Real',c:'v',d:'C. de Bailén',a:40.4179,o:-3.7143,x:'Viernes 20 · De paso hacia el Templo de Debod.'},
+    {id:52,n:'Jardines de Sabatini',c:'v',d:'C. de Bailén',a:40.4208,o:-3.7143,x:'Viernes 20 · De paso hacia el Templo de Debod. Cierran 1 am.'}
   ],
   toledo: [
     {id:1,n:'Restaurante Adolfo',c:'c',d:'Hombre de Palo, 7',a:39.8576,o:-4.0248,x:'Alta cocina toledana.'},
@@ -485,7 +488,12 @@ const lugares = {
     {id:12,n:'Pull & Bear',c:'s',d:'CC Luz del Tajo',a:39.8666,o:-3.9858,x:'Pull & Bear Luz del Tajo.'},
     {id:13,n:'Lefties',c:'s',d:'CC Luz del Tajo',a:39.8664,o:-3.9859,x:'Lefties Luz del Tajo.'},
     {id:14,n:'Primark',c:'s',d:'CC Luz del Tajo',a:39.8667,o:-3.9862,x:'Primark Luz del Tajo.'},
-    {id:15,n:'Decathlon',c:'s',d:'Parque Comercial Abadía',a:39.8906,o:-4.0287,x:'Decathlon Toledo norte.'}
+    {id:15,n:'Decathlon',c:'s',d:'Parque Comercial Abadía',a:39.8906,o:-4.0287,x:'Decathlon Toledo norte.'},
+    {id:16,n:'Plaza de Zocodover',c:'v',d:'Plaza de Zocodover',a:39.8579,o:-4.0264,x:'Sábado 21 · Recorrido por Toledo.'},
+    {id:17,n:'Alcázar de Toledo',c:'v',d:'C. Unión',a:39.8581,o:-4.0219,x:'Sábado 21 · Recorrido por Toledo.'},
+    {id:18,n:'Catedral de Toledo',c:'v',d:'C. Cardenal Cisneros, 1',a:39.8573,o:-4.0244,x:'Sábado 21 · Recorrido por Toledo.'},
+    {id:19,n:'Barrio Judío y Sinagogas',c:'v',d:'Judería de Toledo',a:39.8565,o:-4.03,x:'Sábado 21 · Barrio Judío + Sinagoga (Santa María la Blanca y El Tránsito).'},
+    {id:20,n:'San Juan de los Reyes',c:'v',d:'C. de los Reyes Católicos, 17',a:39.8563,o:-4.0332,x:'Sábado 21 · Recorrido por Toledo.'}
   ],
   roma: [
     {id:1,n:'Trattoria Da Enzo al 29',c:'c',d:'Via dei Vascellari, 29',a:41.8847,o:12.4777,x:'Carbonara auténtica.'},
@@ -498,8 +506,8 @@ const lugares = {
     {id:8,n:'Antico Forno Roscioli',c:'t',d:'Via dei Chiavari, 34',a:41.8947,o:12.4735,x:'Pizza al taglio.'},
     {id:9,n:'Pompi Tiramisù',c:'d',d:'Via della Croce, 82',a:41.9056,o:12.4815,x:'Tiramisú clásico.'},
     {id:10,n:'Gelateria Giolitti',c:'d',d:'Via Uffici del Vicario',a:41.9009,o:12.4775,x:'Heladería histórica.'},
-    {id:11,n:'Coliseo y Foro Romano',c:'v',d:'Piazza del Colosseo',a:41.8902,o:12.4922,x:'Visita al Coliseo y Foro Romano.'},
-    {id:12,n:'Museos Vaticanos',c:'v',d:'Viale Vaticano',a:41.9065,o:12.4536,x:'Visita a los Museos Vaticanos.'},
+    {id:11,n:'Coliseo y Foro Romano',c:'v',d:'Piazza del Colosseo',a:41.8902,o:12.4922,x:'Martes 24 · 8:30 · Reservado. Visita al Coliseo y Foro Romano.'},
+    {id:12,n:'Museos Vaticanos',c:'v',d:'Viale Vaticano',a:41.9065,o:12.4536,x:'Lunes 23 · 15:30 · Reservado.'},
     {id:13,n:'Zara',c:'s',d:'Via del Corso, 189',a:41.9022,o:12.4795,x:'Zara Via del Corso.'},
     {id:14,n:'Zara',c:'s',d:'Via Nazionale, 51',a:41.9008,o:12.4925,x:'Zara Via Nazionale.'},
     {id:15,n:'Zara',c:'s',d:'CC Porta di Roma',a:41.9575,o:12.5110,x:'Zara CC Porta di Roma.'},
@@ -508,7 +516,18 @@ const lugares = {
     {id:18,n:'Primark',c:'s',d:'CC Maximo Shopping Center',a:41.8175,o:12.4842,x:'Primark Maximo.'},
     {id:19,n:'Primark',c:'s',d:'CC Roma Est',a:41.9212,o:12.6358,x:'Primark Roma Est.'},
     {id:20,n:'Decathlon',c:'s',d:'Via Appia Nuova, 450',a:41.8752,o:12.5225,x:'Decathlon Appia.'},
-    {id:21,n:'Decathlon',c:'s',d:'Fiumicino Parco Commerciale',a:41.7915,o:12.2350,x:'Decathlon Fiumicino.'}
+    {id:21,n:'Decathlon',c:'s',d:'Fiumicino Parco Commerciale',a:41.7915,o:12.2350,x:'Decathlon Fiumicino.'},
+    {id:22,n:'Escaleras de la Plaza de España',c:'v',d:'Piazza di Spagna',a:41.906,o:12.4829,x:'Domingo 22 · Llegada a Roma.'},
+    {id:23,n:'Fontana di Trevi',c:'v',d:'Piazza di Trevi',a:41.9009,o:12.4833,x:'Domingo 22.'},
+    {id:24,n:'Plaza Navona',c:'v',d:'Piazza Navona',a:41.8992,o:12.4731,x:'Domingo 22 · Cenar en Plaza Navona.'},
+    {id:25,n:'Panteón de Roma',c:'v',d:'Piazza della Rotonda',a:41.8986,o:12.4769,x:'Lunes 23.'},
+    {id:26,n:"Campo de' Fiori",c:'v',d:"Piazza Campo de' Fiori",a:41.8956,o:12.4722,x:'Lunes 23 · Para snackear.'},
+    {id:27,n:"Castillo Sant'Angelo",c:'v',d:'Lungotevere Castello, 50',a:41.9031,o:12.4663,x:'Lunes 23.'},
+    {id:28,n:'Barrio Trastevere',c:'v',d:'Piazza di Santa Maria in Trastevere',a:41.8896,o:12.4698,x:'Lunes 23 · Caminar por el barrio.'},
+    {id:29,n:'Barrio de Monti',c:'v',d:'Piazza della Madonna dei Monti',a:41.8953,o:12.4897,x:'Martes 24 · Almorzar en el barrio.'},
+    {id:30,n:'Via dei Fori Imperiali',c:'v',d:'Via dei Fori Imperiali',a:41.892,o:12.4853,x:'Martes 24.'},
+    {id:31,n:'Piazza Venezia',c:'v',d:'Piazza Venezia',a:41.8964,o:12.4823,x:'Martes 24.'},
+    {id:32,n:'Piazza del Campidoglio',c:'v',d:'Piazza del Campidoglio',a:41.8933,o:12.4828,x:'Martes 24.'}
   ],
   barcelona: [
     {id:1,n:'Can Culleretes',c:'c',d:'Carrer d\'en Quintana, 5',a:41.3807,o:2.1741,x:'Restaurante centenario.'},
@@ -552,7 +571,18 @@ const lugares = {
     {id:39,n:'Decathlon',c:'s',d:'CC L\'Illa Diagonal',a:41.3892,o:2.1335,x:'Decathlon L\'Illa.'},
     {id:40,n:'Decathlon',c:'s',d:'CC Glòries',a:41.4035,o:2.1870,x:'Decathlon Glòries.'},
     {id:41,n:'Decathlon',c:'s',d:'CC Diagonal Mar',a:41.4072,o:2.2155,x:'Decathlon Diagonal Mar.'},
-    {id:42,n:'Decathlon',c:'s',d:'CC La Maquinista',a:41.4402,o:2.1995,x:'Decathlon La Maquinista.'}
+    {id:42,n:'Decathlon',c:'s',d:'CC La Maquinista',a:41.4402,o:2.1995,x:'Decathlon La Maquinista.'},
+    {id:43,n:'Mercado de la Boquería',c:'v',d:'La Rambla, 91',a:41.3817,o:2.1716,x:'Miércoles 25 · Llegada a Barcelona a las 15:55.'},
+    {id:44,n:'Barrio Gótico',c:'v',d:'Barri Gòtic',a:41.3833,o:2.1767,x:'Miércoles 25 · Caminar por el barrio.'},
+    {id:45,n:'Catedral de Barcelona',c:'v',d:'Pla de la Seu, s/n',a:41.3841,o:2.1762,x:'Miércoles 25.'},
+    {id:46,n:'Sagrada Familia',c:'v',d:'C. de Mallorca, 401',a:41.4036,o:2.1744,x:'Jueves 26 · 9:00 am.'},
+    {id:47,n:'Park Güell',c:'v',d:'Carrer d\'Olot, s/n',a:41.4145,o:2.1527,x:'Jueves 26 · En metro, 35 min.'},
+    {id:48,n:'Casa Batlló',c:'v',d:'Passeig de Gràcia, 43',a:41.3917,o:2.165,x:'Jueves 26 · Passeig de Gràcia + Eixample.'},
+    {id:49,n:'La Pedrera (Casa Milà)',c:'v',d:'Passeig de Gràcia, 92',a:41.3954,o:2.162,x:'Jueves 26 · Passeig de Gràcia + Eixample. Si no entran, pueden ir al mar.'},
+    {id:50,n:'Santa Maria del Mar',c:'v',d:'Plaça de Santa Maria, 1',a:41.3838,o:2.1826,x:'Jueves 26 · Metro hacia El Born, 20 min.'},
+    {id:51,n:'Playa de la Barceloneta',c:'v',d:'Platja de la Barceloneta',a:41.3785,o:2.1925,x:'Jueves 26 · 4:00 pm.'},
+    {id:52,n:'Paseo Marítimo',c:'v',d:'Passeig Marítim de la Barceloneta',a:41.3812,o:2.1955,x:'Jueves 26.'},
+    {id:53,n:'Montserrat',c:'v',d:'Montserrat (a ~60 km de Barcelona)',a:41.5933,o:1.8109,x:'Viernes 27 · Hiking a Montserrat.'}
   ]
 };
 
@@ -581,7 +611,8 @@ const getNextCustomId = () => {
 
 const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const col = {vuelo:"#2b4fd6", tren:"#d35400", alojamiento:"#16a085", visita:"#c0392b"};
-const ICON = {vuelo:'✈️', tren:'🚆', alojamiento:'🏠', visita:'📍'};
+const ICON = {vuelo:'✈️', tren:'🚆', alojamiento:'🏠', visita:'🏛️'};
+const CI = {c:'🍽️', t:'🍷', d:'🍰', v:'🏛️', s:'🛍️'};   // icono por categoría de lugar
 const CITY_LABEL = {SJO:'San José'};
 const CC = {c:'#d35400', t:'#16a085', d:'#8e44ad', v:'#c0392b', s:'#2980b9'};
 const CL = {c:'Clásico', t:'Tapas', d:'Dulce', v:'Visita', s:'Compras'};
@@ -589,7 +620,6 @@ const CL = {c:'Clásico', t:'Tapas', d:'Dulce', v:'Visita', s:'Compras'};
 // Utilidades
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm = (s) => String(s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-const placeLabel = (id) => id >= 9000 ? '★' : id;
 // Tarjeta accesible: clic + Enter/Espacio
 const activatable = (el, fn) => {
     el.setAttribute('role', 'button'); el.tabIndex = 0;
@@ -600,8 +630,8 @@ const activatable = (el, fn) => {
 // Iconos
 const getTransitIcon = (t) => L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker poi-marker" style="background:${t==='vuelo'?'#2b4fd6':'#d35400'}">${t==='vuelo'?'✈️':'🚆'}</div>`, iconSize:[28,28], iconAnchor:[14,14]});
 const airbnbIcon = L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker airbnb-marker" style="background:#16a085">🏠</div>`, iconSize:[28,28], iconAnchor:[14,14]});
-const getRestIcon = (c, id) => L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker" style="background:${CC[c]}">${placeLabel(id)}</div>`, iconSize:[28,28], iconAnchor:[14,14]});
-const visitIcon = L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker poi-marker" style="background:${CC.v}">📍</div>`, iconSize:[28,28], iconAnchor:[14,14]});
+const getRestIcon = (c, id) => L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker poi-marker" style="background:${CC[c]}">${CI[c] || '📍'}</div>`, iconSize:[28,28], iconAnchor:[14,14]});
+const visitIcon = L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker poi-marker" style="background:${CC.v}">${CI.v}</div>`, iconSize:[28,28], iconAnchor:[14,14]});
 const pickIcon = L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker" style="background:#e11d48">＋</div>`, iconSize:[28,28], iconAnchor:[14,14]});
 
 // --- RESUMEN DEL VIAJE ---
@@ -731,7 +761,7 @@ let pickMarker = null;
 const cityCenter = (key) => C[key.charAt(0).toUpperCase() + key.slice(1)];
 
 const mCh = document.getElementById('mc');
-[['', 'Todos'], ['c', 'Clásicos'], ['t', 'Tapas'], ['d', 'Dulce'], ['v', 'Visitas'], ['s', 'Compras']].forEach(([k, l]) => {
+[['', 'Todos'], ['c', '🍽️ Clásicos'], ['t', '🍷 Tapas'], ['d', '🍰 Dulce'], ['v', '🏛️ Visitas'], ['s', '🛍️ Compras']].forEach(([k, l]) => {
     const b = document.createElement('button'); b.className = 'chip'; b.textContent = l; b.dataset.k = k;
     b.onclick = () => { mc = k || null; ms = null; mDraw(); map2.closePopup(); map2.flyTo(cityCenter(currentDetailCity), 14); };
     mCh.appendChild(b);
@@ -795,7 +825,7 @@ function mDraw() {
     shown.forEach(r => {
         const custom = r.id >= 9000;
         const d = document.createElement('div'); d.className = 'card'; d.dataset.id = r.id; d.style.setProperty('--c', CC[r.c]); d.setAttribute('aria-pressed', String(r.id === ms));
-        d.innerHTML = `<div class='d'>${placeLabel(r.id)}<small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${esc(r.n)}</div><div class='su'>${esc(r.d)}</div><div class='ex'>${esc(r.x || 'Lugar añadido manualmente')}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>${custom ? `<br><button type='button' class='btn-del'>Eliminar lugar</button>` : ''}</div></div>`;
+        d.innerHTML = `<div class='d'><span class="ico" aria-hidden="true">${CI[r.c] || '📍'}</span><small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${esc(r.n)}</div><div class='su'>${esc(r.d)}</div><div class='ex'>${esc(r.x || 'Lugar añadido manualmente')}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>${custom ? `<br><button type='button' class='btn-del'>Eliminar lugar</button>` : ''}</div></div>`;
         d.querySelectorAll('a').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
         const del = d.querySelector('.btn-del');
         if (del) del.addEventListener('click', e => {
