@@ -272,6 +272,31 @@ a.stat:hover { text-decoration:underline; }
 .locate-btn.on { background:#2b7fff; border-color:#2b7fff; color:#fff; }
 .loc-msg { margin:8px 4px 0; font-size:.82rem; color:var(--muted); min-height:1em; }
 .su b { color:var(--text); }
+
+/* --- Selector de categorías al elegir ciudad --- */
+body.modal-open { overflow: hidden; }
+.cat-modal { position:fixed; inset:0; z-index:3000; display:flex; align-items:flex-end; justify-content:center; }
+.cat-modal[hidden] { display:none; }
+.cat-backdrop { position:absolute; inset:0; background:rgba(10,14,18,.55); }
+.cat-panel { position:relative; width:100%; max-width:520px; background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:24px 24px 0 0; padding:22px 20px calc(20px + env(safe-area-inset-bottom,0px)); box-shadow:0 -10px 40px rgba(0,0,0,.25); }
+@media (min-width:640px) { .cat-modal { align-items:center; } .cat-panel { border-radius:24px; } }
+.cat-panel h3 { margin:0 0 4px; font:700 1.3rem/1.2 system-ui,sans-serif; letter-spacing:-.4px; }
+.cat-sub { margin:0 0 16px; color:var(--muted); font-size:.92rem; }
+.cat-opts { display:grid; grid-template-columns:repeat(2,1fr); gap:10px; margin-bottom:18px; }
+.cat-opt { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:14px 14px; background:var(--bg); color:var(--text); border:2px solid var(--line); border-radius:16px; font:inherit; font-size:1rem; font-weight:600; cursor:pointer; text-align:left; }
+.cat-opt small { font-weight:700; font-size:.8rem; color:var(--muted); }
+.cat-opt[aria-pressed="true"] { background:var(--text); color:var(--bg); border-color:var(--text); }
+.cat-opt[aria-pressed="true"] small { color:var(--bg); opacity:.75; }
+.cat-actions { display:flex; gap:10px; }
+.cat-btn { flex:1; padding:14px 16px; border-radius:99px; border:none; background:var(--accent); color:#fff; font:inherit; font-weight:700; font-size:1rem; cursor:pointer; }
+.cat-btn.ghost { background:var(--chip); color:var(--text); border:1px solid var(--line); flex:0 0 auto; }
+.cat-btn:disabled { opacity:.5; cursor:not-allowed; }
+
+/* --- Fijar tiendas con ubicación exacta --- */
+.add-quick { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:0 0 10px; font-size:.85rem; color:var(--muted); }
+.add-quick .chip { min-height:34px; padding:6px 12px; font-size:.85rem; }
+.btn-use-loc { width:100%; margin:0 0 12px; padding:10px 14px; background:var(--chip); color:var(--text); border:1px solid var(--line); border-radius:12px; font:inherit; font-size:.9rem; font-weight:600; cursor:pointer; }
+.btn-pin { margin-top:8px; background:var(--accent); color:#fff; border:none; border-radius:99px; padding:7px 14px; font:inherit; font-size:.85rem; font-weight:700; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -334,7 +359,9 @@ a.stat:hover { text-decoration:underline; }
                   <strong>Agregar lugar</strong>
                   <span>Se guarda en este navegador</span>
                 </summary>
-                <p class="add-place-hint">Con este panel abierto, toca el mapa para fijar la ubicación (o escribe latitud y longitud).</p>
+                <p class="add-place-hint" id="add-hint">Con este panel abierto, toca el mapa para fijar la ubicación (o escribe latitud y longitud).</p>
+                <div class="add-quick" id="add-quick" aria-label="Supermercados rápidos"></div>
+                <button type="button" id="use-loc" class="btn-use-loc">📍 Usar mi ubicación actual (estoy en el lugar)</button>
                 <form id="add-place-form" class="add-place-form">
                   <div class="add-place-fields">
                     <input id="place-name" name="place-name" type="text" placeholder="Nombre del lugar" required>
@@ -366,6 +393,19 @@ a.stat:hover { text-decoration:underline; }
   <div id="view-airport" class="view-section" aria-label="Cómo llegar desde el aeropuerto"></div>
 </main>
 
+<!-- Selector de categorías: aparece cada vez que eliges una ciudad -->
+<div id="cat-modal" class="cat-modal" hidden>
+  <div class="cat-backdrop" id="cat-backdrop"></div>
+  <div class="cat-panel" role="dialog" aria-modal="true" aria-labelledby="cat-title">
+    <h3 id="cat-title">¿Qué quieres ver?</h3>
+    <p class="cat-sub">Elige una o varias categorías. El mapa y la lista mostrarán solo esos puntos.</p>
+    <div class="cat-opts" id="cat-opts" role="group" aria-label="Categorías"></div>
+    <div class="cat-actions">
+      <button type="button" id="cat-all" class="cat-btn ghost">Ver todo</button>
+      <button type="button" id="cat-go" class="cat-btn" disabled>Elige al menos una</button>
+    </div>
+  </div>
+</div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
 // --- SIN MAPA (p. ej. sin conexión): el itinerario sigue funcionando ---
@@ -843,7 +883,8 @@ const map2 = L.map('mm').setView([40.417, -3.702], 13);
 L.tileLayer(tileUrl, { attribution: '&copy; OpenStreetMap' }).addTo(map2);
 
 let currentDetailCity = 'madrid';
-let mc = null, ms = null;
+let catSel = new Set(), ms = null, lastShown = [];   // catSel vacío = todas las categorías
+const CAT_LIST = [['c', '🍽️ Clásicos'], ['t', '🍷 Tapas'], ['d', '🍰 Dulce'], ['v', '🏛️ Visitas'], ['s', '🛍️ Compras'], ['m', '🛒 Súper']];
 let detailLayerGroup = L.layerGroup().addTo(map2);   // pines de lugares
 let staticLayerGroup = L.layerGroup().addTo(map2);   // alojamiento y transporte
 let restMarkers = {};
@@ -853,9 +894,12 @@ let pickMarker = null;
 const cityCenter = (key) => C[key.charAt(0).toUpperCase() + key.slice(1)];
 
 const mCh = document.getElementById('mc');
-[['', 'Todos'], ['c', '🍽️ Clásicos'], ['t', '🍷 Tapas'], ['d', '🍰 Dulce'], ['v', '🏛️ Visitas'], ['s', '🛍️ Compras'], ['m', '🛒 Súper']].forEach(([k, l]) => {
+[['', 'Todos'], ...CAT_LIST].forEach(([k, l]) => {
     const b = document.createElement('button'); b.className = 'chip'; b.textContent = l; b.dataset.k = k;
-    b.onclick = () => { mc = k || null; ms = null; mDraw(); map2.closePopup(); map2.flyTo(cityCenter(currentDetailCity), 14); };
+    b.onclick = () => {
+        if (!k) catSel.clear(); else if (catSel.has(k)) catSel.delete(k); else catSel.add(k);
+        ms = null; mDraw(); map2.closePopup(); fitVisible();
+    };
     mCh.appendChild(b);
 });
 
@@ -897,14 +941,14 @@ function removeCustomPlace(cityKey, id) {
 }
 
 function mDraw() {
-    mCh.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.k || null) === mc)));
+    mCh.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k ? catSel.has(b.dataset.k) : catSel.size === 0)));
     if (showPins) staticLayerGroup.addTo(map2); else map2.removeLayer(staticLayerGroup);
     const mL = document.getElementById('ml'); mL.innerHTML = '';
     const cityPlaces = getCityPlaces(currentDetailCity);
     const shown = [];
 
     cityPlaces.forEach(r => {
-        const visible = (!mc || r.c === mc) && norm(`${r.n} ${r.x || ''} ${r.d || ''}`).includes(searchTerm);
+        const visible = (!catSel.size || catSel.has(r.c)) && norm(`${r.n} ${r.x || ''} ${r.d || ''}`).includes(searchTerm);
         const mk = restMarkers[r.id];
         if (mk) { if (visible && showPins) detailLayerGroup.addLayer(mk); else detailLayerGroup.removeLayer(mk); }
         const el = mk ? mk.getElement() : null;
@@ -912,6 +956,7 @@ function mDraw() {
         if (visible) shown.push(r);
     });
 
+    lastShown = shown;
     document.getElementById('result-count').textContent = shown.length === cityPlaces.length ? `${cityPlaces.length} lugares` : `${shown.length} de ${cityPlaces.length} lugares`;
     if (!shown.length) { mL.innerHTML = '<p class="empty">No se encontraron lugares con ese filtro.</p>'; return; }
 
@@ -923,12 +968,13 @@ function mDraw() {
     shown.forEach(r => {
         const custom = r.id >= 9000;
         const link = r.np
-            ? `<a target='_blank' rel='noopener' href='${mapsNear(r.q || r.n, near ? [userPos.lat, userPos.lng] : [r.a, r.o])}'>Buscar el más cercano ${near ? 'a ti' : 'en la zona'} ↗</a>`
+            ? `<a target='_blank' rel='noopener' href='${mapsNear(r.q || r.n, near ? [userPos.lat, userPos.lng] : [r.a, r.o])}'>Buscar el más cercano ${near ? 'a ti' : 'en la zona'} ↗</a><br><button type='button' class='btn-pin'>📌 Fijar una tienda con ubicación exacta</button>`
             : `<a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`;
         const distTxt = dist.has(r.id) ? ` · <b>a ${fmtDist(dist.get(r.id))}</b>` : '';
         const d = document.createElement('div'); d.className = 'card'; d.dataset.id = r.id; d.style.setProperty('--c', CC[r.c]); d.setAttribute('aria-pressed', String(r.id === ms));
         d.innerHTML = `<div class='d'><span class="ico" aria-hidden="true">${CI[r.c] || '📍'}</span><small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${esc(r.n)}</div><div class='su'>${esc(r.d)}${distTxt}</div><div class='ex'>${esc(r.x || 'Lugar añadido manualmente')}<br>${link}${custom ? `<br><button type='button' class='btn-del'>Eliminar lugar</button>` : ''}</div></div>`;
         d.querySelectorAll('a').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
+        d.querySelector('.btn-pin')?.addEventListener('click', e => { e.stopPropagation(); prepStore(r.n); });
         const del = d.querySelector('.btn-del');
         if (del) del.addEventListener('click', e => {
             e.stopPropagation();
@@ -940,9 +986,11 @@ function mDraw() {
     });
 }
 
-function renderDetailCity(cityKey) {
+function renderDetailCity(cityKey, keepFilter = false) {
     currentDetailCity = cityKey;
-    mc = null; ms = null; searchTerm = ''; searchBox.value = ''; showPins = true;
+    if (!keepFilter) catSel = new Set();
+    renderQuickChains(cityKey);
+    ms = null; searchTerm = ''; searchBox.value = ''; showPins = true;
     togglePinsBtn.textContent = 'Ocultar Pines';
     togglePinsBtn.classList.remove('off');
     detailLayerGroup.clearLayers(); staticLayerGroup.clearLayers(); restMarkers = {};
@@ -1037,6 +1085,7 @@ function startLocate() {
         paintUser();
         setLocUi('on', `Precisión ≈ ${Math.round(pos.coords.accuracy || 0)} m · tu ubicación no sale de este dispositivo.`);
         if (first) { first = false; centerOnUser(); refreshNear(true); } else refreshNear();
+        if (fillOnFix) { fillOnFix = false; fillFromGps(); }
     }, err => {
         if (err.code === 1) { stopLocate(); setLocUi('off', LOC_ERR[1]); }
         else locMsgs.forEach(m => { m.textContent = LOC_ERR[err.code] || 'No se pudo obtener tu ubicación.'; });
@@ -1053,6 +1102,98 @@ sortNearBtn.addEventListener('click', () => {
     if (sortNear && watchId == null) startLocate(); else mDraw();
 });
 
+// --- ¿QUÉ QUIERES VER? Aparece cada vez que eliges una ciudad ---
+function fitVisible() {
+    const pts = lastShown.filter(r => !r.np).map(r => [r.a, r.o]);
+    if (!pts.length) { map2.flyTo(cityCenter(currentDetailCity), currentDetailCity === 'toledo' ? 15 : 13, { duration: 0.6 }); return; }
+    if (pts.length === 1) { map2.flyTo(pts[0], 16, { duration: 0.6 }); return; }
+    map2.fitBounds(pts, { padding: [40, 40], maxZoom: 16 });
+}
+const catModal = document.getElementById('cat-modal');
+const catOpts = document.getElementById('cat-opts');
+const catGo = document.getElementById('cat-go');
+const catAll = document.getElementById('cat-all');
+const catTitle = document.getElementById('cat-title');
+let catDraft = new Set(), catLast = {}, catReturnFocus = null;
+
+function catUpdate() {
+    catOpts.querySelectorAll('.cat-opt').forEach(b => b.setAttribute('aria-pressed', String(catDraft.has(b.dataset.k))));
+    catGo.disabled = catDraft.size === 0;
+    catGo.textContent = catDraft.size === 0 ? 'Elige al menos una' : `Ver ${catDraft.size === 1 ? 'la categoría' : catDraft.size + ' categorías'}`;
+}
+function openCatPrompt(cityKey) {
+    const label = cityKey.charAt(0).toUpperCase() + cityKey.slice(1);
+    catTitle.textContent = `¿Qué quieres ver en ${label}?`;
+    const counts = {};
+    getCityPlaces(cityKey).forEach(r => { counts[r.c] = (counts[r.c] || 0) + 1; });
+    catDraft = new Set(catLast[cityKey] || []);
+    catOpts.innerHTML = '';
+    CAT_LIST.filter(([k]) => counts[k]).forEach(([k, l]) => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'cat-opt'; b.dataset.k = k;
+        b.innerHTML = `<span>${l}</span><small>${counts[k]}</small>`;
+        b.onclick = () => { if (catDraft.has(k)) catDraft.delete(k); else catDraft.add(k); catUpdate(); };
+        catOpts.appendChild(b);
+    });
+    catUpdate();
+    catReturnFocus = document.activeElement;
+    catModal.hidden = false; document.body.classList.add('modal-open');
+    (catOpts.querySelector('.cat-opt') || catAll).focus();
+}
+function closeCatPrompt(all) {
+    catSel = all ? new Set() : new Set(catDraft);
+    catLast[currentDetailCity] = new Set(catSel);
+    catModal.hidden = true; document.body.classList.remove('modal-open');
+    ms = null; mDraw(); map2.closePopup(); fitVisible();
+    if (catReturnFocus && catReturnFocus.focus) catReturnFocus.focus({ preventScroll: true });
+}
+catGo.addEventListener('click', () => closeCatPrompt(false));
+catAll.addEventListener('click', () => closeCatPrompt(true));
+document.getElementById('cat-backdrop').addEventListener('click', () => closeCatPrompt(catDraft.size === 0));
+document.addEventListener('keydown', (e) => {
+    if (catModal.hidden) return;
+    if (e.key === 'Escape') { e.preventDefault(); closeCatPrompt(catDraft.size === 0); return; }
+    if (e.key === 'Tab') {
+        const f = [...catModal.querySelectorAll('button:not([disabled])')];
+        if (!f.length) return;
+        const first = f[0], last = f[f.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+});
+
+// --- FIJAR UNA TIENDA CON UBICACIÓN EXACTA ---
+const addHint = document.getElementById('add-hint');
+const ADD_HINT_DEFAULT = addHint.textContent;
+const addQuick = document.getElementById('add-quick');
+let fillOnFix = false;
+const chainsFor = (cityKey) => cityKey === 'roma' ? ['Conad', 'Coop', 'Pam'] : ['Mercadona', 'Carrefour', 'Lidl'];
+function renderQuickChains(cityKey) {
+    addQuick.innerHTML = '<span>Súper rápido:</span>';
+    chainsFor(cityKey).forEach(n => {
+        const b = document.createElement('button'); b.type = 'button'; b.className = 'chip'; b.textContent = '🛒 ' + n;
+        b.onclick = () => prepStore(n);
+        addQuick.appendChild(b);
+    });
+}
+function prepStore(name) {
+    addPanel.open = true;
+    placeNameInput.value = name; placeCategoryInput.value = 'm';
+    if (!placeAddressInput.value) placeAddressInput.value = 'Supermercado';
+    addHint.textContent = `Toca en el mapa el punto exacto de ${name} (o usa tu ubicación si estás en la tienda) y pulsa Agregar.`;
+    addPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+function fillFromGps() {
+    if (!userPos) return false;
+    if (!nearCity()) { addHint.textContent = 'Estás lejos de esta ciudad: toca el punto en el mapa para fijar la ubicación.'; return true; }
+    placeLatInput.value = userPos.lat.toFixed(5); placeLngInput.value = userPos.lng.toFixed(5);
+    addHint.textContent = userPos.acc > 50
+        ? `Ubicación puesta (precisión ≈ ${Math.round(userPos.acc)} m). Para más exactitud, toca el punto en el mapa.`
+        : `Ubicación puesta con tu posición (±${Math.round(userPos.acc)} m). Pulsa Agregar.`;
+    return true;
+}
+document.getElementById('use-loc').addEventListener('click', () => {
+    if (!fillFromGps()) { fillOnFix = true; addHint.textContent = 'Buscando tu posición… permite el acceso cuando el navegador lo pida.'; startLocate(); }
+});
 // --- AGREGAR LUGAR ---
 const addPanel = document.getElementById('add-place-panel');
 const addPlaceForm = document.getElementById('add-place-form');
@@ -1069,6 +1210,7 @@ map2.on('click', (ev) => {
     placeLngInput.value = ev.latlng.lng.toFixed(5);
     if (pickMarker) map2.removeLayer(pickMarker);
     pickMarker = L.marker(ev.latlng, { icon: pickIcon, interactive: false }).addTo(map2);
+    addHint.textContent = 'Punto fijado en el mapa. Pulsa Agregar.';
 });
 
 addPlaceForm.addEventListener('submit', (event) => {
@@ -1082,6 +1224,7 @@ addPlaceForm.addEventListener('submit', (event) => {
     let lat = placeLatInput.value !== '' ? Number(placeLatInput.value) : NaN;
     let lng = placeLngInput.value !== '' ? Number(placeLngInput.value) : NaN;
     const exact = Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+    if (!exact && placeCategoryInput.value === 'm') { addHint.textContent = 'Falta la ubicación exacta: toca el punto en el mapa o usa tu ubicación.'; return; }
     if (!exact) { lat = center[0] + (Math.random() - 0.5) * 0.01; lng = center[1] + (Math.random() - 0.5) * 0.01; }
 
     const newPlace = {
@@ -1092,8 +1235,10 @@ addPlaceForm.addEventListener('submit', (event) => {
     customPlaces[cityKey] = [...(customPlaces[cityKey] || []), newPlace];
     writeCustomPlaces(customPlaces);
     addPlaceForm.reset();
+    addHint.textContent = ADD_HINT_DEFAULT;
     addPanel.open = false;
-    renderDetailCity(cityKey);
+    if (catSel.size) catSel.add(newPlace.c);
+    renderDetailCity(cityKey, true);
     mSel(newPlace.id);
 });
 
@@ -1290,6 +1435,7 @@ function showTab(target) {
         detailTitle.textContent = label + " en detalle";
         document.title = label + ' · ' + BASE_TITLE;
         renderDetailCity(target);
+        openCatPrompt(target);
         setTimeout(() => map2.invalidateSize(), 50);
     }
 }
