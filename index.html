@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Itinerario de Viaje · Europa</title>
+<script>try{var t=localStorage.getItem("travel-theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E✈️%3C/text%3E%3C/svg%3E">
 <!-- Leaflet CSS -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -69,7 +70,9 @@ h1{font:700 clamp(1.8rem,4vw,2.6rem)/1.15 system-ui,-apple-system,sans-serif;mar
 header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 
 /* Pestañas Principales tipo Cápsula Moderna */
-.main-tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 12px; border-bottom: 1px solid var(--line); margin-bottom: 24px; scrollbar-width: none; }
+.tabs-bar { position: sticky; top: 0; z-index: 500; background: var(--bg); border-bottom: 1px solid var(--line); margin-bottom: 24px; }
+.tabs-inner { max-width: 1150px; margin: 0 auto; padding: 10px 20px; }
+.main-tabs { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
 .main-tabs::-webkit-scrollbar { display: none; }
 .tab-btn { background: var(--card); border: 1px solid var(--line); padding: 10px 20px; font: inherit; font-weight: 600; font-size: 0.95rem; color: var(--text); cursor: pointer; border-radius: 99px; transition: all 0.2s ease; }
 .tab-btn:hover { border-color: var(--muted); }
@@ -82,14 +85,14 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 #view-general.active-view { display: grid; grid-template-columns:1.25fr 1fr; gap:24px; }
 @media (max-width:820px){ #view-general.active-view { grid-template-columns:1fr; } }
 
-.mapwrap{position:sticky;top:20px;align-self:start;z-index:10}
+.mapwrap{position:sticky;top:76px;align-self:start;z-index:10}
 @media (max-width:820px){.mapwrap{position:static}}
 
 .theme-toggle { background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 50%; width: 40px; height: 40px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease; }
 .theme-toggle:hover { transform: scale(1.05); }
 
 /* Leaflet Mapas */
-#map, #mm { width: 100%; height: 500px; border-radius: 24px; border: 1px solid var(--line); background: var(--bg); z-index: 1; box-shadow: var(--shadow);}
+#map, #mm { width: 100%; height: clamp(320px, 62vh, 560px); scroll-margin-top: 80px; border-radius: 24px; border: 1px solid var(--line); background: var(--bg); z-index: 1; box-shadow: var(--shadow);}
 .leaflet-popup-content-wrapper { background: var(--card); color: var(--text); border-radius: 16px; border: 1px solid var(--line); box-shadow: var(--shadow); }
 .leaflet-popup-tip { background: var(--card); }
 .leaflet-popup-content { margin: 14px; font-family: inherit; font-size: 0.92rem; }
@@ -114,10 +117,11 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 .chip[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
 
 /* Tarjetas Estilo Web Moderna */
-.card{display:grid;grid-template-columns:85px 1fr;gap:14px;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:12px;cursor:pointer;transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
+.card{display:grid;grid-template-columns:85px 1fr;gap:14px;width:100%;text-align:left;font:inherit;color:inherit;background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:12px;cursor:pointer;transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; box-shadow: inset 4px 0 0 var(--c, transparent), 0 2px 8px rgba(0,0,0,0.02); }
 .card:hover { transform: translateY(-2px); border-color: var(--muted); }
-.card[aria-pressed="true"]{border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent);}
-.d{font:700 1rem/1.1 system-ui,sans-serif;text-align:center; display:flex; flex-direction:column; justify-content:center; background:var(--chip); border-radius: 14px; padding: 6px;}.d small{display:block;font-size:.7rem; font-weight:600; margin-top:4px; opacity:0.85;}
+.card[aria-pressed="true"]{border-color: var(--accent); box-shadow: inset 4px 0 0 var(--c, transparent), 0 0 0 2px var(--accent);}
+.d{font:700 1rem/1.1 system-ui,sans-serif;text-align:center; display:flex; flex-direction:column; justify-content:center; background:color-mix(in srgb, var(--c, var(--chip)) 14%, var(--chip)); border-radius: 14px; padding: 6px;}
+.ico{font-size:1.2rem;line-height:1;margin-bottom:4px}.d small{display:block;font-size:.7rem; font-weight:600; margin-top:4px; opacity:0.85;}
 .ti{font-weight:700; font-size: 1.05rem; margin-bottom: 2px;}
 .su{color:var(--muted);font-size:.9rem}
 .ex{display:none;margin-top:10px;font-size:.9rem;border-top:1px solid var(--line);padding-top:10px}
@@ -149,10 +153,16 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
     justify-content:space-between;
     align-items:center;
     gap:10px;
-    margin-bottom: 12px;
     font-size: 0.9rem;
     color: var(--muted);
+    cursor: pointer;
+    list-style: none;
 }
+.add-place-header::-webkit-details-marker { display:none; }
+.add-place-header::after { content:'＋'; font-weight:700; color:var(--text); }
+.add-place-panel[open] .add-place-header { margin-bottom: 8px; }
+.add-place-panel[open] .add-place-header::after { content:'−'; }
+.add-place-hint { margin: 0 0 12px; font-size: .85rem; color: var(--muted); }
 .add-place-header strong { color: var(--text); font-size: 1rem; }
 .add-place-form { display:grid; gap:10px; }
 .add-place-fields { display:grid; grid-template-columns: 1.5fr 1.5fr 0.8fr; gap:10px; }
@@ -189,6 +199,16 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
     .add-place-fields.secondary { grid-template-columns: 1fr; }
     .search-controls { flex-direction: column; }
 }
+
+/* --- Accesibilidad y detalles --- */
+:where(button, [role="button"], a, input, select, summary):focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; scroll-behavior: auto !important; } }
+.stats { display:flex; flex-wrap:wrap; gap:8px; margin: 0 0 14px; }
+.stat { background: var(--chip); color: var(--muted); border-radius: 99px; padding: 4px 12px; font-size: .85rem; font-weight: 600; }
+.result-count { margin: 0 4px 10px; font-size: .85rem; color: var(--muted); }
+.btn-del { margin-top: 8px; background: transparent; color: #c0392b; border: 1px solid currentColor; border-radius: 99px; padding: 6px 14px; font: inherit; font-size: .85rem; font-weight: 600; cursor: pointer; }
+.btn-del.confirm { background: #c0392b; color: #fff; border-color: #c0392b; }
+.map-fallback { display:grid; place-items:center; height:100%; padding:24px; text-align:center; color:var(--muted); font-size:.95rem; }
 </style>
 </head>
 <body>
@@ -199,22 +219,25 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
   </div>
   <h1>Itinerario y Guía de Viaje</h1>
   <p>Madrid, Toledo, Roma y Barcelona.</p>
-  
-  <nav class="main-tabs">
-    <button class="tab-btn active" data-target="general">Viaje General</button>
+  <div class="stats" id="stats" aria-label="Resumen del viaje"></div>
+</header>
+
+<div class="tabs-bar"><div class="tabs-inner">
+  <nav class="main-tabs" aria-label="Secciones del viaje">
+    <button class="tab-btn active" data-target="general" aria-current="page">Viaje General</button>
     <button class="tab-btn" data-target="madrid">Madrid</button>
     <button class="tab-btn" data-target="toledo">Toledo</button>
     <button class="tab-btn" data-target="roma">Roma</button>
     <button class="tab-btn" data-target="barcelona">Barcelona</button>
   </nav>
-</header>
+</div></div>
 
 <main>
   <!-- VISTA 1: VIAJE GENERAL -->
   <div id="view-general" class="view-section active-view">
       <section class="mapwrap" aria-label="Mapa del viaje">
         <div id="map" role="img" aria-label="Mapa interactivo"></div>
-        <div class="legend"><span><i style="border-color:var(--fl)"></i>Vuelo</span><span><i style="border-color:var(--tr);border-top-style:dashed"></i>Tren</span><span>🏠 Alojamiento</span><span>📍 Visitas</span></div>
+        <div class="legend"><span><i style="border-color:var(--fl)"></i>Vuelo</span><span><i style="border-color:var(--tr);border-top-style:dashed"></i>Tren</span><span>🏠 Alojamiento</span><span>📍 Visitas</span><span>· los pines aparecen al acercar el mapa</span></div>
       </section>
       <section aria-label="Eventos">
         <div class="chips" id="chips" role="group"></div>
@@ -233,15 +256,16 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
           </div>
           <div>
               <div class="search-controls">
-                  <input type="text" id="search-box" class="search-input" placeholder="Buscar lugares, ej: 'Zara'..." autocomplete="off">
+                  <input type="search" id="search-box" class="search-input" aria-label="Buscar lugares" placeholder="Buscar lugares, ej: 'Zara'..." autocomplete="off">
                   <button id="toggle-pins" class="btn-toggle-pins">Ocultar Pines</button>
               </div>
 
-              <div class="add-place-panel">
-                <div class="add-place-header">
+              <details class="add-place-panel" id="add-place-panel">
+                <summary class="add-place-header">
                   <strong>Agregar lugar</strong>
                   <span>Se guarda en este navegador</span>
-                </div>
+                </summary>
+                <p class="add-place-hint">Con este panel abierto, toca el mapa para fijar la ubicación (o escribe latitud y longitud).</p>
                 <form id="add-place-form" class="add-place-form">
                   <div class="add-place-fields">
                     <input id="place-name" name="place-name" type="text" placeholder="Nombre del lugar" required>
@@ -250,6 +274,7 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
                       <option value="c">Clásico</option>
                       <option value="t">Tapas</option>
                       <option value="d">Dulce</option>
+                      <option value="v">Visita</option>
                       <option value="s">Compras</option>
                     </select>
                   </div>
@@ -259,9 +284,10 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
                     <button type="submit" class="btn-add-place">Agregar</button>
                   </div>
                 </form>
-              </div>
+              </details>
 
               <div class='chips' id='mc' role='group'></div>
+              <p class="result-count" id="result-count" aria-live="polite"></p>
               <div id='ml'></div>
           </div>
       </div>
@@ -270,6 +296,12 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+// --- SIN MAPA (p. ej. sin conexión): el itinerario sigue funcionando ---
+if (typeof window.L === 'undefined') {
+    window.L = (() => { const p = new Proxy(function () {}, { get: (_, k) => (k === Symbol.toPrimitive ? () => '' : p), apply: () => p, construct: () => p }); return p; })();
+    ['map', 'mm'].forEach(id => { document.getElementById(id).innerHTML = '<div class="map-fallback"><div><strong>El mapa no está disponible</strong><br>Revisa tu conexión. El itinerario y las listas siguen funcionando.</div></div>'; });
+}
+
 // --- TEMA OSCURO/CLARO ---
 const themeToggle = document.getElementById('themeToggle');
 const isSystemDark = () => matchMedia('(prefers-color-scheme: dark)').matches;
@@ -279,6 +311,7 @@ themeToggle.addEventListener('click', () => {
     const newTheme = isCurrentDark() ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', newTheme);
     themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+    try { localStorage.setItem('travel-theme', newTheme); } catch {}
 });
 
 // --- DATOS DEL VIAJE ---
@@ -321,7 +354,7 @@ const E = [
     id: 2, d: "Día 2", w: "Madrid", t: "alojamiento", c: ["Madrid"],
     ti: "Llegada y Alojamiento en Madrid",
     su: "Zona Retiro", lat: airbnbs.madrid.lat, lng: airbnbs.madrid.lng,
-    ex: `<a href="${airbnbs.madrid.pdf}" target="_blank" rel="noopener">Ver Comprobante Airbnb ↗</a> | <a href="${airbnbs.madrid.pdfDetail}" target="_blank" rel="noopener">Ver Guía y Detalles ↗</a>`
+    ex: `<a href="${airbnbs.madrid.pdf}" target="_blank" rel="noopener">Ver Comprobante Airbnb ↗</a><a href="${airbnbs.madrid.pdfDetail}" target="_blank" rel="noopener">Ver Guía y Detalles ↗</a>`
  },
  {
     id: 3, d: "Día 3", w: "Toledo", t: "tren", c: ["Madrid", "Toledo"],
@@ -335,7 +368,7 @@ const E = [
     su: "Vuelo directo a Italia",
     ex: `Vuelo directo. 
          <br><b>Ver billete por pasajero:</b> 
-         <a href="https://drive.google.com/file/d/1yvGb-E-ylQCWXuUBRWzo4mMmGAC49j4e/view?usp=drivesdk" target="_blank" rel="noopener">K ↗</a> | 
+         <a href="https://drive.google.com/file/d/1yvGb-E-ylQCWXuUBRWzo4mMmGAC49j4e/view?usp=drivesdk" target="_blank" rel="noopener">K ↗</a>
          <a href="https://drive.google.com/file/d/1NLs-B_Xiqff38LG9zidzNFy1sOzD1xhd/view?usp=drivesdk" target="_blank" rel="noopener">S ↗</a>`
  },
  {
@@ -347,13 +380,13 @@ const E = [
  {
     id: 6, d: "Día 5", w: "Roma", t: "visita", c: ["Roma"],
     ti: "Museos Vaticanos",
-    su: "Visita cultural programada",
+    su: "Visita cultural programada", lat: 41.9065, lng: 12.4536,
     ex: `<a href="https://drive.google.com/file/d/1AiQfXrcqWe9NwRWjALbplgbw9SEI5rHG/view?usp=drivesdk" target="_blank" rel="noopener">Ver Tickets Vaticano (PDF) ↗</a>`
  },
  {
     id: 7, d: "Día 6", w: "Roma", t: "visita", c: ["Roma"],
     ti: "Coliseo, Foro Romano y Palatino",
-    su: "Recorrido histórico matutino",
+    su: "Recorrido histórico matutino", lat: 41.8902, lng: 12.4922,
     ex: `<a href="https://drive.google.com/file/d/1vkYlBakRN343LTWv3oVpkv77P6QY2AT-/view?usp=drivesdk" target="_blank" rel="noopener">Ver Tickets Coliseo (PDF) ↗</a>`
  },
  {
@@ -368,7 +401,7 @@ const E = [
     id: 9, d: "Día 7", w: "Barcelona", t: "alojamiento", c: ["Barcelona"],
     ti: "Alojamiento en Barcelona",
     su: "Zona Sants", lat: airbnbs.barcelona.lat, lng: airbnbs.barcelona.lng,
-    ex: `<a href="${airbnbs.barcelona.pdf}" target="_blank" rel="noopener">Ver Comprobante Airbnb ↗</a> | <a href="${airbnbs.barcelona.pdfDetail}" target="_blank" rel="noopener">Ver Guía y Detalles ↗</a>`
+    ex: `<a href="${airbnbs.barcelona.pdf}" target="_blank" rel="noopener">Ver Comprobante Airbnb ↗</a><a href="${airbnbs.barcelona.pdfDetail}" target="_blank" rel="noopener">Ver Guía y Detalles ↗</a>`
  },
  {
     id: 10, d: "Día 10", w: "Madrid", t: "tren", c: ["Barcelona", "Madrid"],
@@ -465,8 +498,8 @@ const lugares = {
     {id:8,n:'Antico Forno Roscioli',c:'t',d:'Via dei Chiavari, 34',a:41.8947,o:12.4735,x:'Pizza al taglio.'},
     {id:9,n:'Pompi Tiramisù',c:'d',d:'Via della Croce, 82',a:41.9056,o:12.4815,x:'Tiramisú clásico.'},
     {id:10,n:'Gelateria Giolitti',c:'d',d:'Via Uffici del Vicario',a:41.9009,o:12.4775,x:'Heladería histórica.'},
-    {id:11,n:'Coliseo (Monumento)',c:'c',d:'Piazza del Colosseo',a:41.8902,o:12.4922,x:'Visita al Coliseo y Foro Romano.'},
-    {id:12,n:'Museos Vaticanos',c:'c',d:'Viale Vaticano',a:41.9065,o:12.4536,x:'Visita a los Museos Vaticanos.'},
+    {id:11,n:'Coliseo y Foro Romano',c:'v',d:'Piazza del Colosseo',a:41.8902,o:12.4922,x:'Visita al Coliseo y Foro Romano.'},
+    {id:12,n:'Museos Vaticanos',c:'v',d:'Viale Vaticano',a:41.9065,o:12.4536,x:'Visita a los Museos Vaticanos.'},
     {id:13,n:'Zara',c:'s',d:'Via del Corso, 189',a:41.9022,o:12.4795,x:'Zara Via del Corso.'},
     {id:14,n:'Zara',c:'s',d:'Via Nazionale, 51',a:41.9008,o:12.4925,x:'Zara Via Nazionale.'},
     {id:15,n:'Zara',c:'s',d:'CC Porta di Roma',a:41.9575,o:12.5110,x:'Zara CC Porta di Roma.'},
@@ -533,7 +566,7 @@ const readCustomPlaces = () => {
     }
 };
 const writeCustomPlaces = (data) => {
-    localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(data));
+    try { localStorage.setItem(CUSTOM_PLACES_KEY, JSON.stringify(data)); } catch {}
 };
 const getCityPlaces = (cityKey) => {
     const base = lugares[cityKey] || [];
@@ -547,45 +580,124 @@ const getNextCustomId = () => {
 };
 
 const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
-const col = {vuelo:"#2b4fd6", tren:"#d35400", alojamiento:"#16a085", visita:"#8e44ad"};
-const CC = {c:'#d35400', t:'#16a085', d:'#8e44ad', s:'#2980b9'};
-const CL = {c:'Clásico', t:'Tapas', d:'Dulce', s:'Compras'};
+const col = {vuelo:"#2b4fd6", tren:"#d35400", alojamiento:"#16a085", visita:"#c0392b"};
+const ICON = {vuelo:'✈️', tren:'🚆', alojamiento:'🏠', visita:'📍'};
+const CITY_LABEL = {SJO:'San José'};
+const CC = {c:'#d35400', t:'#16a085', d:'#8e44ad', v:'#c0392b', s:'#2980b9'};
+const CL = {c:'Clásico', t:'Tapas', d:'Dulce', v:'Visita', s:'Compras'};
+
+// Utilidades
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const norm = (s) => String(s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const placeLabel = (id) => id >= 9000 ? '★' : id;
+// Tarjeta accesible: clic + Enter/Espacio
+const activatable = (el, fn) => {
+    el.setAttribute('role', 'button'); el.tabIndex = 0;
+    el.addEventListener('click', fn);
+    el.addEventListener('keydown', ev => { if ((ev.key === 'Enter' || ev.key === ' ') && ev.target === el) { ev.preventDefault(); fn(); } });
+};
 
 // Iconos
 const getTransitIcon = (t) => L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker poi-marker" style="background:${t==='vuelo'?'#2b4fd6':'#d35400'}">${t==='vuelo'?'✈️':'🚆'}</div>`, iconSize:[28,28], iconAnchor:[14,14]});
 const airbnbIcon = L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker airbnb-marker" style="background:#16a085">🏠</div>`, iconSize:[28,28], iconAnchor:[14,14]});
-const getRestIcon = (c, id) => L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker" style="background:${CC[c]}">${id}</div>`, iconSize:[28,28], iconAnchor:[14,14]});
+const getRestIcon = (c, id) => L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker" style="background:${CC[c]}">${placeLabel(id)}</div>`, iconSize:[28,28], iconAnchor:[14,14]});
+const visitIcon = L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker poi-marker" style="background:${CC.v}">📍</div>`, iconSize:[28,28], iconAnchor:[14,14]});
+const pickIcon = L.divIcon({className:'rest-marker-container', html:`<div class="rest-marker" style="background:#e11d48">＋</div>`, iconSize:[28,28], iconAnchor:[14,14]});
+
+// --- RESUMEN DEL VIAJE ---
+(() => {
+    const days = Math.max(...E.map(e => parseInt((e.d.match(/\d+/) || [0])[0], 10)));
+    const count = (t) => E.filter(e => e.t === t).length;
+    document.getElementById('stats').innerHTML = [`${days} días`, `${Object.keys(lugares).length} ciudades`, `${count('vuelo')} vuelos`, `${count('tren')} trenes`]
+        .map(t => `<span class="stat">${t}</span>`).join('');
+})();
 
 // --- MAPA 1: GENERAL ---
-const map1 = L.map('map').setView([40.5, -4], 4);
+const map1 = L.map('map');
 L.tileLayer(tileUrl, { attribution: '&copy; OpenStreetMap' }).addTo(map1);
 let activeCity = null, activeEvent = null;
 
-// Rutas
-[{type:'vuelo',p:[getPoi('t4'),getPoi('t1')]}, {type:'tren',p:[getPoi('t5'),getPoi('t6')]}, {type:'vuelo',p:[getPoi('t1'),getPoi('t2')]}, {type:'vuelo',p:[getPoi('t2'),getPoi('t3')]}, {type:'tren',p:[getPoi('t5'),getPoi('t7')]}].forEach(r => {
-    L.polyline(r.p, {color: col[r.type], weight:3, dashArray: r.type==='tren'?'6, 6':null, opacity:0.8}).addTo(map1);
+const EU_POINTS = [C.Madrid, C.Toledo, C.Roma, C.Barcelona];
+const EU_FIT = { padding: [40, 40] };
+const CITY_ZOOM = { Madrid: 11, Toledo: 12, Roma: 11, Barcelona: 11, SJO: 8 };
+const POI_MIN_ZOOM = 10;
+
+// Rutas: cada una sabe a qué eventos pertenece, para resaltarla al elegir un evento
+const routes = [
+    { ev: [1, 11], type: 'vuelo', p: [getPoi('t4'), getPoi('t1')] },
+    { ev: [3],     type: 'tren',  p: [getPoi('t5'), getPoi('t6')] },
+    { ev: [4],     type: 'vuelo', p: [getPoi('t1'), getPoi('t2')] },
+    { ev: [8],     type: 'vuelo', p: [getPoi('t2'), getPoi('t3')] },
+    { ev: [10],    type: 'tren',  p: [getPoi('t5'), getPoi('t7')] }
+].map(r => ({ ...r, line: L.polyline(r.p, { color: col[r.type], weight: 3, dashArray: r.type === 'tren' ? '6, 6' : null, opacity: 0.8 }).addTo(map1) }));
+
+function styleRoutes() {
+    const focus = activeEvent != null && routes.some(r => r.ev.includes(activeEvent));
+    routes.forEach(r => {
+        const on = r.ev.includes(activeEvent);
+        r.line.setStyle({ weight: on ? 6 : 3, opacity: focus ? (on ? 1 : 0.2) : 0.8 });
+    });
+}
+
+// Alojamientos y visitas: aparecen al acercar el mapa (evita encimarse con los nombres de ciudad)
+const poiLayer = L.layerGroup();
+Object.values(airbnbs).forEach(a => {
+    const links = `<a href="${a.pdf}" target="_blank" rel="noopener">Ver comprobante ↗</a>` + (a.pdfDetail ? ` | <a href="${a.pdfDetail}" target="_blank" rel="noopener">Ver Guía y Detalles ↗</a>` : '');
+    L.marker([a.lat, a.lng], { icon: airbnbIcon }).bindPopup(`<h3>${a.ti}</h3><p style="margin:0 0 6px">${a.su}</p>${links}`).addTo(poiLayer);
 });
+Object.values(lugares).flat().filter(p => p.c === 'v').forEach(p => {
+    L.marker([p.a, p.o], { icon: visitIcon }).bindPopup(`<h3>${esc(p.n)}</h3><p style="margin:0">${esc(p.x)}</p>`).addTo(poiLayer);
+});
+function syncPoiLayer() {
+    if (map1.getZoom() >= POI_MIN_ZOOM) { if (!map1.hasLayer(poiLayer)) poiLayer.addTo(map1); }
+    else if (map1.hasLayer(poiLayer)) map1.removeLayer(poiLayer);
+}
+map1.on('zoomend', syncPoiLayer);
 
 const cityMarkers = {};
 Object.keys(C).forEach(c => {
-    const m = L.marker(C[c], {icon: L.divIcon({className:'city-marker', html:`<div style="transform:translate(12px,-10px);line-height:20px">${c}</div>`, iconSize:[0,0]})}).addTo(map1);
+    const m = L.marker(C[c], {icon: L.divIcon({className:'city-marker', html:`<div style="transform:translate(12px,-10px);line-height:20px">${CITY_LABEL[c] || c}</div>`, iconSize:[0,0]})}).addTo(map1);
     m.on('click', () => setCity(activeCity === c ? null : c));
     cityMarkers[c] = m;
 });
 
-// Chips Filtro General
+// Chips filtro general
 const chipsContainer = document.getElementById("chips");
-["Todos", "SJO", "Madrid", "Toledo", "Roma", "Barcelona"].forEach(n => {
-    const b = document.createElement("button"); b.className = "chip"; b.textContent = n;
-    b.onclick = () => setCity(n === "Todos" ? null : n); b.dataset.n = n; chipsContainer.appendChild(b);
+[["Todos", "Todos"], ["SJO", "San José"], ["Madrid", "Madrid"], ["Toledo", "Toledo"], ["Roma", "Roma"], ["Barcelona", "Barcelona"]].forEach(([key, label]) => {
+    const b = document.createElement("button"); b.className = "chip"; b.textContent = label;
+    b.onclick = () => setCity(key === "Todos" ? null : key); b.dataset.n = key; chipsContainer.appendChild(b);
 });
 
-function setCity(c) {
+function resetView(instant) {
+    if (activeCity) map1.flyTo(C[activeCity], CITY_ZOOM[activeCity], { duration: 1 });
+    else if (instant) map1.fitBounds(EU_POINTS, EU_FIT);
+    else map1.flyToBounds(EU_POINTS, { ...EU_FIT, duration: 1 });
+}
+
+function setCity(c, instant = false) {
     activeCity = c; activeEvent = null;
     chipsContainer.querySelectorAll(".chip").forEach(b => b.setAttribute("aria-pressed", String((b.dataset.n==="Todos" && !activeCity) || b.dataset.n===activeCity)));
     Object.keys(cityMarkers).forEach(n => { const el = cityMarkers[n].getElement(); if(el) el.classList.toggle('on', n===activeCity); });
-    if(c) map1.flyTo(C[c], c==='SJO'?6:7, {duration:1}); else map1.flyTo([40.5, -4], 4, {duration:1});
+    resetView(instant);
+    styleRoutes();
     renderList();
+}
+
+function focusEvent(e) {
+    if (e.lat != null) { map1.flyTo([e.lat, e.lng], 14, { duration: 0.8 }); return; }
+    const pts = e.c.map(n => C[n]);
+    if (pts.length > 1) map1.flyToBounds(pts, { padding: [60, 60], maxZoom: 8, duration: 0.8 });
+    else map1.flyTo(pts[0], CITY_ZOOM[e.c[0]] || 10, { duration: 0.8 });
+}
+
+function selectEvent(e) {
+    activeEvent = activeEvent === e.id ? null : e.id;
+    styleRoutes(); renderList();
+    if (activeEvent) {
+        focusEvent(e);
+        if (matchMedia('(max-width:820px)').matches) document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else resetView();
+    document.querySelector(`#list .card[data-id="${e.id}"]`)?.focus({ preventScroll: true });
 }
 
 function renderList() {
@@ -593,20 +705,16 @@ function renderList() {
     const items = E.filter(e => !activeCity || e.c.includes(activeCity));
     if(!items.length) { Lst.innerHTML = '<p class="empty">No hay eventos.</p>'; return; }
     items.forEach(e => {
-        const b = document.createElement("button"); b.className = "card"; b.style.setProperty("--c", col[e.t]);
-        b.innerHTML = `<div class="d">${e.d}<small>${e.w}</small></div><div><div class="ti">${e.ti}</div><div class="su">${e.su}</div>${e.ex?`<div class="ex">${e.ex}</div>`:""}</div>`;
-        
-        b.querySelectorAll('a')?.forEach(a => a.addEventListener('click', ev => ev.stopPropagation()));
-        b.onclick = () => {
-            activeEvent = activeEvent === e.id ? null : e.id;
-            renderList();
-        };
-        if (e.id === activeEvent) b.setAttribute("aria-pressed", "true");
-        
+        const b = document.createElement("div"); b.className = "card"; b.dataset.id = e.id; b.style.setProperty("--c", col[e.t]);
+        b.innerHTML = `<div class="d"><span class="ico" aria-hidden="true">${ICON[e.t]}</span>${e.d}<small>${e.w}</small></div><div><div class="ti">${e.ti}</div><div class="su">${e.su}</div>${e.ex?`<div class="ex">${e.ex}</div>`:""}</div>`;
+        b.querySelectorAll('a').forEach(a => a.addEventListener('click', ev => ev.stopPropagation()));
+        activatable(b, () => selectEvent(e));
+        b.setAttribute("aria-pressed", String(e.id === activeEvent));
         Lst.appendChild(b);
     });
 }
-setCity(null);
+setCity(null, true);
+syncPoiLayer();
 
 // --- MAPA 2: DETALLE DINÁMICO CON BÚSQUEDA Y PINES TOGGLE ---
 const map2 = L.map('mm').setView([40.417, -3.702], 13);
@@ -614,21 +722,24 @@ L.tileLayer(tileUrl, { attribution: '&copy; OpenStreetMap' }).addTo(map2);
 
 let currentDetailCity = 'madrid';
 let mc = null, ms = null;
-let detailLayerGroup = L.layerGroup().addTo(map2);
+let detailLayerGroup = L.layerGroup().addTo(map2);   // pines de lugares
+let staticLayerGroup = L.layerGroup().addTo(map2);   // alojamiento y transporte
 let restMarkers = {};
 let searchTerm = '';
 let showPins = true;
+let pickMarker = null;
+const cityCenter = (key) => C[key.charAt(0).toUpperCase() + key.slice(1)];
 
 const mCh = document.getElementById('mc');
-[['', 'Todos'], ['c', 'Clásicos'], ['t', 'Tapas'], ['d', 'Dulce'], ['s', 'Compras']].forEach(([k, l]) => {
+[['', 'Todos'], ['c', 'Clásicos'], ['t', 'Tapas'], ['d', 'Dulce'], ['v', 'Visitas'], ['s', 'Compras']].forEach(([k, l]) => {
     const b = document.createElement('button'); b.className = 'chip'; b.textContent = l; b.dataset.k = k;
-    b.onclick = () => { mc = k || null; ms = null; mDraw(); map2.closePopup(); map2.flyTo(C[currentDetailCity.charAt(0).toUpperCase() + currentDetailCity.slice(1)], 14); };
+    b.onclick = () => { mc = k || null; ms = null; mDraw(); map2.closePopup(); map2.flyTo(cityCenter(currentDetailCity), 14); };
     mCh.appendChild(b);
 });
 
 const searchBox = document.getElementById('search-box');
 searchBox.addEventListener('input', (e) => {
-    searchTerm = e.target.value.toLowerCase();
+    searchTerm = norm(e.target.value.trim());
     mDraw();
 });
 
@@ -636,7 +747,7 @@ const togglePinsBtn = document.getElementById('toggle-pins');
 togglePinsBtn.addEventListener('click', () => {
     showPins = !showPins;
     togglePinsBtn.textContent = showPins ? 'Ocultar Pines' : 'Mostrar Pines';
-    if (!showPins) togglePinsBtn.classList.add('off'); else togglePinsBtn.classList.remove('off');
+    togglePinsBtn.classList.toggle('off', !showPins);
     mDraw();
 });
 
@@ -646,81 +757,94 @@ function mSel(id) {
         const r = getCityPlaces(currentDetailCity).find(x => x.id === ms);
         if(r) {
             map2.flyTo([r.a, r.o], 16, {duration: 0.8});
-            if (restMarkers[id]) restMarkers[id].openPopup();
-            document.getElementById('view-detail').scrollIntoView({behavior: 'smooth', block: 'start'});
+            if (restMarkers[id] && detailLayerGroup.hasLayer(restMarkers[id])) restMarkers[id].openPopup();
+            if (matchMedia('(max-width:820px)').matches) document.getElementById('mm').scrollIntoView({behavior: 'smooth', block: 'nearest'});
         }
     } else map2.closePopup();
+    document.querySelector(`#ml .card[data-id="${id}"]`)?.focus({ preventScroll: true });
+}
+
+function removeCustomPlace(cityKey, id) {
+    const data = readCustomPlaces();
+    data[cityKey] = (data[cityKey] || []).filter(p => p.id !== id);
+    writeCustomPlaces(data);
+    if (restMarkers[id]) { detailLayerGroup.removeLayer(restMarkers[id]); delete restMarkers[id]; }
+    if (ms === id) { ms = null; map2.closePopup(); }
+    mDraw();
 }
 
 function mDraw() {
     mCh.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String((b.dataset.k || null) === mc)));
+    if (showPins) staticLayerGroup.addTo(map2); else map2.removeLayer(staticLayerGroup);
     const mL = document.getElementById('ml'); mL.innerHTML = '';
     const cityPlaces = getCityPlaces(currentDetailCity);
+    const shown = [];
 
     cityPlaces.forEach(r => {
-        const matchCategory = !mc || r.c === mc;
-        const matchSearch = r.n.toLowerCase().includes(searchTerm) || (r.x || '').toLowerCase().includes(searchTerm) || (r.d || '').toLowerCase().includes(searchTerm);
-        const visible = matchCategory && matchSearch;
-        
-        if (visible && showPins) {
-            detailLayerGroup.addLayer(restMarkers[r.id]);
-        } else {
-            detailLayerGroup.removeLayer(restMarkers[r.id]);
-        }
-        
-        const el = restMarkers[r.id] ? restMarkers[r.id].getElement() : null;
-        if(el) { const mInner = el.querySelector('.rest-marker'); if(mInner) mInner.classList.toggle('on', r.id === ms); }
-        if(!visible) return;
-        
-        const d = document.createElement('div'); d.className = 'card'; d.style.setProperty('--c', CC[r.c]); d.setAttribute('aria-pressed', String(r.id === ms));
-        d.innerHTML = `<div class='d'>${r.id}<small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${r.n}</div><div class='su'>${r.d}</div><div class='ex'>${r.x || 'Lugar añadido manualmente'}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a></div></div>`;
-        d.querySelectorAll('a').forEach(a => a.onclick = e => e.stopPropagation()); d.onclick = () => mSel(r.id);
+        const visible = (!mc || r.c === mc) && norm(`${r.n} ${r.x || ''} ${r.d || ''}`).includes(searchTerm);
+        const mk = restMarkers[r.id];
+        if (mk) { if (visible && showPins) detailLayerGroup.addLayer(mk); else detailLayerGroup.removeLayer(mk); }
+        const el = mk ? mk.getElement() : null;
+        if (el) { const mInner = el.querySelector('.rest-marker'); if (mInner) mInner.classList.toggle('on', r.id === ms); }
+        if (visible) shown.push(r);
+    });
+
+    document.getElementById('result-count').textContent = shown.length === cityPlaces.length ? `${cityPlaces.length} lugares` : `${shown.length} de ${cityPlaces.length} lugares`;
+    if (!shown.length) { mL.innerHTML = '<p class="empty">No se encontraron lugares con ese filtro.</p>'; return; }
+
+    shown.forEach(r => {
+        const custom = r.id >= 9000;
+        const d = document.createElement('div'); d.className = 'card'; d.dataset.id = r.id; d.style.setProperty('--c', CC[r.c]); d.setAttribute('aria-pressed', String(r.id === ms));
+        d.innerHTML = `<div class='d'>${placeLabel(r.id)}<small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${esc(r.n)}</div><div class='su'>${esc(r.d)}</div><div class='ex'>${esc(r.x || 'Lugar añadido manualmente')}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>${custom ? `<br><button type='button' class='btn-del'>Eliminar lugar</button>` : ''}</div></div>`;
+        d.querySelectorAll('a').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
+        const del = d.querySelector('.btn-del');
+        if (del) del.addEventListener('click', e => {
+            e.stopPropagation();
+            if (!del.classList.contains('confirm')) { del.classList.add('confirm'); del.textContent = '¿Seguro? Toca de nuevo'; return; }
+            removeCustomPlace(currentDetailCity, r.id);
+        });
+        activatable(d, () => mSel(r.id));
         mL.appendChild(d);
     });
 }
 
 function renderDetailCity(cityKey) {
-    currentDetailCity = cityKey; 
-    mc = null; 
-    ms = null;
-    searchTerm = '';
-    searchBox.value = '';
-    showPins = true;
+    currentDetailCity = cityKey;
+    mc = null; ms = null; searchTerm = ''; searchBox.value = ''; showPins = true;
     togglePinsBtn.textContent = 'Ocultar Pines';
     togglePinsBtn.classList.remove('off');
-    detailLayerGroup.clearLayers(); restMarkers = {};
+    detailLayerGroup.clearLayers(); staticLayerGroup.clearLayers(); restMarkers = {};
+    if (pickMarker) { map2.removeLayer(pickMarker); pickMarker = null; }
+    placeLatInput.value = ''; placeLngInput.value = '';
 
-    const cityPlaces = getCityPlaces(cityKey);
-
-    if(airbnbs[cityKey] && showPins) {
-        const a = airbnbs[cityKey];
-        const m = L.marker([a.lat, a.lng], {icon: airbnbIcon, zIndexOffset: 1000}).addTo(detailLayerGroup);
+    const a = airbnbs[cityKey];
+    if (a) {
+        const m = L.marker([a.lat, a.lng], {icon: airbnbIcon, zIndexOffset: 1000}).addTo(staticLayerGroup);
         let pdfLinks = `<a href="${a.pdf}" target="_blank" rel="noopener">Ver comprobante ↗</a>`;
-        if(a.pdfDetail) pdfLinks += ` | <a href="${a.pdfDetail}" target="_blank" rel="noopener">Ver Guía y Detalles ↗</a>`;
+        if (a.pdfDetail) pdfLinks += ` | <a href="${a.pdfDetail}" target="_blank" rel="noopener">Ver Guía y Detalles ↗</a>`;
         m.bindPopup(`<h3>${a.ti}</h3><p>${a.su}</p><br>${pdfLinks}`);
         m.on('click', () => map2.flyTo([a.lat, a.lng], 16));
     }
 
     transitPOIs.filter(p => p.city === cityKey).forEach(poi => {
-        if(showPins){
-            const m = L.marker([poi.lat, poi.lng], {icon: getTransitIcon(poi.type)}).addTo(detailLayerGroup);
-            m.bindPopup(`<h3>${poi.name}</h3>`);
-            m.on('click', () => map2.flyTo([poi.lat, poi.lng], 15));
-        }
+        const m = L.marker([poi.lat, poi.lng], {icon: getTransitIcon(poi.type)}).addTo(staticLayerGroup);
+        m.bindPopup(`<h3>${poi.name}</h3>`);
+        m.on('click', () => map2.flyTo([poi.lat, poi.lng], 15));
     });
 
-    cityPlaces.forEach(r => {
+    getCityPlaces(cityKey).forEach(r => {
         const m = L.marker([r.a, r.o], {icon: getRestIcon(r.c, r.id)});
-        m.bindPopup(`<h3>${r.n}</h3><p style="margin:0 0 6px 0">${r.d}</p>${r.x || 'Lugar añadido manualmente'}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`);
+        m.bindPopup(`<h3>${esc(r.n)}</h3><p style="margin:0 0 6px 0">${esc(r.d)}</p>${esc(r.x || 'Lugar añadido manualmente')}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`);
         m.on('click', () => mSel(r.id));
         restMarkers[r.id] = m;
     });
 
-    const CityCap = cityKey.charAt(0).toUpperCase() + cityKey.slice(1);
-    map2.flyTo(C[CityCap], cityKey==='toledo'? 15 : 13, {duration: 0});
+    map2.flyTo(cityCenter(cityKey), cityKey === 'toledo' ? 15 : 13, {duration: 0});
     mDraw();
 }
 
+// --- AGREGAR LUGAR ---
+const addPanel = document.getElementById('add-place-panel');
 const addPlaceForm = document.getElementById('add-place-form');
 const placeNameInput = document.getElementById('place-name');
 const placeAddressInput = document.getElementById('place-address');
@@ -728,58 +852,77 @@ const placeCategoryInput = document.getElementById('place-category');
 const placeLatInput = document.getElementById('place-lat');
 const placeLngInput = document.getElementById('place-lng');
 
+// Con el panel abierto, tocar el mapa fija la ubicación
+map2.on('click', (ev) => {
+    if (!addPanel.open) return;
+    placeLatInput.value = ev.latlng.lat.toFixed(5);
+    placeLngInput.value = ev.latlng.lng.toFixed(5);
+    if (pickMarker) map2.removeLayer(pickMarker);
+    pickMarker = L.marker(ev.latlng, { icon: pickIcon, interactive: false }).addTo(map2);
+});
+
 addPlaceForm.addEventListener('submit', (event) => {
     event.preventDefault();
     const name = placeNameInput.value.trim();
     const address = placeAddressInput.value.trim();
-    const category = placeCategoryInput.value;
     if (!name || !address) return;
 
     const cityKey = currentDetailCity;
-    const customPlaces = readCustomPlaces();
-    const cityCenter = C[cityKey.charAt(0).toUpperCase() + cityKey.slice(1)] || [40.41, -3.7];
-    const parsedLat = placeLatInput.value !== '' ? Number(placeLatInput.value) : cityCenter[0] + (Math.random() - 0.5) * 0.02;
-    const parsedLng = placeLngInput.value !== '' ? Number(placeLngInput.value) : cityCenter[1] + (Math.random() - 0.5) * 0.02;
+    const center = cityCenter(cityKey) || [40.41, -3.7];
+    let lat = placeLatInput.value !== '' ? Number(placeLatInput.value) : NaN;
+    let lng = placeLngInput.value !== '' ? Number(placeLngInput.value) : NaN;
+    const exact = Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180;
+    if (!exact) { lat = center[0] + (Math.random() - 0.5) * 0.01; lng = center[1] + (Math.random() - 0.5) * 0.01; }
 
     const newPlace = {
-        id: getNextCustomId(),
-        n: name,
-        c: category,
-        d: address,
-        a: Number.isFinite(parsedLat) ? parsedLat : cityCenter[0],
-        o: Number.isFinite(parsedLng) ? parsedLng : cityCenter[1],
-        x: 'Lugar añadido por el usuario.'
+        id: getNextCustomId(), n: name, c: placeCategoryInput.value, d: address, a: lat, o: lng,
+        x: exact ? 'Lugar añadido por ti.' : 'Lugar añadido por ti · ubicación aproximada.'
     };
-
+    const customPlaces = readCustomPlaces();
     customPlaces[cityKey] = [...(customPlaces[cityKey] || []), newPlace];
     writeCustomPlaces(customPlaces);
     addPlaceForm.reset();
+    addPanel.open = false;
     renderDetailCity(cityKey);
+    mSel(newPlace.id);
 });
 
-// --- LOGICA DE PESTAÑAS ---
+// --- LOGICA DE PESTAÑAS (con #hash: se puede recargar o compartir una ciudad) ---
 const tabs = document.querySelectorAll('.tab-btn');
 const viewGeneral = document.getElementById('view-general');
 const viewDetail = document.getElementById('view-detail');
 const detailTitle = document.getElementById('detail-title');
+const TAB_KEYS = [...tabs].map(t => t.dataset.target);
+const BASE_TITLE = document.title;
 
-tabs.forEach(btn => {
-    btn.addEventListener('click', () => {
-        tabs.forEach(t => t.classList.remove('active'));
-        btn.classList.add('active');
-        const target = btn.dataset.target;
-        
-        if (target === 'general') {
-            viewGeneral.classList.add('active-view'); viewDetail.classList.remove('active-view');
-            setTimeout(() => map1.invalidateSize(), 50);
-        } else {
-            viewGeneral.classList.remove('active-view'); viewDetail.classList.add('active-view');
-            detailTitle.textContent = target.charAt(0).toUpperCase() + target.slice(1) + " en detalle";
-            renderDetailCity(target);
-            setTimeout(() => map2.invalidateSize(), 50);
-        }
+function showTab(target) {
+    if (!TAB_KEYS.includes(target)) target = 'general';
+    tabs.forEach(t => {
+        const on = t.dataset.target === target;
+        t.classList.toggle('active', on);
+        if (on) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current');
     });
-});
+    if (target === 'general') {
+        viewGeneral.classList.add('active-view'); viewDetail.classList.remove('active-view');
+        document.title = BASE_TITLE;
+        setTimeout(() => map1.invalidateSize(), 50);
+    } else {
+        const label = target.charAt(0).toUpperCase() + target.slice(1);
+        viewGeneral.classList.remove('active-view'); viewDetail.classList.add('active-view');
+        detailTitle.textContent = label + " en detalle";
+        document.title = label + ' · ' + BASE_TITLE;
+        renderDetailCity(target);
+        setTimeout(() => map2.invalidateSize(), 50);
+    }
+}
+
+tabs.forEach(btn => btn.addEventListener('click', () => {
+    const t = btn.dataset.target;
+    if (location.hash === '#' + t) return;
+    location.hash = t;
+}));
+window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
+showTab(location.hash.slice(1) || 'general');
 
 setTimeout(() => { map1.invalidateSize(); map2.invalidateSize(); }, 200);
 </script>
