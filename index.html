@@ -231,6 +231,39 @@ a.stat:hover { text-decoration:underline; }
 .ap-tips { margin:4px 0 0; padding:12px 14px; background:var(--chip); border-radius:14px; font-size:.88rem; color:var(--muted); }
 .ap-tips p { margin:0 0 6px; } .ap-tips p:last-child { margin:0; }
 .ap-foot { color:var(--muted); font-size:.85rem; }
+.ap-fold { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:12px 16px; margin:0 0 16px; }
+.ap-fold > summary { display:flex; align-items:center; gap:10px; cursor:pointer; list-style:none; font-weight:700; font-size:.95rem; }
+.ap-fold > summary::-webkit-details-marker { display:none; }
+.ap-fold > summary small { margin-left:auto; font-weight:500; font-size:.8rem; color:var(--muted); }
+.ap-fold > summary::after { content:'＋'; font-weight:700; }
+.ap-fold[open] > summary::after { content:'−'; }
+.ap-fold[open] > summary { margin-bottom:12px; }
+.ap-fold .ap-sketches { margin:0; }
+.ap-fold .ap-opt { box-shadow:none; background:var(--bg); }
+.ap-sketches { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); gap:14px; align-items:start; margin:0 0 16px; }
+.ap-fig { margin:0; }
+.ap-fig .ap-tips { margin-top:10px; }
+.sk { width:100%; max-width:440px; height:auto; display:block; margin:0 auto; }
+.sk text { font:600 12.5px system-ui,-apple-system,"Segoe UI",sans-serif; fill:var(--text); }
+.sk .tt { font-size:13px; font-weight:700; }
+.sk .sub { font-size:10.5px; font-weight:500; fill:var(--muted); }
+.sk .lbl { font-size:10.5px; font-weight:600; }
+.sk .tw { fill:#fff; } .sk .tk { fill:#16202a; } .sk .sub2 { font-size:10.5px; font-weight:500; }
+.sk .bld { fill:var(--chip); stroke:var(--muted); stroke-width:1.5; }
+.sk .bld.me { stroke:var(--accent); stroke-width:2.5; }
+.sk .bld.dim { opacity:.65; }
+.sk .bridge { fill:color-mix(in srgb, var(--accent) 14%, var(--card)); stroke:var(--accent); stroke-width:1.5; }
+.sk .path { fill:none; stroke:var(--accent); stroke-width:3; stroke-dasharray:7 5; stroke-linecap:round; }
+.sk .path.alt { stroke:var(--muted); stroke-width:2; }
+.sk .mk { fill:var(--accent); } .sk .mk2 { fill:var(--muted); }
+.sk .pill { fill:var(--card); stroke:var(--line); }
+.ap-signs-title { margin:0 0 8px; font-size:.75rem; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); }
+.ap-signs { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 16px; }
+.sign { display:flex; align-items:center; gap:10px; background:#16202a; color:#fff; border:2px solid #34454f; border-radius:10px; padding:7px 11px; }
+.sg-ico { font-size:1.25rem; line-height:1; }
+.sg-txt b { display:block; font-size:.88rem; line-height:1.15; }
+.sg-txt small { display:block; font-size:.72rem; opacity:.8; }
+.sign .lb { min-width:26px; height:26px; padding:0 7px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; font-weight:800; font-size:.78rem; color:#fff; }
 </style>
 </head>
 <body>
@@ -247,11 +280,11 @@ a.stat:hover { text-decoration:underline; }
 <div class="tabs-bar"><div class="tabs-inner">
   <nav class="main-tabs" aria-label="Secciones del viaje">
     <button class="tab-btn active" data-target="general" aria-current="page">Viaje General</button>
+    <button class="tab-btn" data-target="aeropuerto">Aeropuerto</button>
     <button class="tab-btn" data-target="madrid">Madrid</button>
     <button class="tab-btn" data-target="toledo">Toledo</button>
     <button class="tab-btn" data-target="roma">Roma</button>
     <button class="tab-btn" data-target="barcelona">Barcelona</button>
-    <button class="tab-btn" data-target="aeropuerto">Aeropuerto</button>
   </nav>
 </div></div>
 
@@ -943,14 +976,80 @@ addPlaceForm.addEventListener('submit', (event) => {
 });
 
 // --- PESTAÑA AEROPUERTO (solo instrucciones) ---
+// --- CROQUIS (SVG esquemáticos, no a escala) ---
+const skMk = (id, h, label, parts) => (`<svg class="sk" viewBox="0 0 360 ${h}" role="img" aria-label="${label}"><defs><marker id="a-{ID}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="mk" d="M0 0L10 5L0 10z"/></marker><marker id="b-{ID}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path class="mk2" d="M0 0L10 5L0 10z"/></marker></defs>${parts.join('')}</svg>`).split('{ID}').join(id);
+const skTxt = (x, y, t, cls = '') => `<text class="${cls}" x="${x}" y="${y}" text-anchor="middle">${t}</text>`;
+const skBld = (x, y, w, h, t, sub, cls = '') => `<rect class="bld ${cls}" x="${x}" y="${y}" width="${w}" height="${h}" rx="12"/>` + skTxt(x + w / 2, y + h / 2 + (sub ? -2 : 4), t) + (sub ? skTxt(x + w / 2, y + h / 2 + 13, sub, 'sub') : '');
+const skStn = (x, y, w, h, color, t, sub, dark = false) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="12" fill="${color}"/>` + skTxt(x + w / 2, y + h / 2 + (sub ? -2 : 4), t, dark ? 'tk' : 'tw') + (sub ? skTxt(x + w / 2, y + h / 2 + 13, sub, (dark ? 'tk' : 'tw') + ' sub2') : '');
+const skPath = (d, alt = false) => `<path class="path${alt ? ' alt' : ''}" d="${d}" marker-end="url(#${alt ? 'b' : 'a'}-{ID})"/>`;
+const skLab = (cx, cy, t) => { const w = Math.round(t.length * 5.4 + 14); return `<rect class="pill" x="${cx - w / 2}" y="${cy - 9}" width="${w}" height="18" rx="9"/>` + skTxt(cx, cy + 4, t, 'lbl'); };
+const SK_PINK = '#F06DAE', SK_BLUE = '#4DA6D9', SK_RED = '#C8102E', SK_ORANGE = '#F28B00', SK_GREEN = '#2E9E5B', SK_LIME = '#7AB800';
+
+const SKETCH = {
+  madT123: skMk('md1', 292, 'Croquis: de las terminales T1, T2 y T3 a la estación de metro junto a la T2', [
+    skTxt(180, 20, 'Terminales T1 · T2 · T3 (edificios juntos)', 'tt'),
+    skBld(18, 38, 96, 54, 'T1', 'Llegadas'), skBld(132, 38, 96, 54, 'T2', 'Llegadas'), skBld(246, 38, 96, 54, 'T3', 'Llegadas'),
+    skPath('M66 94 C66 150 120 150 132 196'), skPath('M180 94 L180 196'), skPath('M294 94 C294 150 240 150 228 196'),
+    skLab(180, 128, 'señales de Metro'),
+    skStn(70, 198, 220, 62, SK_PINK, 'Metro Aeropuerto T1-T2-T3', 'Línea 8 · junto a la T2'),
+    skTxt(180, 282, '≈ 5 min a pie entre terminales', 'sub')
+  ]),
+  madT4: skMk('md2', 254, 'Croquis: de la terminal 4 al metro y al Cercanías en la planta -1', [
+    skTxt(180, 20, 'Terminal 4 (edificio aparte)', 'tt'),
+    skBld(50, 34, 260, 56, 'Terminal 4', 'Al otro lado de las pistas'),
+    skPath('M180 92 L180 142'), skLab(180, 117, 'Baja a la planta -1'),
+    skStn(24, 144, 150, 60, SK_PINK, 'Metro L8', 'Aeropuerto T4'), skStn(186, 144, 150, 60, SK_BLUE, 'Cercanías C-1', 'Aeropuerto T4'),
+    skTxt(180, 226, 'Los andenes de metro y tren van juntos', 'sub'), skTxt(180, 242, '(a Atocha en Cercanías ≈ 25 min)', 'sub')
+  ]),
+  romT1: skMk('rm', 380, 'Croquis: de la terminal 1 de Fiumicino a la estación de trenes por el puente-túnel', [
+    skTxt(180, 20, 'Terminal 1 y Terminal 3 → estación', 'tt'),
+    skBld(20, 34, 140, 62, 'Terminal 1', 'Llegadas · nivel 0', 'me'), skBld(200, 34, 140, 62, 'Terminal 3', 'Llegadas · nivel 0', 'dim'),
+    skPath('M90 98 L90 146'), skPath('M270 98 L270 146'), skLab(180, 122, 'ascensor a nivel 2'),
+    '<rect class="bridge" x="20" y="148" width="320" height="52" rx="12"/>',
+    skTxt(180, 172, 'Puente-túnel con pasillos rodantes'), skTxt(180, 188, 'cubierto · ≈ 5 min a pie', 'sub'),
+    skPath('M180 202 L180 250'),
+    skStn(60, 252, 240, 62, SK_RED, 'Estación Fiumicino Aeroporto', 'Trenitalia · Leonardo Express'),
+    skPath('M338 98 C356 190 356 270 302 290', true),
+    skTxt(180, 336, 'Máquinas rojas de Trenitalia a la entrada', 'sub'),
+    skTxt(180, 356, 'Línea gris: salir por fuera desde la T3 y cruzar', 'sub'), skTxt(180, 370, 'la calle (≈ 4 min a pie)', 'sub')
+  ]),
+  bcnMetro: skMk('bm', 240, 'Croquis: de la terminal 1 de Barcelona a la estación de metro L9 Sud dentro de la terminal', [
+    skTxt(180, 20, 'Terminal 1 → Metro', 'tt'),
+    skBld(60, 34, 240, 56, 'Terminal 1', 'Llegadas · nivel 0', 'me'),
+    skPath('M180 92 L180 142'), skLab(180, 117, 'señales de Metro'),
+    skStn(30, 144, 300, 62, SK_ORANGE, 'Aeroport T1 · Metro L9 Sud', 'Dentro de la terminal · andenes subterráneos'),
+    skTxt(180, 228, 'Sentido Zona Universitària', 'sub')
+  ]),
+  bcnTren: skMk('bt', 424, 'Croquis: de la terminal 1 de Barcelona al shuttle gratuito, la terminal 2 y la estación de tren por el puente peatonal', [
+    skTxt(180, 18, 'Terminal 1 → Terminal 2 → tren', 'tt'),
+    skBld(60, 30, 240, 54, 'Terminal 1', 'Llegadas · nivel 0', 'me'),
+    skPath('M180 86 L180 128'), skLab(180, 107, 'A pie ≈ 5 min · cartel Shuttle'),
+    skStn(50, 130, 260, 50, SK_GREEN, 'Parada del bus Shuttle', 'Gratis · verde · cada ≈ 5 min'),
+    skPath('M180 182 L180 236'), skLab(180, 209, 'Bus ≈ 10 min'),
+    skBld(60, 238, 240, 54, 'Terminal 2B', 'Parada bajo el puente · nivel 0'),
+    skPath('M180 294 L180 346'), skLab(180, 320, 'Puente peatonal ≈ 200 m · carteles Renfe'),
+    skStn(40, 348, 280, 62, SK_LIME, 'Estación Aeroport (Rodalies)', 'R2 Nord → Sants ≈ 20 min', true)
+  ])
+};
+
 const AIRPORT = [
   {
     key: 'madrid', city: 'Madrid', airport: 'Aeropuerto Madrid-Barajas (MAD)',
     meta: ['Llegada del vuelo: 13:00', 'Check-in del Airbnb: 14:00', 'Destino: zona Retiro (metro Sáinz de Baranda)'],
+    sketches: [
+      { title: 'T1 · T2 · T3 → Metro L8', svg: SKETCH.madT123, caption: 'Si llegas a la T1 o a la T3, camina unos 5 minutos hasta la estación junto a la T2. Tu recibo de vuelo no indica la terminal.' },
+      { title: 'T4 → Metro L8 / Cercanías', svg: SKETCH.madT4, caption: 'En la T4 el metro (L8) y el Cercanías C-1 están en la planta -1. Desde ahí sigue la misma ruta: Nuevos Ministerios y L6.' }
+    ],
     options: [{
       title: 'Metro: Línea 8 + Línea 6', badges: ['≈ 50 min', '≈ €5 por persona'],
+      signs: [
+        {ico:'🚇', t:'Metro', s:'Todas las terminales', lb:[['8','#F06DAE']]},
+        {ico:'🚇', t:'Nuevos Ministerios', s:'Destino en el andén', lb:[['8','#F06DAE']]},
+        {ico:'🔄', t:'Transbordo', s:'Sentido Pacífico', lb:[['6','#8F9498']]},
+        {ico:'📍', t:'Sáinz de Baranda', s:'Tu estación', lb:[['6','#8F9498'],['9','#9C2D82']]}
+      ],
       steps: [
-        'Desde la terminal sigue las señales de <b>Metro</b>. La Línea 8 llega a todas las terminales.',
+        'Desde Llegadas sigue las señales de <b>Metro</b>. En <b>T1-T2-T3</b> la estación está junto a la T2; en la <b>T4</b>, en la planta -1 (mira el croquis).',
         'Compra el boleto sencillo con <b>suplemento de aeropuerto</b> en las máquinas: en total unos €5 por persona (el suplemento son €3).',
         'Toma la <b>Línea 8</b> hacia <b>Nuevos Ministerios</b> (unos 20 min desde la T4).',
         'En Nuevos Ministerios cambia a la <b>Línea 6</b> (circular), sentido <b>Pacífico</b>. Son unas 6 paradas: República Argentina, Avenida de América, Diego de León, Manuel Becerra, O’Donnell y <b>Sáinz de Baranda</b>.',
@@ -962,10 +1061,19 @@ const AIRPORT = [
   {
     key: 'roma', city: 'Roma', airport: 'Aeropuerto de Fiumicino (FCO)',
     meta: ['Llegada del vuelo: 15:05 · Terminal 1', 'Check-in del Airbnb: 16:00', 'Destino: Esquilino (metro Vittorio Emanuele)'],
+    sketches: [
+      { title: 'Terminal 1 → Estación de trenes', svg: SKETCH.romT1, caption: 'Desde Llegadas sube al nivel 2 y sigue las señales amarillas de Treno / Train. Algunas guías dicen que desde la T1 hace falta un shuttle a la T3, pero la mayoría describe este pasillo cubierto; si dudas, pregunta al personal.' }
+    ],
     options: [{
       title: 'Leonardo Express (tren directo a Roma Termini)', badges: ['≈ 50–60 min', '€14 por persona', 'Cada 15 min'],
+      signs: [
+        {ico:'🚆', t:'Treno / Train', s:'Hacia la estación del aeropuerto', lb:[]},
+        {ico:'🚆', t:'Leonardo Express', s:'Destino: Roma Termini', lb:[['Express','#C8102E']]},
+        {ico:'🚇', t:'Metro A', s:'Dirección Anagnina', lb:[['A','#F08A00']]},
+        {ico:'📍', t:'Vittorio Emanuele', s:'Tu estación', lb:[['A','#F08A00']]}
+      ],
       steps: [
-        'Al salir de la terminal sigue las señales de <b>Treno / Train</b> hasta la estación <b>Fiumicino Aeroporto</b>.',
+        'Desde Llegadas (nivel 0) sigue las señales amarillas de <b>Treno / Train</b>: sube en ascensor o escalera al <b>nivel 2</b> y cruza el puente-túnel con pasillos rodantes (≈5 min) hasta la estación <b>Fiumicino Aeroporto</b>.',
         'Compra el boleto <b>Leonardo Express</b> (€14 por persona) en las máquinas, la ventanilla o la app de Trenitalia. Elige destino <b>Roma Termini</b>.',
         'Sube al <b>Leonardo Express</b>: sale cada 15 minutos, no hace paradas y tarda unos <b>32 minutos</b> hasta Roma Termini.',
         'En <b>Roma Termini</b> tienes dos formas de llegar: caminar unos <b>10 minutos</b> (0.7 km) hacia el Airbnb, o tomar la <b>Metro A</b> una parada, sentido Anagnina, hasta <b>Vittorio Emanuele</b> y caminar unos 4 minutos.',
@@ -977,10 +1085,21 @@ const AIRPORT = [
   {
     key: 'barcelona', city: 'Barcelona', airport: 'Aeropuerto de Barcelona-El Prat (BCN)',
     meta: ['Llegada del vuelo: 15:55 · Terminal 1', 'Check-in del Airbnb: 15:00', 'Destino: Sants (junto a Plaça de Sants)'],
+    sketches: [
+      { title: 'Terminal 1 → Metro L9 Sud', svg: SKETCH.bcnMetro, caption: 'La estación Aeroport T1 está dentro de la terminal, en el nivel 0. Compra el boleto de aeropuerto en las máquinas.' },
+      { title: 'Terminal 1 → Shuttle → Tren R2 Nord', svg: SKETCH.bcnTren, caption: 'La T1 no tiene tren: hay que ir en el shuttle a la T2 y cruzar el puente hasta la estación. Suma unos 30 minutos al trayecto.' }
+    ],
     options: [{
       title: 'Metro: L9 Sud + L5', badges: ['≈ 40–45 min', '≈ €5.90 por persona'],
+      signs: [
+        {ico:'🚇', t:'Metro L9 Sud', s:'Aeroport T1', lb:[['L9','#F28B00']]},
+        {ico:'🚇', t:'Zona Universitària', s:'Destino del tren', lb:[['L9','#F28B00']]},
+        {ico:'🔄', t:'Collblanc', s:'Transbordo a la L5', lb:[['L5','#1E5BA8']]},
+        {ico:'🚇', t:'Vall d’Hebron', s:'Destino del tren', lb:[['L5','#1E5BA8']]},
+        {ico:'📍', t:'Plaça de Sants', s:'Tu estación', lb:[['L5','#1E5BA8'],['L1','#D8232A']]}
+      ],
       steps: [
-        'En la <b>Terminal 1</b> sigue las señales de <b>Metro L9 Sud</b>. La estación <b>Aeroport T1</b> está dentro del edificio.',
+        'En Llegadas de la <b>Terminal 1</b> (nivel 0) sigue las señales de <b>Metro L9 Sud</b>. La estación <b>Aeroport T1</b> está dentro del edificio.',
         'Compra el <b>boleto de aeropuerto</b> (≈ €5.90) en las máquinas. Las estaciones del aeropuerto no aceptan la T-casual.',
         'Toma la <b>L9 Sud</b> hacia <b>Zona Universitària</b> y bájate en <b>Collblanc</b>.',
         'En Collblanc cambia a la <b>L5</b>, sentido <b>Vall d’Hebron</b>, y viaja 2 paradas (Badal, <b>Plaça de Sants</b>).',
@@ -989,9 +1108,15 @@ const AIRPORT = [
       tips: ['Los trenes de la L9 Sud pasan cada pocos minutos, así que casi no esperas.', 'Es la opción sin lanzadera desde la Terminal 1.']
     }, {
       title: 'Tren: R2 Nord (Rodalies)', badges: ['≈ 50 min', '≈ €5 por persona', 'Cada 30 min'],
+      signs: [
+        {ico:'🚌', t:'Shuttle T1 ↔ T2', s:'Bus verde gratuito', lb:[]},
+        {ico:'🚆', t:'Aeroport (Rodalies)', s:'Estación en la T2', lb:[['R2 Nord','#7AB800']]},
+        {ico:'🚆', t:'Barcelona-Sants', s:'Tu bajada', lb:[['R2 Nord','#7AB800']]},
+        {ico:'🚇', t:'L5 · Cornellà Centre', s:'Hasta Plaça de Sants', lb:[['L5','#1E5BA8']]}
+      ],
       steps: [
-        'Desde la <b>Terminal 1</b> toma el <b>bus lanzadera gratuito</b> a la Terminal 2 (unos 10 minutos).',
-        'En la T2 entra a la estación <b>Aeroport</b> (Rodalies) y compra el boleto sencillo (≈ €5). La T-casual sí vale en este tren.',
+        'Desde Llegadas de la <b>Terminal 1</b> sal a la parada del <b>bus lanzadera gratuito</b> (cartel «Shuttle», ≈5 min a pie) y viaja a la Terminal 2 (unos 10 minutos).',
+        'Baja en la <b>T2B</b>, cruza el <b>puente peatonal</b> (≈200 m, carteles de tren / Renfe) hasta la estación <b>Aeroport</b> (Rodalies) y compra el boleto sencillo (≈ €5). La T-casual sí vale en este tren.',
         'Sube a un tren <b>R2 Nord</b>, dirección Barcelona. Llega a <b>Barcelona-Sants</b> en unos 20 minutos, sin transbordos.',
         'En Sants Estació toma la <b>L5</b> una parada hasta <b>Plaça de Sants</b> (sentido Cornellà Centre), o camina unos 15 minutos.',
         'Abre la dirección de tu comprobante en Google Maps para el tramo final.'
@@ -1003,13 +1128,13 @@ const AIRPORT = [
 
 function renderAirport() {
     const root = document.getElementById('view-airport');
-    const optHtml = (o) => `<article class="ap-opt"><h4>${o.title}</h4><div class="ap-badges">${o.badges.map(b => `<span class="ap-badge">${b}</span>`).join('')}</div><ol class="ap-steps">${o.steps.map(t => `<li>${t}</li>`).join('')}</ol>${o.tips && o.tips.length ? `<div class="ap-tips">${o.tips.map(t => `<p>${t}</p>`).join('')}</div>` : ''}</article>`;
+    const optHtml = (o) => `<article class="ap-opt"><h4>${o.title}</h4><div class="ap-badges">${o.badges.map(b => `<span class="ap-badge">${b}</span>`).join('')}</div>${o.signs ? `<p class="ap-signs-title">Qué buscar</p><div class="ap-signs">${o.signs.map(g => `<div class="sign"><span class="sg-ico" aria-hidden="true">${g.ico}</span><span class="sg-txt"><b>${g.t}</b><small>${g.s}</small></span>${(g.lb || []).map(l => `<span class="lb" style="background:${l[1]}">${l[0]}</span>`).join('')}</div>`).join('')}</div>` : ''}<ol class="ap-steps">${o.steps.map(t => `<li>${t}</li>`).join('')}</ol>${o.tips && o.tips.length ? `<div class="ap-tips">${o.tips.map(t => `<p>${t}</p>`).join('')}</div>` : ''}</article>`;
     root.innerHTML = `<h2 class="ap-title">Cómo llegar desde el aeropuerto</h2><p class="ap-sub">Del aeropuerto de llegada al Airbnb de cada ciudad.</p>` +
         AIRPORT.map(c => {
             const a = airbnbs[c.key];
-            return `<section class="ap-city"><h3 class="ap-city-title">${c.city}<span>${c.airport}</span></h3><div class="ap-meta">${c.meta.map(m => `<span class="stat">${m}</span>`).join('')}${a ? `<a class="stat" href="${a.pdf}" target="_blank" rel="noopener">Ver comprobante del Airbnb ↗</a>` : ''}</div><div class="ap-grid">${c.options.map(optHtml).join('')}</div></section>`;
+            return `<section class="ap-city"><h3 class="ap-city-title">${c.city}<span>${c.airport}</span></h3><div class="ap-meta">${c.meta.map(m => `<span class="stat">${m}</span>`).join('')}${a ? `<a class="stat" href="${a.pdf}" target="_blank" rel="noopener">Ver comprobante del Airbnb ↗</a>` : ''}</div>${c.sketches && c.sketches.length ? `<details class="ap-fold"><summary><span>Croquis: de la terminal a la estación</span><small>${c.sketches.length} ${c.sketches.length === 1 ? 'esquema' : 'esquemas'} · no a escala</small></summary><div class="ap-sketches">${c.sketches.map(k => `<figure class="ap-opt ap-fig"><h4>${k.title}</h4>${k.svg}<figcaption class="ap-tips">${k.caption}</figcaption></figure>`).join('')}</div></details>` : ''}<div class="ap-grid">${c.options.map(optHtml).join('')}</div></section>`;
         }).join('') +
-        `<p class="ap-foot">Tiempos y precios aproximados (2026). Confirma horarios y tarifas en Google Maps, TMB, Renfe o Trenitalia antes de salir.</p>`;
+        `<p class="ap-foot">Los carteles son ilustraciones de referencia: el texto y los colores reales pueden variar un poco. Tiempos y precios aproximados (2026). Confirma horarios y tarifas en Google Maps, TMB, Renfe o Trenitalia antes de salir.</p>`;
 }
 renderAirport();
 
