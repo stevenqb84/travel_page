@@ -97,7 +97,7 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 .leaflet-popup-content a { color: var(--accent-dark); font-weight: bold; text-decoration: none; }
 
 .city-marker { font-weight: 700; font-size: 13px; color: var(--text); text-shadow: 2px 2px 0 var(--card), -2px -2px 0 var(--card), 2px -2px 0 var(--card), -2px 2px 0 var(--card); white-space: nowrap; position: relative; }
-.city-marker::before { content: ''; display: block; width: 14px; height: 14px; background: var(--card); border: 3px solid var(--text); border-radius: 50%; position: absolute; left: -7px; top: 18px; box-shadow: 0 0 0 4px rgba(0,0,0,0.02); }
+.city-marker::before { content: ''; display: block; width: 14px; height: 14px; background: var(--card); border: 3px solid var(--text); border-radius: 50%; position: absolute; left: -7px; top: -7px; box-shadow: 0 0 0 4px rgba(0,0,0,0.02); }
 .city-marker.on::before { background: var(--accent); border-color: var(--accent); transform: scale(1.4); }
 
 .rest-marker { width: 28px !important; height: 28px !important; border-radius: 50%; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; border: 2px solid rgba(255,255,255,0.7); transition: transform 0.2s ease, border-color 0.2s ease; }
@@ -568,7 +568,7 @@ let activeCity = null, activeEvent = null;
 
 const cityMarkers = {};
 Object.keys(C).forEach(c => {
-    const m = L.marker(C[c], {icon: L.divIcon({className:'city-marker', html:`<div style="transform:translate(10px,-24px)">${c}</div>`, iconSize:[0,0]})}).addTo(map1);
+    const m = L.marker(C[c], {icon: L.divIcon({className:'city-marker', html:`<div style="transform:translate(12px,-10px);line-height:20px">${c}</div>`, iconSize:[0,0]})}).addTo(map1);
     m.on('click', () => setCity(activeCity === c ? null : c));
     cityMarkers[c] = m;
 });
