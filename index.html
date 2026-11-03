@@ -133,7 +133,7 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 .ex a:hover { text-decoration: underline; }
 
 /* Controles de Búsqueda */
-.search-controls { display:flex; gap:10px; margin-bottom:16px; }
+.search-controls { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
 .search-input { flex:1; padding:12px 18px; border:1px solid var(--line); border-radius:99px; font:inherit; font-size:0.95rem; background:var(--card); color:var(--text); outline:none; box-shadow: 0 2px 8px rgba(0,0,0,0.02); }
 .search-input:focus { border-color: var(--accent); }
 .btn-toggle-pins { background:var(--text); color:var(--bg); padding:12px 20px; border-radius:99px; font:inherit; font-size:0.9rem; font-weight:600; border:none; cursor:pointer; transition: opacity 0.2s ease; }
@@ -264,6 +264,14 @@ a.stat:hover { text-decoration:underline; }
 .sg-txt b { display:block; font-size:.88rem; line-height:1.15; }
 .sg-txt small { display:block; font-size:.72rem; opacity:.8; }
 .sign .lb { min-width:26px; height:26px; padding:0 7px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; font-weight:800; font-size:.78rem; color:#fff; }
+
+/* --- Ubicación en tiempo real --- */
+.mapwrap { position: sticky; }
+.locate-btn { position:absolute; top:12px; right:12px; z-index:1000; background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:99px; padding:8px 14px; font:inherit; font-size:.85rem; font-weight:700; cursor:pointer; box-shadow:var(--shadow); }
+.locate-btn.busy { opacity:.8; }
+.locate-btn.on { background:#2b7fff; border-color:#2b7fff; color:#fff; }
+.loc-msg { margin:8px 4px 0; font-size:.82rem; color:var(--muted); min-height:1em; }
+.su b { color:var(--text); }
 </style>
 </head>
 <body>
@@ -292,8 +300,10 @@ a.stat:hover { text-decoration:underline; }
   <!-- VISTA 1: VIAJE GENERAL -->
   <div id="view-general" class="view-section active-view">
       <section class="mapwrap" aria-label="Mapa del viaje">
+        <button type="button" class="locate-btn" aria-pressed="false">📍 Mi ubicación</button>
         <div id="map" role="img" aria-label="Mapa interactivo"></div>
         <div class="legend"><span><i style="border-color:var(--fl)"></i>Vuelo</span><span><i style="border-color:var(--tr);border-top-style:dashed"></i>Tren</span><span>🏠 Alojamiento</span><span>🏛️ Visitas</span><span>· los pines aparecen al acercar el mapa</span></div>
+        <p class="loc-msg" aria-live="polite"></p>
       </section>
       <section aria-label="Eventos">
         <div class="chips" id="chips" role="group"></div>
@@ -308,12 +318,15 @@ a.stat:hover { text-decoration:underline; }
       
       <div class='mgrid'>
           <div class="mapwrap">
+              <button type="button" class="locate-btn" aria-pressed="false">📍 Mi ubicación</button>
               <div id='mm' role='img'></div>
+              <p class="loc-msg" aria-live="polite"></p>
           </div>
           <div>
               <div class="search-controls">
                   <input type="search" id="search-box" class="search-input" aria-label="Buscar lugares" placeholder="Buscar lugares, ej: 'Zara'..." autocomplete="off">
                   <button id="toggle-pins" class="btn-toggle-pins">Ocultar Pines</button>
+                  <button id="sort-near" class="btn-toggle-pins off" aria-pressed="false">Cerca primero</button>
               </div>
 
               <details class="add-place-panel" id="add-place-panel">
@@ -332,6 +345,7 @@ a.stat:hover { text-decoration:underline; }
                       <option value="d">🍰 Dulce</option>
                       <option value="v">🏛️ Visita</option>
                       <option value="s">🛍️ Compras</option>
+                      <option value="m">🛒 Supermercado</option>
                     </select>
                   </div>
                   <div class="add-place-fields secondary">
@@ -529,7 +543,10 @@ const lugares = {
     {id:49,n:'Decathlon',c:'s',d:'CC Islazul',a:40.3638,o:-3.7540,x:'Decathlon Sur Islazul.'},
     {id:50,n:'Templo de Debod',c:'v',d:'C. de Ferraz, 1',a:40.424,o:-3.7178,x:'A 20 min a pie, pasando por el Palacio Real y los Jardines Sabatini. Última entrada 7:30.'},
     {id:51,n:'Palacio Real',c:'v',d:'C. de Bailén',a:40.4179,o:-3.7143,x:'De paso hacia el Templo de Debod.'},
-    {id:52,n:'Jardines de Sabatini',c:'v',d:'C. de Bailén',a:40.4208,o:-3.7143,x:'De paso hacia el Templo de Debod. Cierran 1 am.'}
+    {id:52,n:'Jardines de Sabatini',c:'v',d:'C. de Bailén',a:40.4208,o:-3.7143,x:'De paso hacia el Templo de Debod. Cierran 1 am.'},
+    {id:53,n:'Mercadona',c:'m',d:'Búscalo cerca de ti o de tu zona',a:40.415,o:-3.67,np:1,q:'Mercadona',x:'Supermercado de barrio con marca propia y precios bajos. Revisa el horario: muchas tiendas cierran los domingos.'},
+    {id:54,n:'Carrefour',c:'m',d:'Búscalo cerca de ti o de tu zona',a:40.415,o:-3.67,np:1,q:'Carrefour',x:'Supermercado. Las Express (pequeñas y urbanas) suelen abrir más horas, incluso fines de semana; las Market son medianas.'},
+    {id:55,n:'Lidl',c:'m',d:'Búscalo cerca de ti o de tu zona',a:40.415,o:-3.67,np:1,q:'Lidl',x:'Supermercado de precios bajos, con panadería y promociones semanales.'}
   ],
   toledo: [
     {id:1,n:'Restaurante Adolfo',c:'c',d:'Hombre de Palo, 7',a:39.8576,o:-4.0248,x:'Alta cocina toledana.'},
@@ -551,7 +568,10 @@ const lugares = {
     {id:17,n:'Alcázar de Toledo',c:'v',d:'C. Unión',a:39.8581,o:-4.0219,x:'Recorrido por Toledo.'},
     {id:18,n:'Catedral de Toledo',c:'v',d:'C. Cardenal Cisneros, 1',a:39.8573,o:-4.0244,x:'Recorrido por Toledo.'},
     {id:19,n:'Barrio Judío y Sinagogas',c:'v',d:'Judería de Toledo',a:39.8565,o:-4.03,x:'Barrio Judío + Sinagoga (Santa María la Blanca y El Tránsito).'},
-    {id:20,n:'San Juan de los Reyes',c:'v',d:'C. de los Reyes Católicos, 17',a:39.8563,o:-4.0332,x:'Recorrido por Toledo.'}
+    {id:20,n:'San Juan de los Reyes',c:'v',d:'C. de los Reyes Católicos, 17',a:39.8563,o:-4.0332,x:'Recorrido por Toledo.'},
+    {id:21,n:'Mercadona',c:'m',d:'Búscalo cerca de ti o de tu zona',a:39.8628,o:-4.0273,np:1,q:'Mercadona',x:'Supermercado de barrio con marca propia y precios bajos. Revisa el horario: muchas tiendas cierran los domingos.'},
+    {id:22,n:'Carrefour',c:'m',d:'Búscalo cerca de ti o de tu zona',a:39.8628,o:-4.0273,np:1,q:'Carrefour',x:'Supermercado. Las Express (pequeñas y urbanas) suelen abrir más horas, incluso fines de semana; las Market son medianas.'},
+    {id:23,n:'Lidl',c:'m',d:'Búscalo cerca de ti o de tu zona',a:39.8628,o:-4.0273,np:1,q:'Lidl',x:'Supermercado de precios bajos, con panadería y promociones semanales.'}
   ],
   roma: [
     {id:1,n:'Trattoria Da Enzo al 29',c:'c',d:'Via dei Vascellari, 29',a:41.8847,o:12.4777,x:'Carbonara auténtica.'},
@@ -585,7 +605,10 @@ const lugares = {
     {id:29,n:'Barrio de Monti',c:'v',d:'Piazza della Madonna dei Monti',a:41.8953,o:12.4897,x:'Almorzar en el barrio.'},
     {id:30,n:'Via dei Fori Imperiali',c:'v',d:'Via dei Fori Imperiali',a:41.892,o:12.4853,x:'Visita del itinerario.'},
     {id:31,n:'Piazza Venezia',c:'v',d:'Piazza Venezia',a:41.8964,o:12.4823,x:'Visita del itinerario.'},
-    {id:32,n:'Piazza del Campidoglio',c:'v',d:'Piazza del Campidoglio',a:41.8933,o:12.4828,x:'Visita del itinerario.'}
+    {id:32,n:'Piazza del Campidoglio',c:'v',d:'Piazza del Campidoglio',a:41.8933,o:12.4828,x:'Visita del itinerario.'},
+    {id:33,n:'Conad',c:'m',d:'Búscalo cerca de ti o de tu zona',a:41.896,o:12.5,np:1,q:'Conad',x:'Supermercado. Equivalente a Mercadona: cadena italiana con tiendas medianas en casi todos los barrios.'},
+    {id:34,n:'Coop',c:'m',d:'Búscalo cerca de ti o de tu zona',a:41.896,o:12.5,np:1,q:'Coop',x:'Supermercado. Cadena con fuerte presencia en Roma; la mayoría de las tiendas abre de 8:00 a 21:00.'},
+    {id:35,n:'Pam',c:'m',d:'Búscalo cerca de ti o de tu zona',a:41.896,o:12.5,np:1,q:'Pam supermercato',x:'Supermercado de barrio; también tiene la versión Pam Local para compras rápidas.'}
   ],
   barcelona: [
     {id:1,n:'Can Culleretes',c:'c',d:'Carrer d\'en Quintana, 5',a:41.3807,o:2.1741,x:'Restaurante centenario.'},
@@ -640,7 +663,10 @@ const lugares = {
     {id:50,n:'Santa Maria del Mar',c:'v',d:'Plaça de Santa Maria, 1',a:41.3838,o:2.1826,x:'Metro hacia El Born, 20 min.'},
     {id:51,n:'Playa de la Barceloneta',c:'v',d:'Platja de la Barceloneta',a:41.3785,o:2.1925,x:'Plan de la tarde, 4:00 pm.'},
     {id:52,n:'Paseo Marítimo',c:'v',d:'Passeig Marítim de la Barceloneta',a:41.3812,o:2.1955,x:'Visita del itinerario.'},
-    {id:53,n:'Montserrat',c:'v',d:'Montserrat (a ~60 km de Barcelona)',a:41.5933,o:1.8109,x:'Hiking a Montserrat.'}
+    {id:53,n:'Montserrat',c:'v',d:'Montserrat (a ~60 km de Barcelona)',a:41.5933,o:1.8109,x:'Hiking a Montserrat.'},
+    {id:54,n:'Mercadona',c:'m',d:'Búscalo cerca de ti o de tu zona',a:41.378,o:2.138,np:1,q:'Mercadona',x:'Supermercado de barrio con marca propia y precios bajos. Revisa el horario: muchas tiendas cierran los domingos.'},
+    {id:55,n:'Carrefour',c:'m',d:'Búscalo cerca de ti o de tu zona',a:41.378,o:2.138,np:1,q:'Carrefour',x:'Supermercado. Las Express (pequeñas y urbanas) suelen abrir más horas, incluso fines de semana; las Market son medianas.'},
+    {id:56,n:'Lidl',c:'m',d:'Búscalo cerca de ti o de tu zona',a:41.378,o:2.138,np:1,q:'Lidl',x:'Supermercado de precios bajos, con panadería y promociones semanales.'}
   ]
 };
 
@@ -670,14 +696,22 @@ const getNextCustomId = () => {
 const tileUrl = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 const col = {vuelo:"#2b4fd6", tren:"#d35400", alojamiento:"#16a085", visita:"#c0392b"};
 const ICON = {vuelo:'✈️', tren:'🚆', alojamiento:'🏠', visita:'🏛️'};
-const CI = {c:'🍽️', t:'🍷', d:'🍰', v:'🏛️', s:'🛍️'};   // icono por categoría de lugar
+const CI = {c:'🍽️', t:'🍷', d:'🍰', v:'🏛️', s:'🛍️', m:'🛒'};   // icono por categoría de lugar
 const CITY_LABEL = {SJO:'San José'};
-const CC = {c:'#d35400', t:'#16a085', d:'#8e44ad', v:'#c0392b', s:'#2980b9'};
-const CL = {c:'Clásico', t:'Tapas', d:'Dulce', v:'Visita', s:'Compras'};
+const CC = {c:'#d35400', t:'#16a085', d:'#8e44ad', v:'#c0392b', s:'#2980b9', m:'#455a64'};
+const CL = {c:'Clásico', t:'Tapas', d:'Dulce', v:'Visita', s:'Compras', m:'Supermercado'};
 
 // Utilidades
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const norm = (s) => String(s ?? '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const mapsNear = (q, p) => `https://www.google.com/maps/search/${encodeURIComponent(q)}/@${p[0].toFixed(5)},${p[1].toFixed(5)},16z`;
+const haversine = (a, b) => {
+    const R = 6371000, rad = (x) => x * Math.PI / 180;
+    const dLat = rad(b.lat - a.lat), dLng = rad(b.lng - a.lng);
+    const h = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a.lat)) * Math.cos(rad(b.lat)) * Math.sin(dLng / 2) ** 2;
+    return 2 * R * Math.asin(Math.sqrt(h));
+};
+const fmtDist = (m) => m < 1000 ? `${Math.max(10, Math.round(m / 10) * 10)} m` : `${(m / 1000).toFixed(m < 10000 ? 1 : 0)} km`;
 // Tarjeta accesible: clic + Enter/Espacio
 const activatable = (el, fn) => {
     el.setAttribute('role', 'button'); el.tabIndex = 0;
@@ -819,7 +853,7 @@ let pickMarker = null;
 const cityCenter = (key) => C[key.charAt(0).toUpperCase() + key.slice(1)];
 
 const mCh = document.getElementById('mc');
-[['', 'Todos'], ['c', '🍽️ Clásicos'], ['t', '🍷 Tapas'], ['d', '🍰 Dulce'], ['v', '🏛️ Visitas'], ['s', '🛍️ Compras']].forEach(([k, l]) => {
+[['', 'Todos'], ['c', '🍽️ Clásicos'], ['t', '🍷 Tapas'], ['d', '🍰 Dulce'], ['v', '🏛️ Visitas'], ['s', '🛍️ Compras'], ['m', '🛒 Súper']].forEach(([k, l]) => {
     const b = document.createElement('button'); b.className = 'chip'; b.textContent = l; b.dataset.k = k;
     b.onclick = () => { mc = k || null; ms = null; mDraw(); map2.closePopup(); map2.flyTo(cityCenter(currentDetailCity), 14); };
     mCh.appendChild(b);
@@ -844,7 +878,8 @@ function mSel(id) {
     if(ms) {
         const r = getCityPlaces(currentDetailCity).find(x => x.id === ms);
         if(r) {
-            map2.flyTo([r.a, r.o], 16, {duration: 0.8});
+            const target = r.np && userPos && nearCity() ? [userPos.lat, userPos.lng] : [r.a, r.o];
+            map2.flyTo(target, r.np ? 15 : 16, {duration: 0.8});
             if (restMarkers[id] && detailLayerGroup.hasLayer(restMarkers[id])) restMarkers[id].openPopup();
             if (matchMedia('(max-width:820px)').matches) document.getElementById('mm').scrollIntoView({behavior: 'smooth', block: 'nearest'});
         }
@@ -880,10 +915,19 @@ function mDraw() {
     document.getElementById('result-count').textContent = shown.length === cityPlaces.length ? `${cityPlaces.length} lugares` : `${shown.length} de ${cityPlaces.length} lugares`;
     if (!shown.length) { mL.innerHTML = '<p class="empty">No se encontraron lugares con ese filtro.</p>'; return; }
 
+    const near = nearCity();
+    const dist = new Map();
+    if (near) shown.forEach(r => { if (!r.np) dist.set(r.id, haversine(userPos, { lat: r.a, lng: r.o })); });
+    if (near && sortNear) shown.sort((x, y) => (dist.has(x.id) ? dist.get(x.id) : 1e12) - (dist.has(y.id) ? dist.get(y.id) : 1e12));
+
     shown.forEach(r => {
         const custom = r.id >= 9000;
+        const link = r.np
+            ? `<a target='_blank' rel='noopener' href='${mapsNear(r.q || r.n, near ? [userPos.lat, userPos.lng] : [r.a, r.o])}'>Buscar el más cercano ${near ? 'a ti' : 'en la zona'} ↗</a>`
+            : `<a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`;
+        const distTxt = dist.has(r.id) ? ` · <b>a ${fmtDist(dist.get(r.id))}</b>` : '';
         const d = document.createElement('div'); d.className = 'card'; d.dataset.id = r.id; d.style.setProperty('--c', CC[r.c]); d.setAttribute('aria-pressed', String(r.id === ms));
-        d.innerHTML = `<div class='d'><span class="ico" aria-hidden="true">${CI[r.c] || '📍'}</span><small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${esc(r.n)}</div><div class='su'>${esc(r.d)}</div><div class='ex'>${esc(r.x || 'Lugar añadido manualmente')}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>${custom ? `<br><button type='button' class='btn-del'>Eliminar lugar</button>` : ''}</div></div>`;
+        d.innerHTML = `<div class='d'><span class="ico" aria-hidden="true">${CI[r.c] || '📍'}</span><small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${esc(r.n)}</div><div class='su'>${esc(r.d)}${distTxt}</div><div class='ex'>${esc(r.x || 'Lugar añadido manualmente')}<br>${link}${custom ? `<br><button type='button' class='btn-del'>Eliminar lugar</button>` : ''}</div></div>`;
         d.querySelectorAll('a').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
         const del = d.querySelector('.btn-del');
         if (del) del.addEventListener('click', e => {
@@ -921,6 +965,7 @@ function renderDetailCity(cityKey) {
     });
 
     getCityPlaces(cityKey).forEach(r => {
+        if (r.np) return;   // sin pin: se busca la tienda más cercana
         const m = L.marker([r.a, r.o], {icon: getRestIcon(r.c, r.id)});
         m.bindPopup(`<h3>${esc(r.n)}</h3><p style="margin:0 0 6px 0">${esc(r.d)}</p>${esc(r.x || 'Lugar añadido manualmente')}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`);
         m.on('click', () => mSel(r.id));
@@ -930,6 +975,83 @@ function renderDetailCity(cityKey) {
     map2.flyTo(cityCenter(cityKey), cityKey === 'toledo' ? 15 : 13, {duration: 0});
     mDraw();
 }
+
+// --- UBICACIÓN EN TIEMPO REAL (todo ocurre en tu dispositivo; no se guarda ni se envía) ---
+let userPos = null, watchId = null, userLayers = [], sortNear = false, lastDrawPos = null;
+const locBtns = document.querySelectorAll('.locate-btn');
+const locMsgs = document.querySelectorAll('.loc-msg');
+const sortNearBtn = document.getElementById('sort-near');
+const LOC_ERR = { 1: 'Permiso denegado. Actívalo en los ajustes del sitio, en tu navegador.', 2: 'No se pudo determinar tu posición.', 3: 'La señal tardó demasiado; sigo intentando.' };
+
+function setLocUi(state, msg = '') {
+    locBtns.forEach(b => {
+        b.classList.toggle('on', state === 'on'); b.classList.toggle('busy', state === 'busy');
+        b.setAttribute('aria-pressed', String(state === 'on'));
+        b.textContent = state === 'on' ? '📍 Siguiéndote · detener' : state === 'busy' ? '📍 Buscando señal…' : '📍 Mi ubicación';
+    });
+    locMsgs.forEach(m => { m.textContent = msg; });
+}
+function nearCity() {
+    if (!userPos) return false;
+    const c = cityCenter(currentDetailCity);
+    return !!c && haversine(userPos, { lat: c[0], lng: c[1] }) < 80000;
+}
+function paintUser() {
+    if (!userPos) return;
+    const ll = [userPos.lat, userPos.lng];
+    [map1, map2].forEach((m, i) => {
+        if (!userLayers[i]) {
+            userLayers[i] = {
+                acc: L.circle(ll, { radius: userPos.acc, color: '#2b7fff', weight: 1, fillColor: '#2b7fff', fillOpacity: 0.12, interactive: false }).addTo(m),
+                dot: L.circleMarker(ll, { radius: 8, color: '#ffffff', weight: 3, fillColor: '#2b7fff', fillOpacity: 1, interactive: false }).addTo(m)
+            };
+        } else { userLayers[i].acc.setLatLng(ll); userLayers[i].acc.setRadius(userPos.acc); userLayers[i].dot.setLatLng(ll); }
+    });
+}
+function clearUser() { userLayers.forEach(l => { if (l) { l.acc.remove(); l.dot.remove(); } }); userLayers = []; }
+function refreshNear(force = false) {
+    if (!viewDetail.classList.contains('active-view')) return;
+    if (!force && lastDrawPos && userPos && haversine(lastDrawPos, userPos) < 25) return;
+    lastDrawPos = userPos ? { ...userPos } : null;
+    mDraw();
+}
+function centerOnUser() {
+    if (!userPos) return;
+    const ll = [userPos.lat, userPos.lng];
+    if (viewDetail.classList.contains('active-view')) {
+        if (nearCity()) map2.flyTo(ll, 15, { duration: 0.8 });
+        else locMsgs.forEach(m => { m.textContent = `Estás a ${fmtDist(haversine(userPos, { lat: cityCenter(currentDetailCity)[0], lng: cityCenter(currentDetailCity)[1] }))} de esta ciudad: el mapa no se mueve.`; });
+    } else if (viewGeneral.classList.contains('active-view')) {
+        const d = Math.min(...EU_POINTS.map(p => haversine(userPos, { lat: p[0], lng: p[1] })));
+        if (d < 200000) map1.flyTo(ll, 14, { duration: 0.8 });
+        else locMsgs.forEach(m => { m.textContent = `Estás a ${fmtDist(d)} de las ciudades del viaje: el mapa no se mueve.`; });
+    }
+}
+function startLocate() {
+    if (!('geolocation' in navigator)) { setLocUi('off', 'Tu navegador no permite obtener la ubicación.'); return; }
+    if (watchId != null) return;
+    setLocUi('busy', 'Permite el acceso a tu ubicación cuando el navegador lo pida.');
+    let first = true;
+    watchId = navigator.geolocation.watchPosition(pos => {
+        userPos = { lat: pos.coords.latitude, lng: pos.coords.longitude, acc: Math.min(pos.coords.accuracy || 50, 500) };
+        paintUser();
+        setLocUi('on', `Precisión ≈ ${Math.round(pos.coords.accuracy || 0)} m · tu ubicación no sale de este dispositivo.`);
+        if (first) { first = false; centerOnUser(); refreshNear(true); } else refreshNear();
+    }, err => {
+        if (err.code === 1) { stopLocate(); setLocUi('off', LOC_ERR[1]); }
+        else locMsgs.forEach(m => { m.textContent = LOC_ERR[err.code] || 'No se pudo obtener tu ubicación.'; });
+    }, { enableHighAccuracy: true, maximumAge: 5000, timeout: 20000 });
+}
+function stopLocate() {
+    if (watchId != null && navigator.geolocation) navigator.geolocation.clearWatch(watchId);
+    watchId = null; userPos = null; lastDrawPos = null; clearUser(); setLocUi('off'); refreshNear(true);
+}
+locBtns.forEach(b => b.addEventListener('click', () => { if (watchId == null) startLocate(); else stopLocate(); }));
+sortNearBtn.addEventListener('click', () => {
+    sortNear = !sortNear;
+    sortNearBtn.classList.toggle('off', !sortNear); sortNearBtn.setAttribute('aria-pressed', String(sortNear));
+    if (sortNear && watchId == null) startLocate(); else mDraw();
+});
 
 // --- AGREGAR LUGAR ---
 const addPanel = document.getElementById('add-place-panel');
