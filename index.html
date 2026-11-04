@@ -86,13 +86,27 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 @media (max-width:820px){ #view-general.active-view { grid-template-columns:1fr; } }
 
 .mapwrap{position:sticky;top:76px;align-self:start;z-index:10}
-@media (max-width:820px){.mapwrap{position:static}}
+
 
 .theme-toggle { background: var(--card); color: var(--text); border: 1px solid var(--line); border-radius: 50%; width: 40px; height: 40px; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: transform 0.2s ease; }
 .theme-toggle:hover { transform: scale(1.05); }
 
 /* Leaflet Mapas */
 #map, #mm { width: 100%; height: clamp(320px, 62vh, 560px); scroll-margin-top: 80px; border-radius: 24px; border: 1px solid var(--line); background: var(--bg); z-index: 1; box-shadow: var(--shadow);}
+.size-btn{display:none}
+@media (max-width:820px){
+  .mapwrap{position:sticky;top:var(--tabs-h,64px);z-index:400;background:var(--bg);padding:6px 0 8px}
+  #map,#mm{height:clamp(190px,32vh,300px);border-radius:18px;transition:height .25s ease}
+  body.map-big #map,body.map-big #mm{height:calc(100svh - var(--tabs-h,64px) - 90px)}
+  .mapwrap .legend{display:none}
+  .mapwrap .loc-msg{margin:4px 4px 0;font-size:.78rem}
+  .locate-btn{top:18px;right:10px;padding:6px 12px;font-size:.8rem}
+  .size-btn{display:inline-flex;position:absolute;left:10px;bottom:46px;z-index:1000;align-items:center;gap:6px;background:var(--card);color:var(--text);border:1px solid var(--line);border-radius:99px;padding:6px 12px;font:inherit;font-size:.8rem;font-weight:700;cursor:pointer;box-shadow:var(--shadow)}
+  .tabs-inner{padding:8px 14px}
+  .tab-btn{padding:7px 15px;font-size:.88rem}
+  .tabs-bar{margin-bottom:12px}
+  .view-section{padding:0 14px 40px}
+}
 .leaflet-popup-content-wrapper { background: var(--card); color: var(--text); border-radius: 16px; border: 1px solid var(--line); box-shadow: var(--shadow); }
 .leaflet-popup-tip { background: var(--card); }
 .leaflet-popup-content { margin: 14px; font-family: inherit; font-size: 0.92rem; }
@@ -266,7 +280,6 @@ a.stat:hover { text-decoration:underline; }
 .sign .lb { min-width:26px; height:26px; padding:0 7px; border-radius:7px; display:inline-flex; align-items:center; justify-content:center; font-weight:800; font-size:.78rem; color:#fff; }
 
 /* --- Ubicación en tiempo real --- */
-.mapwrap { position: sticky; }
 .locate-btn { position:absolute; top:12px; right:12px; z-index:1000; background:var(--card); color:var(--text); border:1px solid var(--line); border-radius:99px; padding:8px 14px; font:inherit; font-size:.85rem; font-weight:700; cursor:pointer; box-shadow:var(--shadow); }
 .locate-btn.busy { opacity:.8; }
 .locate-btn.on { background:#2b7fff; border-color:#2b7fff; color:#fff; }
@@ -876,7 +889,6 @@ function selectEvent(e) {
     styleRoutes(); renderList();
     if (activeEvent) {
         focusEvent(e);
-        if (matchMedia('(max-width:820px)').matches) document.getElementById('map').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     } else resetView();
     document.querySelector(`#list .card[data-id="${e.id}"]`)?.focus({ preventScroll: true });
 }
@@ -944,7 +956,6 @@ function mSel(id) {
             const target = r.np && userPos && nearCity() ? [userPos.lat, userPos.lng] : [r.a, r.o];
             map2.flyTo(target, r.np ? 15 : 16, {duration: 0.8});
             if (restMarkers[id] && detailLayerGroup.hasLayer(restMarkers[id])) restMarkers[id].openPopup();
-            if (matchMedia('(max-width:820px)').matches) document.getElementById('mm').scrollIntoView({behavior: 'smooth', block: 'nearest'});
         }
     } else map2.closePopup();
     document.querySelector(`#ml .card[data-id="${id}"]`)?.focus({ preventScroll: true });
@@ -1468,6 +1479,34 @@ window.addEventListener('hashchange', () => showTab(location.hash.slice(1)));
 showTab(location.hash.slice(1) || 'general');
 
 setTimeout(() => { map1.invalidateSize(); map2.invalidateSize(); }, 200);
+
+/* --- Móvil: mapa compacto fijo + botón Ampliar/Reducir --- */
+(function(){
+    const bar = document.querySelector('.tabs-bar');
+    const setH = () => document.documentElement.style.setProperty('--tabs-h', bar.offsetHeight + 'px');
+    setH(); addEventListener('resize', setH); addEventListener('orientationchange', setH);
+    const redo = () => [map1, map2].forEach(m => { try { m.invalidateSize(); } catch(e){} });
+    document.querySelectorAll('.mapwrap').forEach(w => {
+        const b = document.createElement('button');
+        b.type = 'button'; b.className = 'size-btn'; b.setAttribute('aria-pressed', 'false');
+        const paint = () => {
+            const big = document.body.classList.contains('map-big');
+            b.textContent = big ? '⤡ Reducir mapa' : '⤢ Ampliar mapa';
+            b.setAttribute('aria-pressed', big);
+        };
+        b.addEventListener('click', () => {
+            document.body.classList.toggle('map-big');
+            document.querySelectorAll('.size-btn').forEach(x => x.dispatchEvent(new Event('paint')));
+            if (document.body.classList.contains('map-big')) {
+                const top = w.parentElement.getBoundingClientRect().top + scrollY - bar.offsetHeight - 4;
+                scrollTo({top: Math.max(0, top), behavior: 'smooth'});
+            }
+            setTimeout(redo, 280);
+        });
+        b.addEventListener('paint', paint);
+        paint(); w.appendChild(b);
+    });
+})();
 </script>
 </body>
 </html>
