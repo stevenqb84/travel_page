@@ -135,6 +135,8 @@ header p{margin:0 0 20px;color:var(--muted);font-size:1.05rem;}
 .card:hover { transform: translateY(-2px); border-color: var(--muted); }
 .card[aria-pressed="true"]{border-color: var(--accent); box-shadow: inset 4px 0 0 var(--c, transparent), 0 0 0 2px var(--accent);}
 .d{font:700 1rem/1.1 system-ui,sans-serif;text-align:center; display:flex; flex-direction:column; justify-content:center; background:color-mix(in srgb, var(--c, var(--chip)) 14%, var(--chip)); border-radius: 14px; padding: 6px;}
+.rate{font:700 .72rem/1 system-ui,sans-serif;color:#8a5a00;background:#fff3d6;border-radius:8px;padding:2px 6px;margin-left:4px;white-space:nowrap}
+.price{font:700 .72rem/1 system-ui,sans-serif;color:#1a7f4b;background:#e6f4ec;border-radius:8px;padding:2px 6px;margin-left:4px;white-space:nowrap}
 .ico{font-size:1.2rem;line-height:1;margin-bottom:4px}.d small{display:block;font-size:.7rem; font-weight:600; margin-top:4px; opacity:0.85;}
 .ti{font-weight:700; font-size: 1.05rem; margin-bottom: 2px;}
 .su{color:var(--muted);font-size:.9rem}
@@ -543,18 +545,37 @@ const E = [
 ];
 
 // --- LUGARES Y BÚSQUEDA EXHAUSTIVA DE TIENDAS ---
+const priceTag = r => (r.r ? ` <span class="rate" title="Calificación en Google Maps">★${r.r.toFixed(1)}</span>` : '') + (r.p ? ` <span class="price" title="Nivel de precio (Google Maps)">${'€'.repeat(r.p)}</span>` : '');
 const lugares = {
   madrid: [
-    {id:1,n:'Sobrino de Botín',c:'c',d:'C. de los Cuchilleros, 17',a:40.4142,o:-3.7078,x:'Asados tradicionales.'},
-    {id:2,n:'Casa Alberto',c:'c',d:'C. de las Huertas, 18',a:40.414,o:-3.6992,x:'Taberna clásica de 1827.'},
-    {id:3,n:'Posada de la Villa',c:'c',d:'C. de la Cava Baja, 9',a:40.4121,o:-3.7092,x:'Sopa castellana y asados.'},
-    {id:4,n:'Taberna de Pedraza',c:'c',d:'C. de Recoletos, 4',a:40.4216,o:-3.6914,x:'Tortilla de Betanzos.'},
-    {id:5,n:'Lhardy',c:'c',d:'Carrera de San Jerónimo, 8',a:40.4166,o:-3.7013,x:'Consomé y cocido clásico.'},
-    {id:6,n:'Taberna La Bola',c:'c',d:'C. de la Bola, 5',a:40.421,o:-3.7118,x:'Cocido en puchero de barro.'},
-    {id:7,n:'Mercado de San Miguel',c:'t',d:'Plaza de San Miguel',a:40.4154,o:-3.709,x:'Tapas gourmet.'},
-    {id:8,n:'Casa Labra',c:'t',d:'C. de Tetuán, 12',a:40.4172,o:-3.7029,x:'Croquetas y bacalao frito.'},
-    {id:9,n:'La Campana',c:'t',d:'C. de Botoneras, 6',a:40.4153,o:-3.7069,x:'Bocadillo de calamares.'},
-    {id:10,n:'Chocolatería San Ginés',c:'d',d:'Pasadizo de San Ginés, 5',a:40.417,o:-3.706,x:'Churros con chocolate.'},
+    {id:1,n:'Sobrino de Botín',c:'c',d:'C. de los Cuchilleros, 17',a:40.4141933,o:-3.7079761,p:3,r:4.3,x:'Asados tradicionales.'},
+    {id:2,n:'Casa Alberto',c:'c',d:'C. de las Huertas, 18',a:40.4137615,o:-3.7001568,p:2,r:4.4,x:'Taberna clásica de 1827.'},
+    {id:3,n:'Posada de la Villa',c:'c',d:'C. de la Cava Baja, 9',a:40.4130855,o:-3.7084508,p:3,r:4.5,x:'Sopa castellana y asados.'},
+    {id:4,n:'Taberna de Pedraza',c:'c',d:'C. de Recoletos, 4',a:40.4221275,o:-3.6908865,p:4,r:3.9,x:'Tortilla de Betanzos.'},
+    {id:5,n:'Lhardy',c:'c',d:'Carrera de San Jerónimo, 8',a:40.4166259,o:-3.7013886,r:4.2,x:'Consomé y cocido clásico.'},
+    {id:6,n:'Taberna La Bola',c:'c',d:'C. de la Bola, 5',a:40.420011,o:-3.71047,p:3,r:4.2,x:'Cocido en puchero de barro.'},
+    {id:7,n:'Mercado de San Miguel',c:'t',d:'Plaza de San Miguel',a:40.4153794,o:-3.7089697,r:4.4,x:'Tapas gourmet.'},
+    {id:8,n:'Casa Labra',c:'t',d:'C. de Tetuán, 12',a:40.4171724,o:-3.704593,p:2,r:4.3,x:'Croquetas y bacalao frito.'},
+    {id:9,n:'La Campana',c:'t',d:'C. de Botoneras, 6',a:40.4149117,o:-3.7068219,p:1,r:4.5,x:'Bocadillo de calamares.'},
+    {id:10,n:'Chocolatería San Ginés',c:'d',d:'Pasadizo de San Ginés, 5',a:40.4167385,o:-3.7069356,r:4.3,x:'Churros con chocolate.'},
+    {id:101,n:'Taberna de Peñalver Callao',c:'c',d:'C. del Postigo de San Martín, 5',a:40.4189968,o:-3.7063698,r:4.8,p:3,x:'Mariscos y platos mediterráneos. Muy concurrido, reserva.'},
+    {id:102,n:'La Mi Venta',c:'c',d:'Pl. de la Marina Española, 7',a:40.42041,o:-3.71254,r:4.7,p:2,x:'Cocina española cerca del Palacio Real.'},
+    {id:103,n:'Restaurante El Tormo',c:'c',d:'Tr. de las Vistillas, 13',a:40.41176,o:-3.71465,r:4.8,p:3,x:'Cocina española, zona de La Latina.'},
+    {id:104,n:'La Malontina',c:'c',d:'C. de la Verónica, 4',a:40.4118,o:-3.69542,r:4.6,p:3,x:'Cocina española de mercado.'},
+    {id:105,n:'Tapa Tapa Montera',c:'t',d:'C. de la Montera, 47',a:40.41964,o:-3.70195,r:4.6,p:2,x:'Tapas y raciones, más de 45 mil reseñas.'},
+    {id:106,n:'Taberna 4 Tapas',c:'t',d:'Pl. de Puerta Cerrada, 3',a:40.4136,o:-3.70843,r:4.6,p:2,x:'Tapas en la zona de la Cava Baja.'},
+    {id:107,n:'Matador',c:'t',d:'C. de la Cruz, 39',a:40.41475,o:-3.70283,r:4.6,p:2,x:'Bar de tapas en el centro.'},
+    {id:108,n:'Taberna La Concha',c:'t',d:'C. de la Cava Baja, 7',a:40.41319,o:-3.70836,r:4.5,p:2,x:'Tapeo en la Cava Baja.'},
+    {id:109,n:'Maison Glacée',c:'d',d:'Calle Mayor, 77',a:40.41507,o:-3.71211,r:4.9,p:1,x:'Helados y brunch junto al Palacio Real.'},
+    {id:110,n:'Mares Heladería',c:'d',d:'C. de San Vicente Ferrer, 28',a:40.42584,o:-3.70359,r:5.0,x:'Helados artesanales (Malasaña).'},
+    {id:111,n:'Motteau Pastelería',c:'d',d:'C. de San Pedro, 9',a:40.41166,o:-3.69464,r:4.8,p:1,x:'Pastelería en el barrio de las Letras.'},
+    {id:112,n:'Melaho\'s',c:'d',d:'C. de las Tres Cruces, 4',a:40.41919,o:-3.7029,r:4.8,x:'Heladería cerca de Gran Vía.'},
+    {id:113,n:'Restaurante Her',c:'c',d:'C. de Hermosilla, 4',a:40.4264441,o:-3.6887644,r:4.9,p:3,x:'Cocina moderna en Salamanca. Reserva recomendada.'},
+    {id:114,n:'Rosi La Loca',c:'c',d:'C. de Cádiz, 4',a:40.4158047,o:-3.7029553,r:4.7,p:2,x:'Cocina creativa y coctelería, muy popular.'},
+    {id:115,n:'Taberna La Cortá La Latina',c:'t',d:'Pl. de la Cebada, 3',a:40.4114769,o:-3.7090516,r:4.7,p:2,x:'Raciones y huevos rotos junto a La Latina.'},
+    {id:116,n:'Taberna La Patosa',c:'t',d:'C. del Humilladero, 3',a:40.4104943,o:-3.7102621,r:4.8,p:2,x:'Tapas caseras en La Latina. Cierra lunes.'},
+    {id:117,n:'Santo Bakehouse',c:'d',d:'C. del Espíritu Santo, 25',a:40.4254039,o:-3.7047813,r:4.9,p:1,x:'Panadería y pastelería, caneles. Cierra lunes.'},
+    {id:118,n:'Alma Nomad Bakery',c:'d',d:'C. de Sta. Feliciana, 10',a:40.4330935,o:-3.6993644,r:4.7,p:1,x:'Bollería y pan en Chamberí, suele haber fila.'},
     {id:11,n:'Zara',c:'s',d:'Plaza de España, 8',a:40.4234,o:-3.7122,x:'Megatienda Edificio España.'},
     {id:12,n:'Zara',c:'s',d:'Gran Vía, 34',a:40.4201,o:-3.7037,x:'Zara Centro Histórico.'},
     {id:13,n:'Zara',c:'s',d:'Calle de la Princesa, 58',a:40.4300,o:-3.7150,x:'Zara zona Argüelles.'},
@@ -624,16 +645,32 @@ const lugares = {
     {id:303,n:'Uniqlo Castellana',c:'s',d:'Pº de la Castellana, 85',a:40.4458,o:-3.6921,x:'Tienda Uniqlo junto a Nuevos Ministerios, tres plantas.'}
   ],
   toledo: [
-    {id:1,n:'Restaurante Adolfo',c:'c',d:'Hombre de Palo, 7',a:39.8576,o:-4.0248,x:'Alta cocina toledana.'},
+    {id:1,n:'Restaurante Adolfo',c:'c',d:'Hombre de Palo, 7',a:39.8579812,o:-4.0240282,r:4.5,x:'Alta cocina toledana.'},
     {id:2,n:'Casa Aurelio',c:'c',d:'Plaza del Ayuntamiento, 4',a:39.8572,o:-4.0253,x:'Perdiz estofada.'},
-    {id:3,n:'Víctor Sánchez-Beato',c:'c',d:'Alamillo del Tránsito, 9',a:39.8560,o:-4.0280,x:'Cocina de autor.'},
-    {id:4,n:'Cuchara de Palo',c:'c',d:'Calle Santa Fe, 1',a:39.8582,o:-4.0215,x:'Comida manchega.'},
-    {id:5,n:'La Abadía',c:'t',d:'Plaza San Nicolás, 3',a:39.8596,o:-4.0246,x:'Cervecería en cueva.'},
-    {id:6,n:'Cervecería El Trébol',c:'t',d:'Calle de Santa Fe, 1',a:39.8592,o:-4.0232,x:'Bomba toledana.'},
-    {id:7,n:'Alfileritos 24',c:'t',d:'Calle Alfileritos, 24',a:39.8601,o:-4.0249,x:'Tapas vanguardistas.'},
-    {id:8,n:'Taberna el Botero',c:'t',d:'Calle Ciudad, 5',a:39.8570,o:-4.0235,x:'Tapas y coctelería.'},
-    {id:9,n:'Lo Nuestro',c:'t',d:'San Juan de Dios, 7',a:39.8583,o:-4.0210,x:'Raciones manchegas.'},
-    {id:10,n:'Obrador Santo Tomé',c:'d',d:'Plaza Zocodover, 7',a:39.8579,o:-4.0264,x:'Mazapán artesano.'},
+    {id:3,n:'Víctor Sánchez-Beato',c:'c',d:'Alamillo del Tránsito, 9',a:39.8558651,o:-4.0284722,p:4,r:4.9,x:'Cocina de autor.'},
+    {id:4,n:'Cuchara de Palo',c:'c',d:'Calle de Santa Fe, 2',a:39.8593962,o:-4.0208043,p:2,r:4.2,x:'Comida manchega.'},
+    {id:5,n:'La Abadía',c:'t',d:'Calle Núñez de Arce, 3',a:39.8599934,o:-4.0228894,p:2,r:4.3,x:'Cervecería en cueva.'},
+    {id:6,n:'Cervecería El Trébol',c:'t',d:'Calle de Santa Fe, 1',a:39.8599479,o:-4.0208283,p:2,r:4.4,x:'Bomba toledana.'},
+    {id:7,n:'Alfileritos 24',c:'t',d:'Calle Alfileritos, 24',a:39.8597822,o:-4.0234842,p:3,r:4.4,x:'Tapas vanguardistas.'},
+    {id:8,n:'Taberna el Botero',c:'t',d:'Calle Ciudad, 5',a:39.856329,o:-4.024965,p:3,r:4.6,x:'Tapas y coctelería.'},
+    {id:9,n:'Lo Nuestro',c:'t',d:'San Juan de Dios, 7',a:39.8563116,o:-4.0290112,p:2,r:4.5,x:'Raciones manchegas.'},
+    {id:10,n:'Confitería Santo Tomé',c:'d',d:'Plaza Zocodover, 7',a:39.8593609,o:-4.0210174,p:1,r:3.9,x:'Mazapán artesano.'},
+    {id:101,n:'Restaurante La Manuela',c:'c',d:'C. Taller del Moro, 5',a:39.8561862,o:-4.0271623,r:4.9,p:3,x:'Cocina toledana, croquetas y chipirones.'},
+    {id:102,n:'Restaurante Aquí',c:'c',d:'Pl. Corral de Don Diego, 5',a:39.8583538,o:-4.0224154,r:4.7,p:2,x:'Venado, cordero y tarta de queso.'},
+    {id:103,n:'Taberna La Esencial',c:'c',d:'C. Trastámara, 4',a:39.8578465,o:-4.021904,r:4.6,p:2,x:'Cocina española, ambiente tranquilo.'},
+    {id:104,n:'Carlos Rooftop (Hotel Carlos V)',c:'c',d:'Pl. del Horno de la Magdalena, 4',a:39.858185,o:-4.021816,r:4.5,p:2,x:'Terraza con vistas a la catedral.'},
+    {id:105,n:'El Picatel',c:'t',d:'C. de Venancio González, 3',a:39.8607961,o:-4.0212908,r:4.8,p:2,x:'Estofados y croquetas, ambiente local.'},
+    {id:106,n:'Taberna Artesanal La Tintilla',c:'t',d:'C. Real, 15',a:39.859662,o:-4.0296454,r:4.8,p:2,x:'Tapas, vinos y pulpo a la gallega.'},
+    {id:107,n:'Taberna Skala',c:'t',d:'Cta. de la Sal, 5',a:39.8583003,o:-4.0237749,r:4.6,p:2,x:'Carcamusas y orejas a la plancha.'},
+    {id:108,n:'Tabernita Tapas Bar',c:'t',d:'C. de Santa Fe, 14',a:39.8596959,o:-4.0207349,r:4.5,p:2,x:'Tapas y bocadillo de calamares.'},
+    {id:109,n:'Taberna Embrujo',c:'t',d:'C. Santa Leocadia, 6',a:39.860168,o:-4.0283718,r:4.5,p:2,x:'Taberna con terraza.'},
+    {id:110,n:'Cervecería Lúpulo',c:'t',d:'C. Aljibillo, 4',a:39.8573209,o:-4.0274649,r:4.6,p:2,x:'Cerveza artesanal y tapas.'},
+    {id:111,n:'Las Delicias de San Antonio',c:'d',d:'Tr. del Conde, 6',a:39.8567756,o:-4.0284299,r:4.8,x:'Helados artesanales.'},
+    {id:112,n:'Heladería Fermata Gelato',c:'d',d:'C. Alfonso X el Sabio, 6',a:39.8585966,o:-4.0253661,r:4.8,x:'Gelato sobre ruinas romanas.'},
+    {id:113,n:'Bar Restaurante Morena',c:'c',d:'Pl. Padre Juan de Mariana, 7',a:39.8578239,o:-4.0259211,r:4.8,p:2,x:'Paella y cocina española junto a la catedral.'},
+    {id:114,n:'Taberna Las Termas',c:'c',d:'C. Navarro Ledesma, 8',a:39.8587749,o:-4.0254581,r:4.9,p:2,x:'Pollo asado y menú del día económico. Cierra miércoles.'},
+    {id:115,n:'Obrador Santo Tomé',c:'d',d:'C. de Santo Tomé, 3',a:39.856818,o:-4.027407,r:4.4,x:'Mazapán desde 1861.'},
+    {id:116,n:'Mazapán Conde',c:'d',d:'Pl. Valdecaleros, 8',a:39.8576116,o:-4.0279541,r:4.9,x:'Mazapán artesanal. Cierra sábado y domingo.'},
     {id:11,n:'Zara',c:'s',d:'CC Luz del Tajo',a:39.8665,o:-3.9860,x:'Zara en CC Luz del Tajo.'},
     {id:12,n:'Pull & Bear',c:'s',d:'CC Luz del Tajo',a:39.8666,o:-3.9858,x:'Pull & Bear Luz del Tajo.'},
     {id:13,n:'Lefties',c:'s',d:'CC Luz del Tajo',a:39.8664,o:-3.9859,x:'Lefties Luz del Tajo.'},
@@ -649,16 +686,35 @@ const lugares = {
     {id:23,n:'Lidl',c:'m',d:'Búscalo cerca de ti o de tu zona',a:39.8628,o:-4.0273,np:1,q:'Lidl',x:'Supermercado de precios bajos, con panadería y promociones semanales.'}
   ],
   roma: [
-    {id:1,n:'Trattoria Da Enzo al 29',c:'c',d:'Via dei Vascellari, 29',a:41.8847,o:12.4777,x:'Carbonara auténtica.'},
-    {id:2,n:'Roscioli Salumeria',c:'c',d:'Via dei Giubbonari, 21',a:41.8941,o:12.4740,x:'Amatriciana y quesos.'},
-    {id:3,n:'Tonnarello',c:'c',d:'Via della Paglia, 1',a:41.8893,o:12.4697,x:'Pasta en Trastevere.'},
-    {id:4,n:'Osteria da Fortunata',c:'c',d:'Via del Pellegrino, 11',a:41.8956,o:12.4722,x:'Pasta fresca a mano.'},
-    {id:5,n:'Pizzeria Da Baffetto',c:'c',d:'Via del Governo Vecchio',a:41.8986,o:12.4705,x:'Pizza romana fina.'},
-    {id:6,n:'Trapizzino',c:'t',d:'Piazza Trilussa, 46',a:41.8899,o:12.4694,x:'Street food pizzero.'},
-    {id:7,n:'Supplizio',c:'t',d:'Via dei Banchi Vecchi',a:41.8967,o:12.4691,x:'Supplì romanos.'},
-    {id:8,n:'Antico Forno Roscioli',c:'t',d:'Via dei Chiavari, 34',a:41.8947,o:12.4735,x:'Pizza al taglio.'},
-    {id:9,n:'Pompi Tiramisù',c:'d',d:'Via della Croce, 82',a:41.9056,o:12.4815,x:'Tiramisú clásico.'},
-    {id:10,n:'Gelateria Giolitti',c:'d',d:'Via Uffici del Vicario',a:41.9009,o:12.4775,x:'Heladería histórica.'},
+    {id:1,n:'Trattoria Da Enzo al 29',c:'c',d:'Via dei Vascellari, 29',a:41.8880847,o:12.4778554,p:2,r:4.3,x:'Carbonara auténtica.'},
+    {id:2,n:'Roscioli Salumeria',c:'c',d:'Via dei Giubbonari, 21',a:41.894256,o:12.4742417,p:3,r:4.3,x:'Amatriciana y quesos.'},
+    {id:3,n:'Tonnarello',c:'c',d:'Via della Paglia, 1',a:41.889804,o:12.4693004,p:2,r:4.7,x:'Pasta en Trastevere.'},
+    {id:4,n:'Osteria da Fortunata',c:'c',d:'Via del Pellegrino, 11',a:41.8961166,o:12.4716707,p:2,r:4.4,x:'Pasta fresca a mano.'},
+    {id:5,n:'Pizzeria Da Baffetto',c:'c',d:'Via del Governo Vecchio, 114',a:41.8982758,o:12.4702938,p:2,r:4.1,x:'Pizza romana fina.'},
+    {id:6,n:'Trapizzino',c:'t',d:'Piazza Trilussa, 46',a:41.891494,o:12.4698437,p:2,r:4.6,x:'Street food pizzero.'},
+    {id:7,n:'Supplizio',c:'t',d:'Via dei Banchi Vecchi, 143',a:41.897487,o:12.467911,p:1,r:4.5,x:'Supplì romanos.'},
+    {id:8,n:'Antico Forno Roscioli',c:'t',d:'Via dei Chiavari, 34',a:41.8945667,o:12.4742778,p:2,r:4.5,x:'Pizza al taglio.'},
+    {id:9,n:'Pompi Tiramisù',c:'d',d:'Via della Croce, 82',a:41.9065421,o:12.4808551,r:4.3,x:'Tiramisú clásico.'},
+    {id:10,n:'Gelateria Giolitti',c:'d',d:'Via Uffici del Vicario',a:41.9010245,o:12.4772026,r:4.4,x:'Heladería histórica.'},
+    {id:101,n:'La Nuova Piazzetta',c:'c',d:'Vicolo del Buon Consiglio, 23/a',a:41.89332,o:12.48919,r:4.8,p:2,x:'Trattoria y pizza en Monti.'},
+    {id:102,n:'Cantina e Cucina',c:'c',d:'Via del Governo Vecchio, 87',a:41.89795,o:12.47164,r:4.6,p:2,x:'Cocina romana cerca de Piazza Navona.'},
+    {id:103,n:'La Locanda del Tempio',c:'c',d:'Via di Pietra, 85',a:41.89999,o:12.48038,r:4.6,p:2,x:'Cocina italiana junto al Panteón.'},
+    {id:104,n:'Gusteria Al 17',c:'c',d:'Via Natale del Grande, 17',a:41.88718,o:12.47047,r:4.8,p:2,x:'Pizza y cocina en Trastevere.'},
+    {id:105,n:'Sesamo Trastevere',c:'c',d:'Viale di Trastevere, 83',a:41.88775,o:12.47332,r:4.8,p:2,x:'Pizza y hamburguesas en Trastevere.'},
+    {id:106,n:'Supplì Roma (I Supplì di Giacomo)',c:'t',d:'Via di S. Francesco a Ripa, 137',a:41.88715,o:12.47175,r:4.7,p:1,x:'Supplì artesanales para llevar.'},
+    {id:107,n:'Alice Pizza Trastevere',c:'t',d:'Via di S. Francesco a Ripa, 1',a:41.8886,o:12.47099,r:4.8,p:1,x:'Pizza al taglio.'},
+    {id:108,n:'Pizzeria La Boccaccia',c:'t',d:'Via di Santa Dorotea, 2',a:41.89185,o:12.46859,r:4.6,p:1,x:'Pizza económica en Trastevere.'},
+    {id:109,n:'Antico Forno Santini',c:'d',d:'Vicolo del Cinque, 44',a:41.89088,o:12.46955,r:4.8,p:1,x:'Panadería y heladería en Trastevere.'},
+    {id:110,n:'Gelateria La Romana',c:'d',d:'Piazza S. Andrea della Valle',a:41.89669,o:12.47412,r:4.9,x:'Gelato desde 1947.'},
+    {id:111,n:'Gelateria Sweet Life',c:'d',d:'Corso Vittorio Emanuele II, 270',a:41.89807,o:12.46823,r:4.9,x:'Gelato artesanal.'},
+    {id:112,n:'Frigidarium',c:'d',d:'Via del Governo Vecchio, 112',a:41.89823,o:12.47045,r:4.7,x:'Gelato junto a Piazza Navona.'},
+    {id:113,n:'Casa Manco',c:'t',d:'Via Aldo Manuzio, 66C',a:41.8777932,o:12.4736888,r:4.9,p:1,x:'Pizza al taglio en Testaccio. Cierra martes y domingo.'},
+    {id:114,n:'Pizzeria della Madonna dei Monti',c:'c',d:'Via della Madonna dei Monti, 110',a:41.8938333,o:12.4880582,r:4.7,p:2,x:'Pizza napolitana cerca del Coliseo.'},
+    {id:115,n:'Ar Monte Testaccio',c:'c',d:'Via Nicola Zabaglia, 28',a:41.8770933,o:12.4759906,r:4.7,p:2,x:'Pasta casera en Testaccio.'},
+    {id:116,n:'Trattoria Vecchia Roma',c:'c',d:'Via Ferruccio, 12',a:41.8936997,o:12.502435,r:4.5,p:2,x:'Amatriciana flambeada. Cierra domingo.'},
+    {id:117,n:'Mastro Donato Pizza Gourmet',c:'t',d:'Via Marmorata, 61',a:41.8793767,o:12.4784417,r:4.8,p:1,x:'Pizza y supplì. Cierra domingo.'},
+    {id:118,n:'Two Sizes',c:'d',d:'Via del Governo Vecchio, 88',a:41.8980142,o:12.471566,r:4.7,x:'Tiramisú en vasos de dos tamaños.'},
+    {id:119,n:'I Dolci di Nonna Vincenza',c:'d',d:'Via dell\'Arco del Monte, 98',a:41.8940972,o:12.4730667,r:4.5,x:'Cannoli sicilianos y granita.'},
     {id:11,n:'Coliseo y Foro Romano',c:'v',d:'Piazza del Colosseo',a:41.8902,o:12.4922,x:'Reservado. Visita al Coliseo y Foro Romano.'},
     {id:12,n:'Museos Vaticanos',c:'v',d:'Viale Vaticano',a:41.9065,o:12.4536,x:'Reservado.'},
     {id:13,n:'Zara',c:'s',d:'Via del Corso, 189',a:41.9022,o:12.4795,x:'Zara Via del Corso.'},
@@ -688,16 +744,36 @@ const lugares = {
     {id:302,n:'Uniqlo Roma Termini',c:'s',d:'Stazione Termini, Via Marsala 44-46',a:41.9014,o:12.5013,x:'Tienda Uniqlo dentro de la estación Termini (planta baja, entrada Via Marsala).'}
   ],
   barcelona: [
-    {id:1,n:'Can Culleretes',c:'c',d:'Carrer d\'en Quintana, 5',a:41.3807,o:2.1741,x:'Restaurante centenario.'},
-    {id:2,n:'7 Portes',c:'c',d:'Passeig d\'Isabel II, 14',a:41.3820,o:2.1834,x:'Paellas y arroces.'},
-    {id:3,n:'Bar Cañete',c:'c',d:'Carrer de la Unió, 17',a:41.3791,o:2.1732,x:'Tapas de calidad.'},
-    {id:4,n:'Cervecería Catalana',c:'t',d:'Carrer de Mallorca, 236',a:41.3923,o:2.1609,x:'Tapas emblemáticas.'},
-    {id:5,n:'El Xampanyet',c:'t',d:'Carrer de Montcada, 22',a:41.3839,o:2.1818,x:'Cava y anchoas.'},
-    {id:6,n:'Quimet & Quimet',c:'t',d:'Poeta Cabanyes, 25',a:41.3742,o:2.1643,x:'Montaditos y conservas.'},
-    {id:7,n:'Ciudad Condal',c:'t',d:'Rambla de Catalunya, 18',a:41.3887,o:2.1672,x:'Tapas y montaditos.'},
-    {id:8,n:'La Cova Fumada',c:'t',d:'Carrer del Baluart, 56',a:41.3789,o:2.1895,x:'Origen de la bomba.'},
-    {id:9,n:'Pastisseria Hofmann',c:'d',d:'Carrer Flassaders, 44',a:41.3846,o:2.1816,x:'Croissants de mascarpone.'},
-    {id:10,n:'Churreria San Roman',c:'d',d:'Banys Nous, 8',a:41.3824,o:2.1749,x:'Churros tradicionales.'},
+    {id:1,n:'Can Culleretes',c:'c',d:'Carrer d\'en Quintana, 5',a:41.3812502,o:2.1744565,p:2,r:4.3,x:'Restaurante centenario.'},
+    {id:2,n:'7 Portes',c:'c',d:'Passeig d\'Isabel II, 14',a:41.3823052,o:2.1833902,p:3,r:4.4,x:'Paellas y arroces.'},
+    {id:3,n:'Bar Cañete',c:'c',d:'Carrer de la Unió, 17',a:41.3791528,o:2.173125,p:3,r:4.6,x:'Tapas de calidad.'},
+    {id:4,n:'Cervecería Catalana',c:'t',d:'Carrer de Mallorca, 236',a:41.3923251,o:2.1608515,p:2,r:4.5,x:'Tapas emblemáticas.'},
+    {id:5,n:'El Xampanyet',c:'t',d:'Carrer de Montcada, 22',a:41.3845391,o:2.181679,p:2,r:4.7,x:'Cava y anchoas.'},
+    {id:6,n:'Quimet & Quimet',c:'t',d:'Poeta Cabanyes, 25',a:41.3739472,o:2.1655579,p:2,r:4.6,x:'Montaditos y conservas.'},
+    {id:7,n:'Ciudad Condal',c:'t',d:'Rambla de Catalunya, 18',a:41.3888547,o:2.1670033,p:2,r:4.4,x:'Tapas y montaditos.'},
+    {id:8,n:'La Cova Fumada',c:'t',d:'Carrer del Baluard, 56',a:41.3793025,o:2.1892183,p:2,r:4.6,x:'Origen de la bomba.'},
+    {id:9,n:'Pastisseria Hofmann',c:'d',d:'Carrer Flassaders, 44',a:41.385079,o:2.1827036,r:4.4,x:'Croissants de mascarpone.'},
+    {id:10,n:'Churreria San Roman',c:'d',d:'Banys Nous, 8',a:41.3822384,o:2.1751146,r:4.5,x:'Churros tradicionales.'},
+    {id:101,n:'Ca l\'Estevet',c:'c',d:'Carrer de Valldonzella, 46',a:41.383282,o:2.164792,r:4.6,p:3,x:'Cocina catalana en el Raval.'},
+    {id:102,n:'Ca l\'Agut',c:'c',d:'Carrer d\'en Gignàs, 16',a:41.38093,o:2.17991,r:4.7,p:2,x:'Cocina catalana clásica.'},
+    {id:103,n:'Casa Amàlia',c:'c',d:'Ptge. del Mercat, 14',a:41.39627,o:2.16852,r:4.7,p:3,x:'Cocina de mercado en el Eixample.'},
+    {id:104,n:'Bornès Restaurant',c:'c',d:'Carrer de la Carassa, 2',a:41.38451,o:2.18025,r:4.9,p:3,x:'Cocina y coctelería en el Born.'},
+    {id:105,n:'Casa Leopoldo',c:'c',d:'Carrer de Maria Casas Mira, 24',a:41.37931,o:2.16941,r:4.7,p:3,x:'Cocina tradicional del Raval.'},
+    {id:106,n:'L\'Antic Bocoi del Gòtic',c:'c',d:'Baixada de Viladecols, 3',a:41.38208,o:2.17954,r:4.7,p:2,x:'Cocina española en el Gótico.'},
+    {id:107,n:'La Plata',c:'t',d:'Carrer de la Mercè, 28',a:41.38041,o:2.18059,r:4.7,p:2,x:'Bar de tapas clásico, cerca del puerto.'},
+    {id:108,n:'Tapería Catalana',c:'t',d:'Rambla de Catalunya, 70',a:41.39178,o:2.16287,r:4.8,p:2,x:'Tapas en la Rambla de Catalunya.'},
+    {id:109,n:'Petit Tapas',c:'t',d:'Carrer Ample, 26',a:41.38032,o:2.18005,r:4.8,p:2,x:'Tapas y vinos en el Gótico.'},
+    {id:110,n:'La Tapería Barcelona',c:'t',d:'Plaça de l\'Àngel, 5',a:41.38376,o:2.17859,r:4.7,p:2,x:'Tapas junto a Via Laietana.'},
+    {id:111,n:'Bodega Biarritz 1881',c:'t',d:'Carrer Nou de Sant Francesc, 7',a:41.37919,o:2.17706,r:4.7,p:2,x:'Tapas, casi 10 mil reseñas.'},
+    {id:112,n:'Gelateria Da Gallo',c:'d',d:'Carrer de Mallorca, 277',a:41.39506,o:2.16383,r:4.9,x:'Gelato artesanal.'},
+    {id:113,n:'Bilmonte',c:'d',d:'Carrer del Consell de Cent, 282',a:41.38941,o:2.16364,r:4.9,x:'Helados y postres.'},
+    {id:114,n:'Morreig',c:'d',d:'Carrer de Verdi, 25',a:41.40374,o:2.15694,r:4.8,x:'Helados y pastelería en Gràcia.'},
+    {id:115,n:'Restaurante Gòtic',c:'c',d:'Carrer d\'en Gignàs, 20',a:41.3810011,o:2.1799682,r:4.8,p:2,x:'Paella y cocina mediterránea.'},
+    {id:116,n:'Amaranta Gòtic',c:'c',d:'Baixada de Sant Miquel, 6',a:41.381516,o:2.1767852,r:4.9,p:2,x:'Menú del día y paella en el Gótico.'},
+    {id:117,n:'Colección by Sensi',c:'t',d:'Carrer del Regomir, 16',a:41.3810973,o:2.1796502,r:4.8,p:2,x:'Tapas y cócteles en el Gótico.'},
+    {id:118,n:'Bodega del Born',c:'t',d:'Carrer dels Mirallers, 14',a:41.3838849,o:2.1813819,r:4.8,p:2,x:'Vermut y tapas en el Born.'},
+    {id:119,n:'Flor de Gràcia',c:'d',d:'Carrer de Bruniquer, 9',a:41.4042489,o:2.1598859,r:4.8,p:1,x:'Panadería: croissants y rollos de canela.'},
+    {id:120,n:'La Colmena',c:'d',d:'Plaça de l\'Àngel, 12',a:41.3838319,o:2.1782333,r:4.5,x:'Pastelería histórica, xuixo de crema.'},
     {id:11,n:'Zara',c:'s',d:'Plaça de Catalunya, 5',a:41.3865,o:2.1700,x:'Zara Flagship Plaça Catalunya.'},
     {id:12,n:'Zara',c:'s',d:'Passeig de Gràcia, 16',a:41.3892,o:2.1675,x:'Zara Gràcia Sur.'},
     {id:13,n:'Zara',c:'s',d:'Rambla de Catalunya, 67',a:41.3915,o:2.1620,x:'Zara Eixample.'},
@@ -1011,7 +1087,7 @@ function mDraw() {
             : `<a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`;
         const distTxt = dist.has(r.id) ? ` · <b>a ${fmtDist(dist.get(r.id))}</b>` : '';
         const d = document.createElement('div'); d.className = 'card'; d.dataset.id = r.id; d.style.setProperty('--c', CC[r.c]); d.setAttribute('aria-pressed', String(r.id === ms));
-        d.innerHTML = `<div class='d'><span class="ico" aria-hidden="true">${CI[r.c] || '📍'}</span><small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${esc(r.n)}</div><div class='su'>${esc(r.d)}${distTxt}</div><div class='ex'>${esc(r.x || 'Lugar añadido manualmente')}<br>${link}${custom ? `<br><button type='button' class='btn-del'>Eliminar lugar</button>` : ''}</div></div>`;
+        d.innerHTML = `<div class='d'><span class="ico" aria-hidden="true">${CI[r.c] || '📍'}</span><small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${esc(r.n)}${priceTag(r)}</div><div class='su'>${esc(r.d)}${distTxt}</div><div class='ex'>${esc(r.x || 'Lugar añadido manualmente')}<br>${link}${custom ? `<br><button type='button' class='btn-del'>Eliminar lugar</button>` : ''}</div></div>`;
         d.querySelectorAll('a').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
         d.querySelector('.btn-pin')?.addEventListener('click', e => { e.stopPropagation(); prepStore(r.n); });
         const del = d.querySelector('.btn-del');
@@ -1054,7 +1130,7 @@ function renderDetailCity(cityKey, keepFilter = false) {
     getCityPlaces(cityKey).forEach(r => {
         if (r.np) return;   // sin pin: se busca la tienda más cercana
         const m = L.marker([r.a, r.o], {icon: getRestIcon(r.c, r.id)});
-        m.bindPopup(`<h3>${esc(r.n)}</h3><p style="margin:0 0 6px 0">${esc(r.d)}</p>${esc(r.x || 'Lugar añadido manualmente')}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`);
+        m.bindPopup(`<h3>${esc(r.n)}${priceTag(r)}</h3><p style="margin:0 0 6px 0">${esc(r.d)}</p>${esc(r.x || 'Lugar añadido manualmente')}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`);
         m.on('click', () => mSel(r.id));
         restMarkers[r.id] = m;
     });
