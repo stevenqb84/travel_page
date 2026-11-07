@@ -333,6 +333,7 @@ body.modal-open { overflow: hidden; }
     <button class="tab-btn" data-target="toledo">Toledo</button>
     <button class="tab-btn" data-target="roma">Roma</button>
     <button class="tab-btn" data-target="barcelona">Barcelona</button>
+    <button class="tab-btn" data-target="sanramon">San Ramón (prueba)</button>
   </nav>
 </div></div>
 
@@ -547,47 +548,48 @@ const E = [
 ];
 
 // --- LUGARES Y BÚSQUEDA EXHAUSTIVA DE TIENDAS ---
+const fmtX = r => esc(r.x || 'Lugar añadido manualmente').replace(/\n/g, '<br>');
 const priceTag = r => (r.r ? ` <span class="rate" title="Calificación en Google Maps">★${r.r.toFixed(1)}</span>` : '') + (r.p ? ` <span class="price" title="Nivel de precio (Google Maps)">${'€'.repeat(r.p)}</span>` : '');
 const lugares = {
   madrid: [
-    {id:1,n:'Sobrino de Botín',c:'c',d:'C. de los Cuchilleros, 17',a:40.4141933,o:-3.7079761,p:3,r:4.3,x:'Asados tradicionales.'},
-    {id:2,n:'Casa Alberto',c:'c',d:'C. de las Huertas, 18',a:40.4137615,o:-3.7001568,p:2,r:4.4,x:'Taberna clásica de 1827.'},
-    {id:3,n:'Posada de la Villa',c:'c',d:'C. de la Cava Baja, 9',a:40.4130855,o:-3.7084508,p:3,r:4.5,x:'Sopa castellana y asados.'},
-    {id:4,n:'Taberna de Pedraza',c:'c',d:'C. de Recoletos, 4',a:40.4221275,o:-3.6908865,p:4,r:3.9,x:'Tortilla de Betanzos.'},
-    {id:5,n:'Lhardy',c:'c',d:'Carrera de San Jerónimo, 8',a:40.4166259,o:-3.7013886,r:4.2,x:'Consomé y cocido clásico.'},
-    {id:6,n:'Taberna La Bola',c:'c',d:'C. de la Bola, 5',a:40.420011,o:-3.71047,p:3,r:4.2,x:'Cocido en puchero de barro.'},
-    {id:7,n:'Mercado de San Miguel',c:'t',d:'Plaza de San Miguel',a:40.4153794,o:-3.7089697,r:4.4,x:'Tapas gourmet.'},
-    {id:8,n:'Casa Labra',c:'t',d:'C. de Tetuán, 12',a:40.4171724,o:-3.704593,p:2,r:4.3,x:'Croquetas y bacalao frito.'},
-    {id:9,n:'La Campana',c:'t',d:'C. de Botoneras, 6',a:40.4149117,o:-3.7068219,p:1,r:4.5,x:'Bocadillo de calamares.'},
-    {id:10,n:'Chocolatería San Ginés',c:'d',d:'Pasadizo de San Ginés, 5',a:40.4167385,o:-3.7069356,r:4.3,x:'Churros con chocolate.'},
-    {id:101,n:'Taberna de Peñalver Callao',c:'c',d:'C. del Postigo de San Martín, 5',a:40.4189968,o:-3.7063698,r:4.8,p:3,x:'Mariscos y platos mediterráneos. Muy concurrido, reserva.'},
-    {id:102,n:'La Mi Venta',c:'c',d:'Pl. de la Marina Española, 7',a:40.42041,o:-3.71254,r:4.7,p:2,x:'Cocina española cerca del Palacio Real.'},
-    {id:103,n:'Restaurante El Tormo',c:'c',d:'Tr. de las Vistillas, 13',a:40.41176,o:-3.71465,r:4.8,p:3,x:'Cocina española, zona de La Latina.'},
-    {id:104,n:'La Malontina',c:'c',d:'C. de la Verónica, 4',a:40.4118,o:-3.69542,r:4.6,p:3,x:'Cocina española de mercado.'},
-    {id:105,n:'Tapa Tapa Montera',c:'t',d:'C. de la Montera, 47',a:40.41964,o:-3.70195,r:4.6,p:2,x:'Tapas y raciones, más de 45 mil reseñas.'},
-    {id:106,n:'Taberna 4 Tapas',c:'t',d:'Pl. de Puerta Cerrada, 3',a:40.4136,o:-3.70843,r:4.6,p:2,x:'Tapas en la zona de la Cava Baja.'},
-    {id:107,n:'Matador',c:'t',d:'C. de la Cruz, 39',a:40.41475,o:-3.70283,r:4.6,p:2,x:'Bar de tapas en el centro.'},
-    {id:108,n:'Taberna La Concha',c:'t',d:'C. de la Cava Baja, 7',a:40.41319,o:-3.70836,r:4.5,p:2,x:'Tapeo en la Cava Baja.'},
-    {id:109,n:'Maison Glacée',c:'d',d:'Calle Mayor, 77',a:40.41507,o:-3.71211,r:4.9,p:1,x:'Helados y brunch junto al Palacio Real.'},
-    {id:110,n:'Mares Heladería',c:'d',d:'C. de San Vicente Ferrer, 28',a:40.42584,o:-3.70359,r:5.0,x:'Helados artesanales (Malasaña).'},
-    {id:111,n:'Motteau Pastelería',c:'d',d:'C. de San Pedro, 9',a:40.41166,o:-3.69464,r:4.8,p:1,x:'Pastelería en el barrio de las Letras.'},
-    {id:112,n:'Melaho\'s',c:'d',d:'C. de las Tres Cruces, 4',a:40.41919,o:-3.7029,r:4.8,x:'Heladería cerca de Gran Vía.'},
-    {id:113,n:'Restaurante Her',c:'c',d:'C. de Hermosilla, 4',a:40.4264441,o:-3.6887644,r:4.9,p:3,x:'Cocina moderna en Salamanca. Reserva recomendada.'},
-    {id:114,n:'Rosi La Loca',c:'c',d:'C. de Cádiz, 4',a:40.4158047,o:-3.7029553,r:4.7,p:2,x:'Cocina creativa y coctelería, muy popular.'},
-    {id:115,n:'Taberna La Cortá La Latina',c:'t',d:'Pl. de la Cebada, 3',a:40.4114769,o:-3.7090516,r:4.7,p:2,x:'Raciones y huevos rotos junto a La Latina.'},
-    {id:116,n:'Taberna La Patosa',c:'t',d:'C. del Humilladero, 3',a:40.4104943,o:-3.7102621,r:4.8,p:2,x:'Tapas caseras en La Latina. Cierra lunes.'},
-    {id:117,n:'Santo Bakehouse',c:'d',d:'C. del Espíritu Santo, 25',a:40.4254039,o:-3.7047813,r:4.9,p:1,x:'Panadería y pastelería, caneles. Cierra lunes.'},
-    {id:118,n:'Alma Nomad Bakery',c:'d',d:'C. de Sta. Feliciana, 10',a:40.4330935,o:-3.6993644,r:4.7,p:1,x:'Bollería y pan en Chamberí, suele haber fila.'},
-    {id:119,n:'Dolchelatte Café y Helados Artesanos Argentinos',c:'d',d:'C/ del Alcalde Sainz de Baranda, 50',a:40.4165413,o:-3.6717893999999993,r:4.8,x:'Helados argentinos artesanales. A unos 230 m del alojamiento.'},
-    {id:120,n:'EL TALGO BAR',c:'c',d:'C/ del Alcalde Sainz de Baranda, 21',a:40.4170351,o:-3.6753340999999997,r:4.8,p:3,x:'Cocina de bistró. A unos 510 m del alojamiento.'},
-    {id:121,n:'Erre Que Erre Retiro',c:'c',d:'C. de Narváez, 72',a:40.417580799999996,o:-3.6764774000000005,r:4.7,p:2,x:'Cocina española. A unos 620 m del alojamiento.'},
-    {id:122,n:'Heladería Sienna Narváez',c:'d',d:'C. de Narváez, 62',a:40.4186111,o:-3.6763888999999996,r:4.6,x:'Helados y café. A unos 670 m del alojamiento.'},
-    {id:123,n:'Kalúa Helados',c:'d',d:'C. de Ibiza, 21',a:40.418421099999996,o:-3.6760281,r:4.6,x:'Helados y repostería. A unos 640 m del alojamiento.'},
-    {id:124,n:'Con Sazón O\'Donnell',c:'c',d:'C. de Máiquez, 16',a:40.4210706,o:-3.672998,r:4.8,p:2,x:'Cocina casera, más de 8 mil reseñas. A unos 720 m del alojamiento.'},
-    {id:125,n:'La Marmoteka de Narváez',c:'t',d:'C. de Narváez, 52',a:40.419317799999995,o:-3.6763673999999997,r:4.8,p:2,x:'Tapas y raciones. A unos 720 m del alojamiento.'},
-    {id:126,n:'Gaditana Retiro',c:'c',d:'Calle del Dr. Castelo, 26',a:40.4201781,o:-3.6755744999999993,r:4.8,p:3,x:'Pescados y mariscos. A unos 740 m del alojamiento.'},
-    {id:127,n:'Sazón-arte',c:'c',d:'C. de Menorca, 19',a:40.419549499999995,o:-3.6770643,r:4.7,p:2,x:'Cocina de bistró. A unos 780 m del alojamiento.'},
-    {id:128,n:'La Castela',c:'c',d:'Calle del Dr. Castelo, 22',a:40.4203106,o:-3.6766422999999997,r:4.6,p:3,x:'Cocina tradicional y parrilla. A unos 820 m del alojamiento.'},
+    {id:1,n:'Sobrino de Botín',c:'c',d:'C. de los Cuchilleros, 17',a:40.4141933,o:-3.7079761,p:3,r:4.3,x:'Asados tradicionales.\nQué pedir: cochinillo asado, cordero, sopa de cebolla.\nHorario: Lun–Dom 13:00–16:00 y 20:00–23:30.\nTel. +34 913 66 42 17 · 17.293 reseñas en Google. Se anuncia como el restaurante más antiguo del mundo; reserva, las reseñas lo describen como muy turístico.'},
+    {id:2,n:'Casa Alberto',c:'c',d:'C. de las Huertas, 18',a:40.4137615,o:-3.7001568,p:2,r:4.4,x:'Taberna clásica de 1827.\nLas reseñas destacan: calamares, rabo de toro, sangría.\nHorario: Lun cerrado; Mar–Sáb 12:00–23:00; Dom 12:00–16:00.\nTel. +34 914 29 93 56 · 5.430 reseñas en Google.'},
+    {id:3,n:'Posada de la Villa',c:'c',d:'C. de la Cava Baja, 9',a:40.4130855,o:-3.7084508,p:3,r:4.5,x:'Sopa castellana y asados.\nQué pedir: cuarto de cordero asado, rabo de toro, milhojas.\nHorario: Lun–Sáb 12:45–15:45 y 19:45–23:45; Dom 12:45–15:45.\nTel. +34 913 66 18 60 · 4.226 reseñas en Google. Horno de leña; algunas reseñas lo encuentran salado.'},
+    {id:4,n:'Taberna de Pedraza',c:'c',d:'C. de Recoletos, 4',a:40.4221275,o:-3.6908865,p:4,r:3.9,x:'Tortilla de Betanzos.\nQué pedir: chuletón, tortilla de Betanzos, croquetas, anchoas.\nHorario: Mar 13:00–16:30; Mié–Sáb 13:00–16:30 y 20:00–23:30; Dom 13:00–16:30; cierra lunes.\nTel. +34 913 42 82 40 · 2.639 reseñas en Google. Precio alto y reseñas divididas (3.9).'},
+    {id:5,n:'Lhardy',c:'c',d:'Carrera de San Jerónimo, 8',a:40.4166259,o:-3.7013886,r:4.2,x:'Consomé y cocido clásico.\nQué pedir: Wellington de ternera, callos a la madrileña, consomé.\nHorario: Lun–Sáb 13:00–24:00; Dom 13:00–17:00.\nTel. +34 915 21 33 85 · 3.492 reseñas en Google. Fundado en 1839; abajo hay una pastelería histórica.'},
+    {id:6,n:'Taberna La Bola',c:'c',d:'C. de la Bola, 5',a:40.420011,o:-3.71047,p:3,r:4.2,x:'Cocido en puchero de barro.\nQué pedir: cocido madrileño (en dos vuelcos).\nHorario: Lun–Mié 13:00–16:00; Jue–Sáb 12:00–20:30; Dom 13:00–16:00.\nTel. +34 915 47 69 30 · 8.111 reseñas en Google. El pan se cobra aparte según reseñas.'},
+    {id:7,n:'Mercado de San Miguel',c:'t',d:'Plaza de San Miguel',a:40.4153794,o:-3.7089697,r:4.4,x:'Tapas gourmet.\nQué pedir: tapas variadas, croquetas, bao, vermut.\nHorario: Dom–Jue 10:00–24:00; Vie–Sáb 10:00–01:00.\nTel. +34 915 42 49 36 · 166.661 reseñas en Google. Siempre lleno y caro; mejor para picar de pie.'},
+    {id:8,n:'Casa Labra',c:'t',d:'C. de Tetuán, 12',a:40.4171724,o:-3.704593,p:2,r:4.3,x:'Croquetas y bacalao frito.\nQué pedir: bacalao frito, croquetas.\nHorario: Lun–Dom 11:30–15:30 y 18:30–23:30.\nTel. +34 915 31 06 16 · 15.974 reseñas en Google. Fila rápida; se come de pie en la barra.'},
+    {id:9,n:'La Campana',c:'t',d:'C. de Botoneras, 6',a:40.4149117,o:-3.7068219,p:1,r:4.5,x:'Bocadillo de calamares.\nQué pedir: bocadillo de calamares (4,50 €).\nHorario: Lun–Mié y Vie–Dom 10:00–23:00; cierra jueves.\nTel. +34 911 03 49 32 · 20.683 reseñas en Google. Hay una fila para comer dentro y otra para llevar.'},
+    {id:10,n:'Chocolatería San Ginés',c:'d',d:'Pasadizo de San Ginés, 5',a:40.4167385,o:-3.7069356,r:4.3,x:'Churros con chocolate.\nQué pedir: chocolate con churros, porras.\nHorario: Abierto 24 horas.\nTel. +34 913 65 65 46 · 73.989 reseñas en Google. Se paga primero y luego te ubican.'},
+    {id:101,n:'Taberna de Peñalver Callao',c:'c',d:'C. del Postigo de San Martín, 5',a:40.4189968,o:-3.7063698,r:4.8,p:3,x:'Mariscos y platos mediterráneos. Muy concurrido, reserva.\nLas reseñas destacan: paella, vieiras, calamares.\nHorario: Lun–Dom 12:00–00:00.\nTel. +34 644 06 57 81 · 10.204 reseñas en Google.'},
+    {id:102,n:'La Mi Venta',c:'c',d:'Pl. de la Marina Española, 7',a:40.42041,o:-3.71254,r:4.7,p:2,x:'Cocina española cerca del Palacio Real.\nLas reseñas destacan: calamares, rabo de toro.\nHorario: Lun–Dom 13:00–16:30 y 19:00–23:00.\nTel. +34 915 59 50 91 · 8.150 reseñas en Google.'},
+    {id:103,n:'Restaurante El Tormo',c:'c',d:'Tr. de las Vistillas, 13',a:40.41176,o:-3.71465,r:4.8,p:3,x:'Cocina española, zona de La Latina.\nHorario: Lun 13:30–17:30; Mar cerrado; Mié–Dom 13:30–17:30.\nTel. +34 640 87 25 29 · 631 reseñas en Google.'},
+    {id:104,n:'La Malontina',c:'c',d:'C. de la Verónica, 4',a:40.4118,o:-3.69542,r:4.6,p:3,x:'Cocina española de mercado.\nLas reseñas destacan: croquetas, gelato, bacalao.\nHorario: Lun–Jue 12:30–22:00; Vie–Sáb 12:30–23:00; Dom 13:30–21:30.\nTel. +34 914 20 31 08 · 3.361 reseñas en Google.'},
+    {id:105,n:'Tapa Tapa Montera',c:'t',d:'C. de la Montera, 47',a:40.41964,o:-3.70195,r:4.6,p:2,x:'Tapas y raciones, más de 45 mil reseñas.\nLas reseñas destacan: paella, croquetas, mejillones.\nHorario: Lun–Jue 09:00–01:00; Vie–Sáb 09:00–02:00; Dom 09:00–01:00.\nTel. +34 915 21 01 22 · 45.423 reseñas en Google.'},
+    {id:106,n:'Taberna 4 Tapas',c:'t',d:'Pl. de Puerta Cerrada, 3',a:40.4136,o:-3.70843,r:4.6,p:2,x:'Tapas en la zona de la Cava Baja.\nLas reseñas destacan: sangría.\nHorario: Lun–Jue 12:30–23:00; Vie–Dom 12:30–00:00.\nTel. +34 914 73 65 98 · 3.276 reseñas en Google.'},
+    {id:107,n:'Matador',c:'t',d:'C. de la Cruz, 39',a:40.41475,o:-3.70283,r:4.6,p:2,x:'Bar de tapas en el centro.\nLas reseñas destacan: sangría, vermut.\nHorario: Lun–Jue 12:30–02:00; Vie–Sáb 12:30–02:30; Dom 12:30–02:00.\n4.203 reseñas en Google.'},
+    {id:108,n:'Taberna La Concha',c:'t',d:'C. de la Cava Baja, 7',a:40.41319,o:-3.70836,r:4.5,p:2,x:'Tapeo en la Cava Baja.\nLas reseñas destacan: vermut, bacalao, gambas.\nHorario: Lun–Jue 12:30–00:00; Vie–Sáb 12:30–01:00; Dom 12:30–00:00.\nTel. +34 608 57 00 17 · 4.239 reseñas en Google.'},
+    {id:109,n:'Maison Glacée',c:'d',d:'Calle Mayor, 77',a:40.41507,o:-3.71211,r:4.9,p:1,x:'Helados y brunch junto al Palacio Real.\nLas reseñas destacan: gelato, helado.\nHorario: Lun–Mié 10:00–20:00; Jue 10:00–19:30; Vie–Dom 10:00–20:00.\n1.025 reseñas en Google.'},
+    {id:110,n:'Mares Heladería',c:'d',d:'C. de San Vicente Ferrer, 28',a:40.42584,o:-3.70359,r:5.0,x:'Helados artesanales (Malasaña).\nLas reseñas destacan: helado, pistacho.\nHorario: Lun 14:30–00:00; Mar cerrado; Mié 14:30–00:00; Jue 14:30–00:30; Vie–Sáb 14:30–01:00; Dom 13:00–01:00.\nTel. +34 641 89 22 03 · 1.019 reseñas en Google.'},
+    {id:111,n:'Motteau Pastelería',c:'d',d:'C. de San Pedro, 9',a:40.41166,o:-3.69464,r:4.8,p:1,x:'Pastelería en el barrio de las Letras.\nLas reseñas destacan: tarta de queso, pistacho.\nHorario: Lun–Vie 09:30–14:00 y 15:30–20:00; Sáb–Dom 09:30–14:00.\nTel. +34 618 93 13 77 · 1.537 reseñas en Google.'},
+    {id:112,n:'Melaho\'s',c:'d',d:'C. de las Tres Cruces, 4',a:40.41919,o:-3.7029,r:4.8,x:'Heladería cerca de Gran Vía.\nLas reseñas destacan: helado.\nHorario: Lun–Dom 13:30–22:00.\nTel. +34 642 51 54 23 · 883 reseñas en Google.'},
+    {id:113,n:'Restaurante Her',c:'c',d:'C. de Hermosilla, 4',a:40.4264441,o:-3.6887644,r:4.9,p:3,x:'Cocina moderna en Salamanca. Reserva recomendada.\nQué pedir: ceviche verde, tacos de lechón, gnocchi con trufa.\nHorario: Lun–Vie 13:30–16:00 y 19:30–23:00; Sáb–Dom 13:00–16:00 y 19:30–23:00.\nTel. +34 914 92 41 22 · 5.930 reseñas en Google. Reserva con anticipación.'},
+    {id:114,n:'Rosi La Loca',c:'c',d:'C. de Cádiz, 4',a:40.4158047,o:-3.7029553,r:4.7,p:2,x:'Cocina creativa y coctelería, muy popular.\nQué pedir: bravas locas, burrata alocada, bao, cócteles creativos.\nHorario: Lun–Vie 12:30–01:30; Sáb–Dom 12:00–01:30.\nTel. +34 915 32 66 81 · 27.135 reseñas en Google. Mesas muy juntas; ambiente animado.'},
+    {id:115,n:'Taberna La Cortá La Latina',c:'t',d:'Pl. de la Cebada, 3',a:40.4114769,o:-3.7090516,r:4.7,p:2,x:'Raciones y huevos rotos junto a La Latina.\nQué pedir: huevos rotos con carrillera, canelones de pollo.\nHorario: Dom–Jue 12:30–24:00; Vie–Sáb 12:30–01:00.\nTel. +34 912 98 51 24 · 1.428 reseñas en Google. Precios moderados, junto al metro La Latina.'},
+    {id:116,n:'Taberna La Patosa',c:'t',d:'C. del Humilladero, 3',a:40.4104943,o:-3.7102621,r:4.8,p:2,x:'Tapas caseras en La Latina. Cierra lunes.\nQué pedir: raciones caseras, vino.\nHorario: Mar–Mié 18:30–00:30; Jue 18:30–01:00; Vie–Sáb 12:30–01:30; Dom 12:30–18:30; cierra lunes.\nTel. +34 609 26 27 33 · 586 reseñas en Google. Una reseña dice que la cocina cerró antes que el local; confirma el horario.'},
+    {id:117,n:'Santo Bakehouse',c:'d',d:'C. del Espíritu Santo, 25',a:40.4254039,o:-3.7047813,r:4.9,p:1,x:'Panadería y pastelería, caneles. Cierra lunes.\nQué pedir: caneles, croissant, pan artesanal.\nHorario: Mar–Vie 09:00–20:00; Sáb–Dom 09:00–15:00; cierra lunes.\n784 reseñas en Google. Cerrado los lunes.'},
+    {id:118,n:'Alma Nomad Bakery',c:'d',d:'C. de Sta. Feliciana, 10',a:40.4330935,o:-3.6993644,r:4.7,p:1,x:'Bollería y pan en Chamberí, suele haber fila.\nQué pedir: croissant de almendra, tarta de chocolate, bollo de cardamomo.\nHorario: Lun–Sáb 08:00–20:00; Dom 09:00–15:00.\nTel. +34 613 02 68 88 · 1.966 reseñas en Google. Hay fila de 10 a 20 minutos; come en la Plaza de Olavide.'},
+    {id:119,n:'Dolchelatte Café y Helados Artesanos Argentinos',c:'d',d:'C/ del Alcalde Sainz de Baranda, 50',a:40.4165413,o:-3.6717893999999993,r:4.8,x:'Helados argentinos artesanales. A unos 230 m del alojamiento.\nLas reseñas destacan: helado.\nHorario: Lun–Mar cerrado; Mié–Vie 17:00–21:00; Sáb 16:00–22:00; Dom 16:30–17:30.\nTel. +34 633 38 01 73 · 102 reseñas en Google.'},
+    {id:120,n:'EL TALGO BAR',c:'c',d:'C/ del Alcalde Sainz de Baranda, 21',a:40.4170351,o:-3.6753340999999997,r:4.8,p:3,x:'Cocina de bistró. A unos 510 m del alojamiento.\nLas reseñas destacan: helado, costillas, tarta de queso.\nHorario: Lun–Mar cerrado; Mié–Sáb 13:00–15:30 y 20:00–22:30; Dom 13:00–15:30.\nTel. +34 691 40 92 79 · 1.232 reseñas en Google.'},
+    {id:121,n:'Erre Que Erre Retiro',c:'c',d:'C. de Narváez, 72',a:40.417580799999996,o:-3.6764774000000005,r:4.7,p:2,x:'Cocina española. A unos 620 m del alojamiento.\nLas reseñas destacan: croquetas, calamares, tartar.\nHorario: Lun–Jue 08:30–00:30; Vie 08:30–01:00; Sáb 09:30–01:00; Dom 09:30–00:30.\nTel. +34 911 49 63 96 · 2.724 reseñas en Google.'},
+    {id:122,n:'Heladería Sienna Narváez',c:'d',d:'C. de Narváez, 62',a:40.4186111,o:-3.6763888999999996,r:4.6,x:'Helados y café. A unos 670 m del alojamiento.\nLas reseñas destacan: helado, gelato, pistacho.\nHorario: Lun–Jue 11:00–23:00; Vie–Sáb 11:00–00:00; Dom 11:00–23:00.\nTel. +34 911 99 80 11 · 2.970 reseñas en Google.'},
+    {id:123,n:'Kalúa Helados',c:'d',d:'C. de Ibiza, 21',a:40.418421099999996,o:-3.6760281,r:4.6,x:'Helados y repostería. A unos 640 m del alojamiento.\nLas reseñas destacan: helado, tarta de queso.\nHorario: Lun–Jue 10:00–23:00; Vie–Sáb 10:00–00:30; Dom 10:00–00:00.\nTel. +34 910 41 82 79 · 1.012 reseñas en Google.'},
+    {id:124,n:'Con Sazón O\'Donnell',c:'c',d:'C. de Máiquez, 16',a:40.4210706,o:-3.672998,r:4.8,p:2,x:'Cocina casera, más de 8 mil reseñas. A unos 720 m del alojamiento.\nHorario: Lun–Jue 09:00–17:00 y 19:00–23:00; Vie 09:00–17:00 y 19:00–00:00; Sáb 10:00–17:00 y 19:00–00:00; Dom 10:00–17:00 y 19:00–23:00.\nTel. +34 691 70 93 26 · 8.342 reseñas en Google.'},
+    {id:125,n:'La Marmoteka de Narváez',c:'t',d:'C. de Narváez, 52',a:40.419317799999995,o:-3.6763673999999997,r:4.8,p:2,x:'Tapas y raciones. A unos 720 m del alojamiento.\nHorario: Lun 12:00–17:00; Mar–Jue 18:00–00:00; Vie–Sáb 12:00–01:00; Dom 12:30–01:00.\nTel. +34 910 12 68 90 · 474 reseñas en Google.'},
+    {id:126,n:'Gaditana Retiro',c:'c',d:'Calle del Dr. Castelo, 26',a:40.4201781,o:-3.6755744999999993,r:4.8,p:3,x:'Pescados y mariscos. A unos 740 m del alojamiento.\nHorario: Lun–Sáb 12:00–00:00; Dom 12:00–17:00.\nTel. +34 614 26 36 55 · 2.545 reseñas en Google.'},
+    {id:127,n:'Sazón-arte',c:'c',d:'C. de Menorca, 19',a:40.419549499999995,o:-3.6770643,r:4.7,p:2,x:'Cocina de bistró. A unos 780 m del alojamiento.\nLas reseñas destacan: pulpo, carne a la parrilla, estofado.\nHorario: Lun cerrado; Mar–Sáb 13:00–17:00 y 20:00–00:00; Dom 13:00–17:00.\nTel. +34 910 70 82 81 · 882 reseñas en Google.'},
+    {id:128,n:'La Castela',c:'c',d:'Calle del Dr. Castelo, 22',a:40.4203106,o:-3.6766422999999997,r:4.6,p:3,x:'Cocina tradicional y parrilla. A unos 820 m del alojamiento.\nLas reseñas destacan: paella, vermut, gambas.\nHorario: Lun–Jue 12:30–17:00 y 20:00–00:00; Vie–Sáb 12:30–17:30 y 20:00–00:30; Dom cerrado.\nTel. +34 915 74 00 15 · 6.861 reseñas en Google.'},
     {id:11,n:'Zara',c:'s',d:'Plaza de España, 8',a:40.4234,o:-3.7122,x:'Megatienda Edificio España.'},
     {id:12,n:'Zara',c:'s',d:'Gran Vía, 34',a:40.4201,o:-3.7037,x:'Zara Centro Histórico.'},
     {id:13,n:'Zara',c:'s',d:'Calle de la Princesa, 58',a:40.4300,o:-3.7150,x:'Zara zona Argüelles.'},
@@ -657,32 +659,32 @@ const lugares = {
     {id:303,n:'Uniqlo Castellana',c:'s',d:'Pº de la Castellana, 85',a:40.4458,o:-3.6921,x:'Tienda Uniqlo junto a Nuevos Ministerios, tres plantas.'}
   ],
   toledo: [
-    {id:1,n:'Restaurante Adolfo',c:'c',d:'Hombre de Palo, 7',a:39.8579812,o:-4.0240282,r:4.5,x:'Alta cocina toledana.'},
-    {id:2,n:'Casa Aurelio',c:'c',d:'Plaza del Ayuntamiento, 4',a:39.8572,o:-4.0253,x:'Perdiz estofada.'},
-    {id:3,n:'Víctor Sánchez-Beato',c:'c',d:'Alamillo del Tránsito, 9',a:39.8558651,o:-4.0284722,p:4,r:4.9,x:'Cocina de autor.'},
-    {id:4,n:'Cuchara de Palo',c:'c',d:'Calle de Santa Fe, 2',a:39.8593962,o:-4.0208043,p:2,r:4.2,x:'Comida manchega.'},
-    {id:5,n:'La Abadía',c:'t',d:'Calle Núñez de Arce, 3',a:39.8599934,o:-4.0228894,p:2,r:4.3,x:'Cervecería en cueva.'},
-    {id:6,n:'Cervecería El Trébol',c:'t',d:'Calle de Santa Fe, 1',a:39.8599479,o:-4.0208283,p:2,r:4.4,x:'Bomba toledana.'},
-    {id:7,n:'Alfileritos 24',c:'t',d:'Calle Alfileritos, 24',a:39.8597822,o:-4.0234842,p:3,r:4.4,x:'Tapas vanguardistas.'},
-    {id:8,n:'Taberna el Botero',c:'t',d:'Calle Ciudad, 5',a:39.856329,o:-4.024965,p:3,r:4.6,x:'Tapas y coctelería.'},
-    {id:9,n:'Lo Nuestro',c:'t',d:'San Juan de Dios, 7',a:39.8563116,o:-4.0290112,p:2,r:4.5,x:'Raciones manchegas.'},
-    {id:10,n:'Confitería Santo Tomé',c:'d',d:'Plaza Zocodover, 7',a:39.8593609,o:-4.0210174,p:1,r:3.9,x:'Mazapán artesano.'},
-    {id:101,n:'Restaurante La Manuela',c:'c',d:'C. Taller del Moro, 5',a:39.8561862,o:-4.0271623,r:4.9,p:3,x:'Cocina toledana, croquetas y chipirones.'},
-    {id:102,n:'Restaurante Aquí',c:'c',d:'Pl. Corral de Don Diego, 5',a:39.8583538,o:-4.0224154,r:4.7,p:2,x:'Venado, cordero y tarta de queso.'},
-    {id:103,n:'Taberna La Esencial',c:'c',d:'C. Trastámara, 4',a:39.8578465,o:-4.021904,r:4.6,p:2,x:'Cocina española, ambiente tranquilo.'},
-    {id:104,n:'Carlos Rooftop (Hotel Carlos V)',c:'c',d:'Pl. del Horno de la Magdalena, 4',a:39.858185,o:-4.021816,r:4.5,p:2,x:'Terraza con vistas a la catedral.'},
-    {id:105,n:'El Picatel',c:'t',d:'C. de Venancio González, 3',a:39.8607961,o:-4.0212908,r:4.8,p:2,x:'Estofados y croquetas, ambiente local.'},
-    {id:106,n:'Taberna Artesanal La Tintilla',c:'t',d:'C. Real, 15',a:39.859662,o:-4.0296454,r:4.8,p:2,x:'Tapas, vinos y pulpo a la gallega.'},
-    {id:107,n:'Taberna Skala',c:'t',d:'Cta. de la Sal, 5',a:39.8583003,o:-4.0237749,r:4.6,p:2,x:'Carcamusas y orejas a la plancha.'},
-    {id:108,n:'Tabernita Tapas Bar',c:'t',d:'C. de Santa Fe, 14',a:39.8596959,o:-4.0207349,r:4.5,p:2,x:'Tapas y bocadillo de calamares.'},
-    {id:109,n:'Taberna Embrujo',c:'t',d:'C. Santa Leocadia, 6',a:39.860168,o:-4.0283718,r:4.5,p:2,x:'Taberna con terraza.'},
-    {id:110,n:'Cervecería Lúpulo',c:'t',d:'C. Aljibillo, 4',a:39.8573209,o:-4.0274649,r:4.6,p:2,x:'Cerveza artesanal y tapas.'},
-    {id:111,n:'Las Delicias de San Antonio',c:'d',d:'Tr. del Conde, 6',a:39.8567756,o:-4.0284299,r:4.8,x:'Helados artesanales.'},
-    {id:112,n:'Heladería Fermata Gelato',c:'d',d:'C. Alfonso X el Sabio, 6',a:39.8585966,o:-4.0253661,r:4.8,x:'Gelato sobre ruinas romanas.'},
-    {id:113,n:'Bar Restaurante Morena',c:'c',d:'Pl. Padre Juan de Mariana, 7',a:39.8578239,o:-4.0259211,r:4.8,p:2,x:'Paella y cocina española junto a la catedral.'},
-    {id:114,n:'Taberna Las Termas',c:'c',d:'C. Navarro Ledesma, 8',a:39.8587749,o:-4.0254581,r:4.9,p:2,x:'Pollo asado y menú del día económico. Cierra miércoles.'},
-    {id:115,n:'Obrador Santo Tomé',c:'d',d:'C. de Santo Tomé, 3',a:39.856818,o:-4.027407,r:4.4,x:'Mazapán desde 1861.'},
-    {id:116,n:'Mazapán Conde',c:'d',d:'Pl. Valdecaleros, 8',a:39.8576116,o:-4.0279541,r:4.9,x:'Mazapán artesanal. Cierra sábado y domingo.'},
+    {id:1,n:'Restaurante Adolfo',c:'c',d:'Hombre de Palo, 7',a:39.8579812,o:-4.0240282,r:4.5,x:'Alta cocina toledana.\nQué pedir: menú degustación, visita a su bodega del siglo IX.\nHorario: Mar–Jue 13:00–16:00; Vie–Sáb 13:00–16:00 y 20:00–22:00; Dom 13:00–15:30; cierra lunes.\nTel. +34 925 22 73 21 · 962 reseñas en Google. Alta cocina; las reseñas se dividen por el precio.'},
+    {id:2,n:'Casa Aurelio',c:'c',d:'Plaza del Ayuntamiento, 4',a:39.8572,o:-4.0253,x:'Perdiz estofada.\nGoogle Maps no lo encontró en el casco antiguo; confirma que siga abierto antes de ir.'},
+    {id:3,n:'Víctor Sánchez-Beato',c:'c',d:'Alamillo del Tránsito, 9',a:39.8558651,o:-4.0284722,p:4,r:4.9,x:'Cocina de autor.\nQué pedir: menú degustación (anguila, chuletillas de cordero, suflé).\nHorario: Mié–Sáb 14:00–15:30 y 21:00–22:30; Dom 14:00–15:30; cierra lunes y martes.\nTel. +34 677 87 96 33 · 715 reseñas en Google. Reserva; la comida dura unas 2,5 horas.'},
+    {id:4,n:'Cuchara de Palo',c:'c',d:'Calle de Santa Fe, 2',a:39.8593962,o:-4.0208043,p:2,r:4.2,x:'Comida manchega.\nQué pedir: migas manchegas, tapa de perdiz, desayunos.\nHorario: Lun–Jue 10:00–23:30; Vie–Sáb 10:00–00:30; Dom 10:30–23:30.\nTel. +34 925 22 46 06 · 5.341 reseñas en Google. Buena opción para desayunar o cuando otros locales cierran.'},
+    {id:5,n:'La Abadía',c:'t',d:'Calle Núñez de Arce, 3',a:39.8599934,o:-4.0228894,p:2,r:4.3,x:'Cervecería en cueva.\nQué pedir: venado, parrillada, cervezas artesanas propias.\nHorario: Lun–Vie 09:00–24:00; Sáb 11:00–01:00; Dom 11:00–24:00.\nTel. +34 925 19 22 51 · 11.942 reseñas en Google. Reserva; el edificio y sus baños son muy comentados.'},
+    {id:6,n:'Cervecería El Trébol',c:'t',d:'Calle de Santa Fe, 1',a:39.8599479,o:-4.0208283,p:2,r:4.4,x:'Bomba toledana.\nQué pedir: croquetas de jamón, carcamusas, patatas bravas.\nHorario: Lun–Vie 09:00–24:00; Sáb 11:00–01:00; Dom 11:00–24:00.\nTel. +34 925 28 12 97 · 15.732 reseñas en Google. No acepta reservas; puede haber 30 minutos de espera.'},
+    {id:7,n:'Alfileritos 24',c:'t',d:'Calle Alfileritos, 24',a:39.8597822,o:-4.0234842,p:3,r:4.4,x:'Tapas vanguardistas.\nQué pedir: jabalí, berenjena con burrata, suflé.\nHorario: Lun–Jue y Dom 10:30–23:30; Vie–Sáb 10:30–00:30.\nTel. +34 925 23 96 25 · 7.112 reseñas en Google. Tapas con toques asiáticos; hay menú degustación.'},
+    {id:8,n:'Taberna el Botero',c:'t',d:'Calle Ciudad, 5',a:39.856329,o:-4.024965,p:3,r:4.6,x:'Tapas y coctelería.\nQué pedir: croquetas, atún, cócteles.\nHorario: Lun–Jue y Dom 12:30–00:30; Vie–Sáb 12:30–02:00.\nTel. +34 925 28 09 67 · 3.175 reseñas en Google. La cocina nocturna puede empezar tarde (una reseña dice 21:00); reserva.'},
+    {id:9,n:'Lo Nuestro',c:'t',d:'San Juan de Dios, 7',a:39.8563116,o:-4.0290112,p:2,r:4.5,x:'Raciones manchegas.\nQué pedir: croquetas artesanas, carcamusas, arroz negro, tarta de queso manchego.\nHorario: Lun–Dom 11:00–17:30.\nTel. +34 699 24 07 41 · 2.554 reseñas en Google. Cierra por la tarde.'},
+    {id:10,n:'Confitería Santo Tomé',c:'d',d:'Plaza Zocodover, 7',a:39.8593609,o:-4.0210174,p:1,r:3.9,x:'Mazapán artesano.\nQué pedir: mazapán, torrijas, bombones.\nHorario: Lun–Dom 09:00–21:00.\nTel. +34 925 22 11 68 · 385 reseñas en Google. En la plaza de Zocodover; puedes comprar piezas sueltas.'},
+    {id:101,n:'Restaurante La Manuela',c:'c',d:'C. Taller del Moro, 5',a:39.8561862,o:-4.0271623,r:4.9,p:3,x:'Cocina toledana, croquetas y chipirones.\nQué pedir: chipirones, croquetas, cordero, vermut local.\nHorario: Mar–Jue 11:00–16:00; Vie–Sáb 11:00–16:00 y 20:00–23:00; Dom 11:00–16:00; cierra lunes.\nTel. +34 617 51 65 66 · 1.449 reseñas en Google. Local sencillo; la gente destaca la comida y el trato.'},
+    {id:102,n:'Restaurante Aquí',c:'c',d:'Pl. Corral de Don Diego, 5',a:39.8583538,o:-4.0224154,r:4.7,p:2,x:'Venado, cordero y tarta de queso.\nQué pedir: venado cocinado lento, pato, tarta de queso.\nHorario: Lun y Jue–Dom 12:30–22:00; Mar 12:30–16:00; cierra miércoles.\nTel. +34 614 96 71 79 · 1.164 reseñas en Google. Si no pides entrante, pide un acompañamiento.'},
+    {id:103,n:'Taberna La Esencial',c:'c',d:'C. Trastámara, 4',a:39.8578465,o:-4.021904,r:4.6,p:2,x:'Cocina española, ambiente tranquilo.\nQué pedir: venado, patatas bravas con chorizo, tarta de queso.\nHorario: Lun–Vie 09:30–24:00; Sáb 12:00–24:00; Dom 12:00–18:00.\nTel. +34 646 69 05 29 · 366 reseñas en Google. Tranquilo y sin multitudes.'},
+    {id:104,n:'Carlos Rooftop (Hotel Carlos V)',c:'c',d:'Pl. del Horno de la Magdalena, 4',a:39.858185,o:-4.021816,r:4.5,p:2,x:'Terraza con vistas a la catedral.\nQué pedir: gambas con huevos, perdiz, cócteles.\nHorario: Mar–Vie 13:00–21:00; Sáb 13:00–00:00; Dom 13:00–21:00; cierra lunes.\nTel. +34 925 22 21 00 · 1.568 reseñas en Google. Se entra por el Hotel Carlos V; vistas a la catedral.'},
+    {id:105,n:'El Picatel',c:'t',d:'C. de Venancio González, 3',a:39.8607961,o:-4.0212908,r:4.8,p:2,x:'Estofados y croquetas, ambiente local.\nQué pedir: estofado de cerdo, bacalao, croquetas.\nHorario: Lun–Mar y Jue 10:00–16:00; Vie 10:00–16:00 y 20:00–23:00; Sáb 12:00–16:00 y 20:00–23:00; Dom 12:00–16:00; cierra miércoles.\nTel. +34 654 13 73 23 · 358 reseñas en Google. Lo frecuentan toledanos; precios razonables.'},
+    {id:106,n:'Taberna Artesanal La Tintilla',c:'t',d:'C. Real, 15',a:39.859662,o:-4.0296454,r:4.8,p:2,x:'Tapas, vinos y pulpo a la gallega.\nQué pedir: pulpo a la gallega, sardinas ahumadas, estofado de cerdo con aceitunas.\nHorario: Lun–Jue 11:30–16:00; Vie 11:30–16:30 y 19:00–24:00; Sáb 12:30–17:00; cierra domingo.\nTel. +34 925 84 18 45 · 633 reseñas en Google. Buena carta de vinos; el dueño atiende en la sala.'},
+    {id:107,n:'Taberna Skala',c:'t',d:'Cta. de la Sal, 5',a:39.8583003,o:-4.0237749,r:4.6,p:2,x:'Carcamusas y orejas a la plancha.\nQué pedir: carcamusas, croquetas, orejas a la plancha.\nHorario: Lun–Jue y Dom 11:30–17:00; Vie–Sáb 11:30–17:00 y 20:00–24:00.\nTel. +34 677 58 10 49 · 4.861 reseñas en Google. Llega hacia las 13:30 para evitar la fila.'},
+    {id:108,n:'Tabernita Tapas Bar',c:'t',d:'C. de Santa Fe, 14',a:39.8596959,o:-4.0207349,r:4.5,p:2,x:'Tapas y bocadillo de calamares.\nQué pedir: bocadillo de calamares en pan negro, tomate frito, mojito.\nHorario: Lun–Jue 13:00–16:30 y 20:00–24:00; Vie–Sáb 12:30–17:00 y 20:00–01:00; Dom 12:30–17:00 y 20:00–24:00.\nTel. +34 925 21 30 06 · 2.969 reseñas en Google. Precios bajos; pocas personas atienden.'},
+    {id:109,n:'Taberna Embrujo',c:'t',d:'C. Santa Leocadia, 6',a:39.860168,o:-4.0283718,r:4.5,p:2,x:'Taberna con terraza.\nQué pedir: venado estofado, patatas al ajo, secreto de cerdo.\nHorario: Lun–Vie 10:00–16:30 y 19:00–24:00; Sáb 11:00–16:30 y 19:00–24:00; cierra domingo.\nTel. +34 925 21 07 06 · 3.345 reseñas en Google. Terraza grande en la calle de enfrente.'},
+    {id:110,n:'Cervecería Lúpulo',c:'t',d:'C. Aljibillo, 4',a:39.8573209,o:-4.0274649,r:4.6,p:2,x:'Cerveza artesanal y tapas.\nQué pedir: cerveza artesana propia, huevos rotos con jamón, pizza con masa de cerveza.\nHorario: Mié–Jue 12:00–23:00; Vie–Sáb 12:00–24:00; Dom 12:00–17:00; cierra lunes y martes.\nTel. +34 640 30 83 10 · 1.289 reseñas en Google. Patio exterior agradable.'},
+    {id:111,n:'Las Delicias de San Antonio',c:'d',d:'Tr. del Conde, 6',a:39.8567756,o:-4.0284299,r:4.8,x:'Helados artesanales.\nQué pedir: helados de mora, mango, tres chocolates.\nHorario: Lun y Sáb–Dom 10:00–14:30 y 16:00–19:00; Vie 11:00–14:30 y 16:00–19:00; cierra martes a jueves.\n430 reseñas en Google. Abre pocos días; confirma antes de ir.'},
+    {id:112,n:'Heladería Fermata Gelato',c:'d',d:'C. Alfonso X el Sabio, 6',a:39.8585966,o:-4.0253661,r:4.8,x:'Gelato sobre ruinas romanas.\nQué pedir: helado de pistacho y otros sabores artesanales.\nHorario: Mar–Vie 13:00–19:00; Sáb–Dom 12:00–19:00; cierra lunes.\n262 reseñas en Google. Suelo de cristal sobre ruinas romanas.'},
+    {id:113,n:'Bar Restaurante Morena',c:'c',d:'Pl. Padre Juan de Mariana, 7',a:39.8578239,o:-4.0259211,r:4.8,p:2,x:'Paella y cocina española junto a la catedral.\nQué pedir: paella, gambas al ajillo, churros.\nHorario: Lun, Jue y Dom 12:00–22:00; Mié 17:00–22:00; Vie–Sáb 13:00–23:00; cierra martes.\nTel. +34 825 85 25 89 · 783 reseñas en Google. Alguna reseña critica la frescura de las ensaladas.'},
+    {id:114,n:'Taberna Las Termas',c:'c',d:'C. Navarro Ledesma, 8',a:39.8587749,o:-4.0254581,r:4.9,p:2,x:'Pollo asado y menú del día económico. Cierra miércoles.\nQué pedir: pollo asado, tarta de queso, menú del día.\nHorario: Lun–Mar y Jue–Vie y Dom 11:00–17:00; Sáb 11:00–23:00; cierra miércoles.\nTel. +34 925 57 83 42 · 209 reseñas en Google. El menú del día ronda los 16 € según reseñas.'},
+    {id:115,n:'Obrador Santo Tomé',c:'d',d:'C. de Santo Tomé, 3',a:39.856818,o:-4.027407,r:4.4,x:'Mazapán desde 1861.\nQué pedir: mazapán, pasteles de almendra, almendras saladas.\nHorario: Lun–Dom 09:00–21:00.\nTel. +34 925 22 37 63 · 711 reseñas en Google. Hace mazapán desde 1861; tiene una figura récord de mazapán.'},
+    {id:116,n:'Mazapán Conde',c:'d',d:'Pl. Valdecaleros, 8',a:39.8576116,o:-4.0279541,r:4.9,x:'Mazapán artesanal. Cierra sábado y domingo.\nQué pedir: tortas y figuras de mazapán.\nHorario: Lun–Vie 09:00–14:00 y 17:00–20:00; cierra sábado y domingo.\nTel. +34 925 25 40 51 · 167 reseñas en Google. Más barato que las tiendas turísticas del centro.'},
     {id:11,n:'Zara',c:'s',d:'CC Luz del Tajo',a:39.8665,o:-3.9860,x:'Zara en CC Luz del Tajo.'},
     {id:12,n:'Pull & Bear',c:'s',d:'CC Luz del Tajo',a:39.8666,o:-3.9858,x:'Pull & Bear Luz del Tajo.'},
     {id:13,n:'Lefties',c:'s',d:'CC Luz del Tajo',a:39.8664,o:-3.9859,x:'Lefties Luz del Tajo.'},
@@ -698,46 +700,46 @@ const lugares = {
     {id:23,n:'Lidl',c:'m',d:'Búscalo cerca de ti o de tu zona',a:39.8628,o:-4.0273,np:1,q:'Lidl',x:'Supermercado de precios bajos, con panadería y promociones semanales.'}
   ],
   roma: [
-    {id:1,n:'Trattoria Da Enzo al 29',c:'c',d:'Via dei Vascellari, 29',a:41.8880847,o:12.4778554,p:2,r:4.3,x:'Carbonara auténtica.'},
-    {id:2,n:'Roscioli Salumeria',c:'c',d:'Via dei Giubbonari, 21',a:41.894256,o:12.4742417,p:3,r:4.3,x:'Amatriciana y quesos.'},
-    {id:3,n:'Tonnarello',c:'c',d:'Via della Paglia, 1',a:41.889804,o:12.4693004,p:2,r:4.7,x:'Pasta en Trastevere.'},
-    {id:4,n:'Osteria da Fortunata',c:'c',d:'Via del Pellegrino, 11',a:41.8961166,o:12.4716707,p:2,r:4.4,x:'Pasta fresca a mano.'},
-    {id:5,n:'Pizzeria Da Baffetto',c:'c',d:'Via del Governo Vecchio, 114',a:41.8982758,o:12.4702938,p:2,r:4.1,x:'Pizza romana fina.'},
-    {id:6,n:'Trapizzino',c:'t',d:'Piazza Trilussa, 46',a:41.891494,o:12.4698437,p:2,r:4.6,x:'Street food pizzero.'},
-    {id:7,n:'Supplizio',c:'t',d:'Via dei Banchi Vecchi, 143',a:41.897487,o:12.467911,p:1,r:4.5,x:'Supplì romanos.'},
-    {id:8,n:'Antico Forno Roscioli',c:'t',d:'Via dei Chiavari, 34',a:41.8945667,o:12.4742778,p:2,r:4.5,x:'Pizza al taglio.'},
-    {id:9,n:'Pompi Tiramisù',c:'d',d:'Via della Croce, 82',a:41.9065421,o:12.4808551,r:4.3,x:'Tiramisú clásico.'},
-    {id:10,n:'Gelateria Giolitti',c:'d',d:'Via Uffici del Vicario',a:41.9010245,o:12.4772026,r:4.4,x:'Heladería histórica.'},
-    {id:101,n:'La Nuova Piazzetta',c:'c',d:'Vicolo del Buon Consiglio, 23/a',a:41.89332,o:12.48919,r:4.8,p:2,x:'Trattoria y pizza en Monti.'},
-    {id:102,n:'Cantina e Cucina',c:'c',d:'Via del Governo Vecchio, 87',a:41.89795,o:12.47164,r:4.6,p:2,x:'Cocina romana cerca de Piazza Navona.'},
-    {id:103,n:'La Locanda del Tempio',c:'c',d:'Via di Pietra, 85',a:41.89999,o:12.48038,r:4.6,p:2,x:'Cocina italiana junto al Panteón.'},
-    {id:104,n:'Gusteria Al 17',c:'c',d:'Via Natale del Grande, 17',a:41.88718,o:12.47047,r:4.8,p:2,x:'Pizza y cocina en Trastevere.'},
-    {id:105,n:'Sesamo Trastevere',c:'c',d:'Viale di Trastevere, 83',a:41.88775,o:12.47332,r:4.8,p:2,x:'Pizza y hamburguesas en Trastevere.'},
-    {id:106,n:'Supplì Roma (I Supplì di Giacomo)',c:'t',d:'Via di S. Francesco a Ripa, 137',a:41.88715,o:12.47175,r:4.7,p:1,x:'Supplì artesanales para llevar.'},
-    {id:107,n:'Alice Pizza Trastevere',c:'t',d:'Via di S. Francesco a Ripa, 1',a:41.8886,o:12.47099,r:4.8,p:1,x:'Pizza al taglio.'},
-    {id:108,n:'Pizzeria La Boccaccia',c:'t',d:'Via di Santa Dorotea, 2',a:41.89185,o:12.46859,r:4.6,p:1,x:'Pizza económica en Trastevere.'},
-    {id:109,n:'Antico Forno Santini',c:'d',d:'Vicolo del Cinque, 44',a:41.89088,o:12.46955,r:4.8,p:1,x:'Panadería y heladería en Trastevere.'},
-    {id:110,n:'Gelateria La Romana',c:'d',d:'Piazza S. Andrea della Valle',a:41.89669,o:12.47412,r:4.9,x:'Gelato desde 1947.'},
-    {id:111,n:'Gelateria Sweet Life',c:'d',d:'Corso Vittorio Emanuele II, 270',a:41.89807,o:12.46823,r:4.9,x:'Gelato artesanal.'},
-    {id:112,n:'Frigidarium',c:'d',d:'Via del Governo Vecchio, 112',a:41.89823,o:12.47045,r:4.7,x:'Gelato junto a Piazza Navona.'},
-    {id:113,n:'Casa Manco',c:'t',d:'Via Aldo Manuzio, 66C',a:41.8777932,o:12.4736888,r:4.9,p:1,x:'Pizza al taglio en Testaccio. Cierra martes y domingo.'},
-    {id:114,n:'Pizzeria della Madonna dei Monti',c:'c',d:'Via della Madonna dei Monti, 110',a:41.8938333,o:12.4880582,r:4.7,p:2,x:'Pizza napolitana cerca del Coliseo.'},
-    {id:115,n:'Ar Monte Testaccio',c:'c',d:'Via Nicola Zabaglia, 28',a:41.8770933,o:12.4759906,r:4.7,p:2,x:'Pasta casera en Testaccio.'},
-    {id:116,n:'Trattoria Vecchia Roma',c:'c',d:'Via Ferruccio, 12',a:41.8936997,o:12.502435,r:4.5,p:2,x:'Amatriciana flambeada. Cierra domingo.'},
-    {id:117,n:'Mastro Donato Pizza Gourmet',c:'t',d:'Via Marmorata, 61',a:41.8793767,o:12.4784417,r:4.8,p:1,x:'Pizza y supplì. Cierra domingo.'},
-    {id:118,n:'Two Sizes',c:'d',d:'Via del Governo Vecchio, 88',a:41.8980142,o:12.471566,r:4.7,x:'Tiramisú en vasos de dos tamaños.'},
-    {id:119,n:'I Dolci di Nonna Vincenza',c:'d',d:'Via dell\'Arco del Monte, 98',a:41.8940972,o:12.4730667,r:4.5,x:'Cannoli sicilianos y granita.'},
-    {id:120,n:'Pizzería Europa',c:'t',d:'Via Merulana',a:41.895656599999995,o:12.500065999999999,r:4.5,p:1,x:'Pizza al taglio para llevar. A unos 40 m del alojamiento.'},
-    {id:121,n:'Terra Gelato',c:'d',d:'P.za di Santa Maria Maggiore, 9',a:41.8967974,o:12.4995003,r:4.7,x:'Gelato frente a Santa Maria Maggiore. A unos 100 m del alojamiento.'},
-    {id:122,n:'Regoli Pasticceria',c:'d',d:'Via dello Statuto, 60',a:41.8948172,o:12.500949199999999,r:4.5,x:'Pastelería histórica, maritozzi. A unos 150 m del alojamiento.'},
-    {id:123,n:'Osteria Emasi',c:'c',d:'V. Principe Amedeo, 75a/75b',a:41.8984969,o:12.5006953,r:4.7,p:2,x:'Cocina romana. A unos 280 m del alojamiento.'},
-    {id:124,n:'Trattoria Cecio',c:'c',d:'V. Principe Amedeo, 104',a:41.8984299,o:12.5012226,r:4.5,p:2,x:'Trattoria de cocina romana. A unos 290 m del alojamiento.'},
-    {id:125,n:'Pizzeria Acqua & Farina',c:'t',d:'V. Principe Amedeo, 90',a:41.898567400000005,o:12.500934599999999,r:4.6,p:2,x:'Pizza artesanal. A unos 300 m del alojamiento.'},
-    {id:126,n:'Gelateria Gatsby & Gelato San Lorenzo',c:'d',d:'civico 106 lato giardini',a:41.894030699999995,o:12.5040651,r:4.8,x:'Gelato artesanal. A unos 400 m del alojamiento.'},
-    {id:127,n:'Sfizio Pizzeria',c:'t',d:'Via Giovanni Giolitti, 77',a:41.899789299999995,o:12.501370600000001,r:4.7,p:1,x:'Pizza económica, más de 10 mil reseñas. A unos 440 m del alojamiento.'},
-    {id:128,n:'Gelateria Artigianale Il Capriccio di Carla Monti',c:'d',d:'Via Agostino Depretis, 61',a:41.8995799,o:12.4951793,r:4.8,x:'Gelato artesanal. A unos 560 m del alojamiento.'},
-    {id:129,n:'Cacio & Pepe',c:'c',d:'Piazza del Viminale, 1',a:41.8999096,o:12.493418799999999,r:4.7,p:2,x:'Cocina romana. A unos 700 m del alojamiento.'},
-    {id:130,n:'CITAGLIO La Pizza in Teglia',c:'t',d:'Via Palermo, 46',a:41.899864799999996,o:12.493303099999999,r:5.0,p:1,x:'Pizza en bandeja. A unos 700 m del alojamiento.'},
+    {id:1,n:'Trattoria Da Enzo al 29',c:'c',d:'Via dei Vascellari, 29',a:41.8880847,o:12.4778554,p:2,r:4.3,x:'Carbonara auténtica.\nQué pedir: carbonara, albóndigas, alcachofas fritas, tiramisú.\nHorario: Lun–Sáb 12:00–15:00 y 18:30–22:30; cierra domingo.\nTel. +39 06 581 2260 · 10.377 reseñas en Google. Fila larga; las reseñas hablan de 35 a 80 minutos.'},
+    {id:2,n:'Roscioli Salumeria',c:'c',d:'Via dei Giubbonari, 21',a:41.894256,o:12.4742417,p:3,r:4.3,x:'Amatriciana y quesos.\nQué pedir: carbonara, cacio e pepe, tabla de jamones, burrata.\nHorario: Lun–Dom 09:00–23:30.\nTel. +39 06 687 5287 · 6.701 reseñas en Google. Reserva; sin reserva la espera ronda 1 hora.'},
+    {id:3,n:'Tonnarello',c:'c',d:'Via della Paglia, 1',a:41.889804,o:12.4693004,p:2,r:4.7,x:'Pasta en Trastevere.\nLas reseñas destacan: carbonara, tiramisú, focaccia.\nHorario: Lun–Dom 11:30–23:00.\n111.248 reseñas en Google.'},
+    {id:4,n:'Osteria da Fortunata',c:'c',d:'Via del Pellegrino, 11',a:41.8961166,o:12.4716707,p:2,r:4.4,x:'Pasta fresca a mano.\nLas reseñas destacan: pasta, tiramisú, carbonara.\nHorario: Lun–Dom 11:30–00:30.\nTel. +39 06 9970 1350 · 33.435 reseñas en Google.'},
+    {id:5,n:'Pizzeria Da Baffetto',c:'c',d:'Via del Governo Vecchio, 114',a:41.8982758,o:12.4702938,p:2,r:4.1,x:'Pizza romana fina.\nQué pedir: pizza fina (alcachofa y huevo), bruschetta.\nHorario: Lun y Mié–Dom 12:00–15:30 y 18:00–24:00; cierra martes.\nTel. +39 06 686 1617 · 11.096 reseñas en Google. Mucha gente; algunas reseñas critican la espera.'},
+    {id:6,n:'Trapizzino',c:'t',d:'Piazza Trilussa, 46',a:41.891494,o:12.4698437,p:2,r:4.6,x:'Street food pizzero.\nQué pedir: trapizzino de albóndigas o lengua en salsa, supplì.\nHorario: Lun–Jue y Dom 12:00–24:00; Vie–Sáb 12:00–01:00.\nTel. +39 06 4341 9624 · 5.957 reseñas en Google. Casi sin mesas; se come en el parque cercano.'},
+    {id:7,n:'Supplizio',c:'t',d:'Via dei Banchi Vecchi, 143',a:41.897487,o:12.467911,p:1,r:4.5,x:'Supplì romanos.\nQué pedir: supplì clásico, pomodoro e basilico, carbonara.\nHorario: Lun–Sáb 12:00–15:30 y 17:00–21:30; cierra domingo.\nTel. +39 06 8987 1920 · 3.408 reseñas en Google. Poco espacio dentro; hay bancos en la plaza.'},
+    {id:8,n:'Antico Forno Roscioli',c:'t',d:'Via dei Chiavari, 34',a:41.8945667,o:12.4742778,p:2,r:4.5,x:'Pizza al taglio.\nQué pedir: pizza rossa, pizza de mortadela, porchetta con patatas.\nHorario: Lun–Dom 07:30–20:00.\nTel. +39 06 686 4045 · 8.007 reseñas en Google. Llega antes de la hora punta; hay poco espacio.'},
+    {id:9,n:'Pompi Tiramisù',c:'d',d:'Via della Croce, 82',a:41.9065421,o:12.4808551,r:4.3,x:'Tiramisú clásico.\nQué pedir: tiramisú clásico (unos 6 €), tiramisú de pistacho.\nHorario: Lun–Dom 11:00–21:30.\nTel. +39 06 2430 4431 · 8.016 reseñas en Google. No hay donde sentarse dentro.'},
+    {id:10,n:'Gelateria Giolitti',c:'d',d:'Via Uffici del Vicario',a:41.9010245,o:12.4772026,r:4.4,x:'Heladería histórica.\nLas reseñas destacan: helado, gelato, tiramisú.\nHorario: Lun–Dom 07:30–00:00.\nTel. +39 06 699 1243 · 29.880 reseñas en Google.'},
+    {id:101,n:'La Nuova Piazzetta',c:'c',d:'Vicolo del Buon Consiglio, 23/a',a:41.89332,o:12.48919,r:4.8,p:2,x:'Trattoria y pizza en Monti.\nLas reseñas destacan: pasta, gambas, carbonara.\nHorario: Lun–Dom 11:30–22:30.\nTel. +39 351 940 4029 · 56.055 reseñas en Google.'},
+    {id:102,n:'Cantina e Cucina',c:'c',d:'Via del Governo Vecchio, 87',a:41.89795,o:12.47164,r:4.6,p:2,x:'Cocina romana cerca de Piazza Navona.\nQué pedir: ravioli de ricotta, tonnarelli cacio e pepe, lasaña, tiramisú.\nHorario: Lun–Dom 11:00–23:30.\nTel. +39 06 689 2574 · 18.139 reseñas en Google. Focaccia caliente de cortesía en la mesa.'},
+    {id:103,n:'La Locanda del Tempio',c:'c',d:'Via di Pietra, 85',a:41.89999,o:12.48038,r:4.6,p:2,x:'Cocina italiana junto al Panteón.\nLas reseñas destacan: pasta, pizza, carbonara.\nHorario: Lun–Dom 11:00–23:00.\nTel. +39 06 4754 5886 · 10.355 reseñas en Google.'},
+    {id:104,n:'Gusteria Al 17',c:'c',d:'Via Natale del Grande, 17',a:41.88718,o:12.47047,r:4.8,p:2,x:'Pizza y cocina en Trastevere.\nLas reseñas destacan: lasaña, supplì, canelones.\nHorario: Lun cerrado; Mar–Dom 11:30–22:00.\nTel. +39 06 6400 5875 · 892 reseñas en Google.'},
+    {id:105,n:'Sesamo Trastevere',c:'c',d:'Viale di Trastevere, 83',a:41.88775,o:12.47332,r:4.8,p:2,x:'Pizza y hamburguesas en Trastevere.\nQué pedir: pizzas gourmet, hamburguesas, supplì.\nHorario: Lun–Sáb 11:30–22:00; cierra domingo.\nTel. +39 06 5184 7427 · 1.155 reseñas en Google. Pocas mesas; sirve sobre todo para llevar.'},
+    {id:106,n:'Supplì Roma (I Supplì di Giacomo)',c:'t',d:'Via di S. Francesco a Ripa, 137',a:41.88715,o:12.47175,r:4.7,p:1,x:'Supplì artesanales para llevar.\nQué pedir: supplì (2–3 €), pizza al taglio, lasaña.\nHorario: Lun–Sáb 10:00–21:00; cierra domingo.\nTel. +39 06 589 7110 · 6.153 reseñas en Google. Sin mesas; la fila avanza rápido.'},
+    {id:107,n:'Alice Pizza Trastevere',c:'t',d:'Via di S. Francesco a Ripa, 1',a:41.8886,o:12.47099,r:4.8,p:1,x:'Pizza al taglio.\nLas reseñas destacan: pizza, supplì.\nHorario: Lun–Jue 11:30–22:30; Vie 12:00–01:00; Sáb 11:30–01:00; Dom 11:30–23:30.\nTel. +39 06 6935 5773 · 3.057 reseñas en Google.'},
+    {id:108,n:'Pizzeria La Boccaccia',c:'t',d:'Via di Santa Dorotea, 2',a:41.89185,o:12.46859,r:4.6,p:1,x:'Pizza económica en Trastevere.\nLas reseñas destacan: pizza.\nHorario: Lun–Dom 09:00–23:00.\nTel. +39 320 775 6277 · 2.078 reseñas en Google.'},
+    {id:109,n:'Antico Forno Santini',c:'d',d:'Vicolo del Cinque, 44',a:41.89088,o:12.46955,r:4.8,p:1,x:'Panadería y heladería en Trastevere.\nQué pedir: maritozzi, biscotti de almendra, helado, desayuno.\nHorario: Lun–Dom 08:00–23:00.\nTel. +39 06 6975 8366 · 898 reseñas en Google. A pasos del Tíber; dentro hace calor.'},
+    {id:110,n:'Gelateria La Romana',c:'d',d:'Piazza S. Andrea della Valle',a:41.89669,o:12.47412,r:4.9,x:'Gelato desde 1947.\nLas reseñas destacan: gelato.\nHorario: Lun–Jue 11:00–23:00; Vie–Sáb 11:00–00:00; Dom 11:00–23:00.\nTel. +39 06 6813 9867 · 16.104 reseñas en Google.'},
+    {id:111,n:'Gelateria Sweet Life',c:'d',d:'Corso Vittorio Emanuele II, 270',a:41.89807,o:12.46823,r:4.9,x:'Gelato artesanal.\nLas reseñas destacan: gelato, helado, tiramisú.\nHorario: Lun–Mar 13:00–00:00; Mié–Jue cerrado; Vie 13:30–00:45; Sáb 13:00–00:45; Dom 13:00–00:00.\nTel. +39 320 633 6587 · 4.863 reseñas en Google.'},
+    {id:112,n:'Frigidarium',c:'d',d:'Via del Governo Vecchio, 112',a:41.89823,o:12.47045,r:4.7,x:'Gelato junto a Piazza Navona.\nQué pedir: gelato de amarena, chocolate negro, coco.\nHorario: Lun–Dom 10:30–24:00.\nTel. +39 06 3105 2934 · 9.292 reseñas en Google. Puedes pedir una capa de chocolate encima.'},
+    {id:113,n:'Casa Manco',c:'t',d:'Via Aldo Manuzio, 66C',a:41.8777932,o:12.4736888,r:4.9,p:1,x:'Pizza al taglio en Testaccio. Cierra martes y domingo.\nQué pedir: pizza al taglio (stracciatella, flor de calabacín, tomate asado).\nHorario: Lun y Mié–Sáb 09:30–14:30; cierra martes y domingo.\nTel. +39 06 8913 2652 · 1.578 reseñas en Google. Dentro del Mercato Testaccio; venden por peso.'},
+    {id:114,n:'Pizzeria della Madonna dei Monti',c:'c',d:'Via della Madonna dei Monti, 110',a:41.8938333,o:12.4880582,r:4.7,p:2,x:'Pizza napolitana cerca del Coliseo.\nLas reseñas destacan: pizza, supplì, focaccia.\nHorario: Lun–Dom 11:00–22:00.\nTel. +39 340 484 8596 · 5.201 reseñas en Google.'},
+    {id:115,n:'Ar Monte Testaccio',c:'c',d:'Via Nicola Zabaglia, 28',a:41.8770933,o:12.4759906,r:4.7,p:2,x:'Pasta casera en Testaccio.\nQué pedir: cacio e pepe, carbonara, ravioli de calabaza, tiramisú de pistacho.\nHorario: Lun–Jue 12:00–23:30; Vie–Dom 12:00–24:00.\nTel. +39 06 5730 0368 · 3.440 reseñas en Google. Pasta casera; zona de Testaccio.'},
+    {id:116,n:'Trattoria Vecchia Roma',c:'c',d:'Via Ferruccio, 12',a:41.8936997,o:12.502435,r:4.5,p:2,x:'Amatriciana flambeada. Cierra domingo.\nLas reseñas destacan: cordero, amatriciana, tiramisú.\nHorario: Lun–Vie 12:30–15:00 y 19:00–23:00; Sáb 12:00–15:00 y 19:00–23:00; Dom cerrado.\nTel. +39 06 446 7143 · 14.929 reseñas en Google.'},
+    {id:117,n:'Mastro Donato Pizza Gourmet',c:'t',d:'Via Marmorata, 61',a:41.8793767,o:12.4784417,r:4.8,p:1,x:'Pizza y supplì. Cierra domingo.\nQué pedir: pizza de guanciale y patata, supplì, calzone.\nHorario: Lun–Vie 11:30–20:00; Sáb 11:30–15:00; cierra domingo.\nTel. +39 06 9483 8515 · 931 reseñas en Google. Funciona bien para llevar.'},
+    {id:118,n:'Two Sizes',c:'d',d:'Via del Governo Vecchio, 88',a:41.8980142,o:12.471566,r:4.7,x:'Tiramisú en vasos de dos tamaños.\nQué pedir: tiramisú clásico, de pistacho y de fresa.\nHorario: Mar–Dom 11:00–22:00; cierra lunes.\nTel. +39 06 6476 1191 · 18.570 reseñas en Google. La fila avanza rápido; hay dos tamaños de vaso.'},
+    {id:119,n:'I Dolci di Nonna Vincenza',c:'d',d:'Via dell\'Arco del Monte, 98',a:41.8940972,o:12.4730667,r:4.5,x:'Cannoli sicilianos y granita.\nQué pedir: cannolo siciliano, granita de pistacho, tiramisú.\nHorario: Lun–Vie 07:30–19:30; Sáb–Dom 08:00–19:30.\nTel. +39 06 9259 4322 · 1.323 reseñas en Google. Café muy fuerte.'},
+    {id:120,n:'Pizzería Europa',c:'t',d:'Via Merulana',a:41.895656599999995,o:12.500065999999999,r:4.5,p:1,x:'Pizza al taglio para llevar. A unos 40 m del alojamiento.\nLas reseñas destacan: pizza.\nHorario: Lun–Dom 08:00–22:30.\nTel. +39 06 6450 1196 · 549 reseñas en Google.'},
+    {id:121,n:'Terra Gelato',c:'d',d:'P.za di Santa Maria Maggiore, 9',a:41.8967974,o:12.4995003,r:4.7,x:'Gelato frente a Santa Maria Maggiore. A unos 100 m del alojamiento.\nLas reseñas destacan: gelato, pistacho, helado.\nHorario: Lun–Jue 11:00–23:00; Vie–Sáb 11:00–23:30; Dom 11:00–23:00.\nTel. +39 06 4566 6656 · 841 reseñas en Google.'},
+    {id:122,n:'Regoli Pasticceria',c:'d',d:'Via dello Statuto, 60',a:41.8948172,o:12.500949199999999,r:4.5,x:'Pastelería histórica, maritozzi. A unos 150 m del alojamiento.\nLas reseñas destacan: maritozzi, cannoli, canelones.\nHorario: Lun 07:00–19:00; Mar cerrado; Mié–Dom 07:00–19:00.\nTel. +39 06 487 2812 · 6.692 reseñas en Google.'},
+    {id:123,n:'Osteria Emasi',c:'c',d:'V. Principe Amedeo, 75a/75b',a:41.8984969,o:12.5006953,r:4.7,p:2,x:'Cocina romana. A unos 280 m del alojamiento.\nLas reseñas destacan: carbonara, cacio e pepe, supplì.\nHorario: Lun–Dom 12:00–14:45 y 18:00–22:45.\nTel. +39 06 8941 5148 · 1.710 reseñas en Google.'},
+    {id:124,n:'Trattoria Cecio',c:'c',d:'V. Principe Amedeo, 104',a:41.8984299,o:12.5012226,r:4.5,p:2,x:'Trattoria de cocina romana. A unos 290 m del alojamiento.\nLas reseñas destacan: pasta, tiramisú, carbonara.\nHorario: Lun–Dom 12:00–14:30 y 18:00–22:45.\nTel. +39 06 446 4991 · 4.453 reseñas en Google.'},
+    {id:125,n:'Pizzeria Acqua & Farina',c:'t',d:'V. Principe Amedeo, 90',a:41.898567400000005,o:12.500934599999999,r:4.6,p:2,x:'Pizza artesanal. A unos 300 m del alojamiento.\nLas reseñas destacan: pizza, supplì, cacio e pepe.\nHorario: Lun–Mié 09:30–22:00; Jue–Sáb 09:30–23:00; Dom cerrado.\nTel. +39 327 034 2852 · 1.706 reseñas en Google.'},
+    {id:126,n:'Gelateria Gatsby & Gelato San Lorenzo',c:'d',d:'civico 106 lato giardini',a:41.894030699999995,o:12.5040651,r:4.8,x:'Gelato artesanal. A unos 400 m del alojamiento.\nLas reseñas destacan: gelato, helado, pistacho.\nHorario: Lun–Dom 12:00–23:00.\nTel. +39 06 6933 9626 · 362 reseñas en Google.'},
+    {id:127,n:'Sfizio Pizzeria',c:'t',d:'Via Giovanni Giolitti, 77',a:41.899789299999995,o:12.501370600000001,r:4.7,p:1,x:'Pizza económica, más de 10 mil reseñas. A unos 440 m del alojamiento.\nLas reseñas destacan: pizza, supplì.\nHorario: Lun–Dom 07:30–22:00.\nTel. +39 06 481 7404 · 10.246 reseñas en Google.'},
+    {id:128,n:'Gelateria Artigianale Il Capriccio di Carla Monti',c:'d',d:'Via Agostino Depretis, 61',a:41.8995799,o:12.4951793,r:4.8,x:'Gelato artesanal. A unos 560 m del alojamiento.\nLas reseñas destacan: gelato, pistacho.\nHorario: Lun–Jue 11:00–00:00; Vie–Sáb 11:00–00:30; Dom 11:00–00:00.\nTel. +39 370 703 5348 · 2.473 reseñas en Google.'},
+    {id:129,n:'Cacio & Pepe',c:'c',d:'Piazza del Viminale, 1',a:41.8999096,o:12.493418799999999,r:4.7,p:2,x:'Cocina romana. A unos 700 m del alojamiento.\nLas reseñas destacan: carbonara, pasta, carne a la parrilla.\nHorario: Lun 16:00–23:00; Mar–Sáb 12:00–23:00; Dom cerrado.\nTel. +39 351 438 0160 · 710 reseñas en Google.'},
+    {id:130,n:'CITAGLIO La Pizza in Teglia',c:'t',d:'Via Palermo, 46',a:41.899864799999996,o:12.493303099999999,r:5.0,p:1,x:'Pizza en bandeja. A unos 700 m del alojamiento.\nLas reseñas destacan: pizza, carbonara, cacio e pepe.\nHorario: Lun–Sáb 10:30–21:30; Dom cerrado.\nTel. +39 392 488 6258 · 350 reseñas en Google.'},
     {id:11,n:'Coliseo y Foro Romano',c:'v',d:'Piazza del Colosseo',a:41.8902,o:12.4922,x:'Reservado. Visita al Coliseo y Foro Romano.'},
     {id:12,n:'Museos Vaticanos',c:'v',d:'Viale Vaticano',a:41.9065,o:12.4536,x:'Reservado.'},
     {id:13,n:'Zara',c:'s',d:'Via del Corso, 189',a:41.9022,o:12.4795,x:'Zara Via del Corso.'},
@@ -766,51 +768,58 @@ const lugares = {
     {id:301,n:'Uniqlo Roma Via del Corso',c:'s',d:'Via del Corso, 197',a:41.9009,o:12.4809,x:'Tienda Uniqlo en la esquina de la Galleria Alberto Sordi.'},
     {id:302,n:'Uniqlo Roma Termini',c:'s',d:'Stazione Termini, Via Marsala 44-46',a:41.9014,o:12.5013,x:'Tienda Uniqlo dentro de la estación Termini (planta baja, entrada Via Marsala).'}
   ],
+  sanramon: [
+    {id:101,n:'Green Garden Trattoria',c:'c',d:'Calle 0, San Ramón',a:10.0865865,o:-84.4678841,r:4.8,p:2,x:'Trattoria italiana con pastas frescas y pizza de masa fina.\nQué pedir: pasta fresca, pizza, cheesecake con caramelo.\nHorario: Lun y Mié 11:00–14:00 y 18:00–21:00; Jue 11:00–21:00; Vie–Sáb 11:00–22:00; Dom 11:00–17:00; cierra martes.\nTel. +506 2445 3335 · 476 reseñas en Google. El chef sale a las mesas; reseñas destacan los postres.'},
+    {id:102,n:'October 29',c:'c',d:'Contiguo a Bugys Patriarca',a:10.0883397,o:-84.4668659,r:4.7,p:2,x:'Restaurante mediterráneo con pizzas, hamburguesas y decoración con arte.\nQué pedir: carpaccio, pizza, hamburguesa 29, pasta.\nHorario: Mar–Vie 17:00–23:00; Sáb 11:00–23:30; Dom 11:00–21:30; cierra lunes.\nTel. +506 2445 8282 · 717 reseñas en Google. Ambiente interior-exterior; las reseñas dicen que vale el trayecto.'},
+    {id:103,n:'Papi Parrillero',c:'c',d:'Avenida 8, San Ramón',a:10.0828483,o:-84.4694879,r:4.7,p:2,x:'Parrilla familiar con carnes a la brasa y música en vivo.\nQué pedir: parrillada para dos, cócteles, karaoke.\nHorario: Lun–Dom 11:30–21:00.\nTel. +506 6336 6336 · 389 reseñas en Google. Porciones generosas y precios moderados.'},
+    {id:104,n:'Soda Chaparral',c:'c',d:'50 m oeste de Correos',a:10.0862462,o:-84.4724911,r:4.4,p:2,x:'Soda típica costarricense para desayunar o almorzar.\nQué pedir: gallo pinto con huevos rancheros, omelette, casado, café chorreado.\nHorario: Lun–Vie 07:00–18:00; Sáb 07:00–19:00; Dom 07:30–17:00.\nTel. +506 2445 1005 · 469 reseñas en Google. Tuestan su propio café y lo preparan en la mesa.'},
+    {id:105,n:'Le Sucrée Pâtisserie',c:'d',d:'200 m este y 50 m norte del Banco Nacional',a:10.086007,o:-84.4681671,r:4.9,p:2,x:'Pastelería y cafetería con repostería artesanal.\nQué pedir: focaccia, pastelería variada, café con miel.\nHorario: Lun–Sáb 12:30–18:30; cierra domingo.\nTel. +506 6422 9008 · 353 reseñas en Google. Una reseña recomienda llamar antes para confirmar que esté abierto.'}
+  ],
   barcelona: [
-    {id:1,n:'Can Culleretes',c:'c',d:'Carrer d\'en Quintana, 5',a:41.3812502,o:2.1744565,p:2,r:4.3,x:'Restaurante centenario.'},
-    {id:2,n:'7 Portes',c:'c',d:'Passeig d\'Isabel II, 14',a:41.3823052,o:2.1833902,p:3,r:4.4,x:'Paellas y arroces.'},
-    {id:3,n:'Bar Cañete',c:'c',d:'Carrer de la Unió, 17',a:41.3791528,o:2.173125,p:3,r:4.6,x:'Tapas de calidad.'},
-    {id:4,n:'Cervecería Catalana',c:'t',d:'Carrer de Mallorca, 236',a:41.3923251,o:2.1608515,p:2,r:4.5,x:'Tapas emblemáticas.'},
-    {id:5,n:'El Xampanyet',c:'t',d:'Carrer de Montcada, 22',a:41.3845391,o:2.181679,p:2,r:4.7,x:'Cava y anchoas.'},
-    {id:6,n:'Quimet & Quimet',c:'t',d:'Poeta Cabanyes, 25',a:41.3739472,o:2.1655579,p:2,r:4.6,x:'Montaditos y conservas.'},
-    {id:7,n:'Ciudad Condal',c:'t',d:'Rambla de Catalunya, 18',a:41.3888547,o:2.1670033,p:2,r:4.4,x:'Tapas y montaditos.'},
-    {id:8,n:'La Cova Fumada',c:'t',d:'Carrer del Baluard, 56',a:41.3793025,o:2.1892183,p:2,r:4.6,x:'Origen de la bomba.'},
-    {id:9,n:'Pastisseria Hofmann',c:'d',d:'Carrer Flassaders, 44',a:41.385079,o:2.1827036,r:4.4,x:'Croissants de mascarpone.'},
-    {id:10,n:'Churreria San Roman',c:'d',d:'Banys Nous, 8',a:41.3822384,o:2.1751146,r:4.5,x:'Churros tradicionales.'},
-    {id:101,n:'Ca l\'Estevet',c:'c',d:'Carrer de Valldonzella, 46',a:41.383282,o:2.164792,r:4.6,p:3,x:'Cocina catalana en el Raval.'},
-    {id:102,n:'Ca l\'Agut',c:'c',d:'Carrer d\'en Gignàs, 16',a:41.38093,o:2.17991,r:4.7,p:2,x:'Cocina catalana clásica.'},
-    {id:103,n:'Casa Amàlia',c:'c',d:'Ptge. del Mercat, 14',a:41.39627,o:2.16852,r:4.7,p:3,x:'Cocina de mercado en el Eixample.'},
-    {id:104,n:'Bornès Restaurant',c:'c',d:'Carrer de la Carassa, 2',a:41.38451,o:2.18025,r:4.9,p:3,x:'Cocina y coctelería en el Born.'},
-    {id:105,n:'Casa Leopoldo',c:'c',d:'Carrer de Maria Casas Mira, 24',a:41.37931,o:2.16941,r:4.7,p:3,x:'Cocina tradicional del Raval.'},
-    {id:106,n:'L\'Antic Bocoi del Gòtic',c:'c',d:'Baixada de Viladecols, 3',a:41.38208,o:2.17954,r:4.7,p:2,x:'Cocina española en el Gótico.'},
-    {id:107,n:'La Plata',c:'t',d:'Carrer de la Mercè, 28',a:41.38041,o:2.18059,r:4.7,p:2,x:'Bar de tapas clásico, cerca del puerto.'},
-    {id:108,n:'Tapería Catalana',c:'t',d:'Rambla de Catalunya, 70',a:41.39178,o:2.16287,r:4.8,p:2,x:'Tapas en la Rambla de Catalunya.'},
-    {id:109,n:'Petit Tapas',c:'t',d:'Carrer Ample, 26',a:41.38032,o:2.18005,r:4.8,p:2,x:'Tapas y vinos en el Gótico.'},
-    {id:110,n:'La Tapería Barcelona',c:'t',d:'Plaça de l\'Àngel, 5',a:41.38376,o:2.17859,r:4.7,p:2,x:'Tapas junto a Via Laietana.'},
-    {id:111,n:'Bodega Biarritz 1881',c:'t',d:'Carrer Nou de Sant Francesc, 7',a:41.37919,o:2.17706,r:4.7,p:2,x:'Tapas, casi 10 mil reseñas.'},
-    {id:112,n:'Gelateria Da Gallo',c:'d',d:'Carrer de Mallorca, 277',a:41.39506,o:2.16383,r:4.9,x:'Gelato artesanal.'},
-    {id:113,n:'Bilmonte',c:'d',d:'Carrer del Consell de Cent, 282',a:41.38941,o:2.16364,r:4.9,x:'Helados y postres.'},
-    {id:114,n:'Morreig',c:'d',d:'Carrer de Verdi, 25',a:41.40374,o:2.15694,r:4.8,x:'Helados y pastelería en Gràcia.'},
-    {id:115,n:'Restaurante Gòtic',c:'c',d:'Carrer d\'en Gignàs, 20',a:41.3810011,o:2.1799682,r:4.8,p:2,x:'Paella y cocina mediterránea.'},
-    {id:116,n:'Amaranta Gòtic',c:'c',d:'Baixada de Sant Miquel, 6',a:41.381516,o:2.1767852,r:4.9,p:2,x:'Menú del día y paella en el Gótico.'},
-    {id:117,n:'Colección by Sensi',c:'t',d:'Carrer del Regomir, 16',a:41.3810973,o:2.1796502,r:4.8,p:2,x:'Tapas y cócteles en el Gótico.'},
-    {id:118,n:'Bodega del Born',c:'t',d:'Carrer dels Mirallers, 14',a:41.3838849,o:2.1813819,r:4.8,p:2,x:'Vermut y tapas en el Born.'},
-    {id:119,n:'Flor de Gràcia',c:'d',d:'Carrer de Bruniquer, 9',a:41.4042489,o:2.1598859,r:4.8,p:1,x:'Panadería: croissants y rollos de canela.'},
-    {id:120,n:'La Colmena',c:'d',d:'Plaça de l\'Àngel, 12',a:41.3838319,o:2.1782333,r:4.5,x:'Pastelería histórica, xuixo de crema.'},
-    {id:121,n:'Fonda Can Portell',c:'c',d:'Passeig de Sant Antoni, 17',a:41.3771069,o:2.1369381,r:4.6,p:3,x:'Cocina mediterránea. A unos 130 m del alojamiento.'},
-    {id:122,n:'La Tere Gastrobar',c:'t',d:'Carrer de Riego, 25',a:41.3765472,o:2.1382406,r:4.6,p:2,x:'Gastrobar y vinos. A unos 160 m del alojamiento.'},
-    {id:123,n:'Mucho cielo y mucho mar',c:'t',d:'Carrer de Salou, 12',a:41.376041099999995,o:2.1377953,r:4.8,p:2,x:'Tapas y platos de mar. A unos 220 m del alojamiento.'},
-    {id:124,n:'Casa Vives',c:'d',d:'Carrer de Sants, 74',a:41.3754887,o:2.1371526,r:4.5,x:'Pastelería de barrio. A unos 290 m del alojamiento.'},
-    {id:125,n:'GOIG Restaurant',c:'c',d:'Carrer del Masnou, 27',a:41.376067299999995,o:2.1403314,r:4.8,p:2,x:'Cocina catalana. A unos 290 m del alojamiento.'},
-    {id:126,n:'Gelati Dino',c:'d',d:'Carrer de Sants, 98',a:41.3755386,o:2.1363012,r:4.6,x:'Helados artesanales. A unos 310 m del alojamiento.'},
-    {id:127,n:'L\'Home dels Nassos',c:'c',d:'Carrer de Melcior de Palau, 62',a:41.3794222,o:2.1338611,r:4.9,x:'Cocina mediterránea. A unos 380 m del alojamiento.'},
-    {id:128,n:'La Mundana',c:'c',d:'Carrer del Vallespir, 93',a:41.3811259,o:2.1358199,r:4.6,p:3,x:'Cocina fusión mediterránea. A unos 390 m del alojamiento.'},
-    {id:129,n:'Bodega 1940',c:'c',d:'Carrer de Panissars, 30',a:41.3766682,o:2.133334,r:4.8,p:2,x:'Cocina mediterránea. A unos 420 m del alojamiento.'},
-    {id:130,n:'Olivos Comida y Vinos Restaurante',c:'c',d:'Carrer de Galileu, 159',a:41.380404999999996,o:2.1338304999999997,r:4.9,p:4,x:'Cocina y vinos. A unos 440 m del alojamiento.'},
-    {id:131,n:'Bibì e Bibò Heladería',c:'d',d:'Carrer de Sants, 156',a:41.3755624,o:2.1334408,r:4.9,x:'Helados y pastelería. A unos 470 m del alojamiento.'},
-    {id:132,n:'Bar LUTE',c:'t',d:'Carrer de Sant Medir, 9',a:41.374274199999995,o:2.1332326999999998,r:4.7,p:2,x:'Tapas. A unos 570 m del alojamiento.'},
-    {id:133,n:'MAKES TAPERIA',c:'t',d:'Av. de Madrid, 160',a:41.3802793,o:2.1313098,r:4.9,p:2,x:'Tapas. A unos 610 m del alojamiento.'},
-    {id:134,n:'La Terraza Miró',c:'c',d:'Carrer de Tarragona, 129',a:41.377438999999995,o:2.1460809,r:4.7,p:2,x:'Cocina española, más de 5 mil reseñas. A unos 680 m del alojamiento.'},
+    {id:1,n:'Can Culleretes',c:'c',d:'Carrer d\'en Quintana, 5',a:41.3812502,o:2.1744565,p:2,r:4.3,x:'Restaurante centenario.\nQué pedir: gambas al ajillo, pollo, crema catalana.\nHorario: Mar–Mié 13:00–15:30; Jue–Sáb 13:00–15:30 y 20:00–22:00; Dom 13:00–15:30; cierra lunes.\nTel. +34 933 17 30 22 · 6.950 reseñas en Google. Reseñas lo describen como el más antiguo de Barcelona; el servicio divide opiniones.'},
+    {id:2,n:'7 Portes',c:'c',d:'Passeig d\'Isabel II, 14',a:41.3823052,o:2.1833902,p:3,r:4.4,x:'Paellas y arroces.\nQué pedir: paella, mejillones, cochon de cerdo.\nHorario: Lun–Dom 13:00–24:00.\nTel. +34 933 19 30 33 · 25.581 reseñas en Google. Cobran el pan por persona (3 €).'},
+    {id:3,n:'Bar Cañete',c:'c',d:'Carrer de la Unió, 17',a:41.3791528,o:2.173125,p:3,r:4.6,x:'Tapas de calidad.\nQué pedir: solomillo con foie, tartar de atún, berenjena, bocadillo de calamares.\nHorario: Lun–Sáb 13:00–24:00; cierra domingo.\nTel. +34 932 70 34 58 · 8.499 reseñas en Google. Reserva o llega antes de abrir; hay fila sin reserva.'},
+    {id:4,n:'Cervecería Catalana',c:'t',d:'Carrer de Mallorca, 236',a:41.3923251,o:2.1608515,p:2,r:4.5,x:'Tapas emblemáticas.\nQué pedir: bacalao con miel, solomillo con foie, montaditos.\nHorario: Lun–Vie 08:30–01:00; Sáb–Dom 09:00–01:00.\nTel. +34 932 16 03 68 · 25.249 reseñas en Google. No acepta reservas; espera de unos 20 minutos.'},
+    {id:5,n:'El Xampanyet',c:'t',d:'Carrer de Montcada, 22',a:41.3845391,o:2.181679,p:2,r:4.7,x:'Cava y anchoas.\nQué pedir: tortilla, huevo con sobrasada, cava de la casa.\nHorario: Lun 19:00–23:00; Mar–Vie 12:00–15:30 y 19:00–23:00; Sáb 12:00–15:30; cierra domingo.\nTel. +34 933 19 70 03 · 6.647 reseñas en Google. La fila se forma antes de abrir.'},
+    {id:6,n:'Quimet & Quimet',c:'t',d:'Poeta Cabanyes, 25',a:41.3739472,o:2.1655579,p:2,r:4.6,x:'Montaditos y conservas.\nQué pedir: conservas, montaditos de salmón con miel trufada, vieiras.\nHorario: Lun–Vie 12:00–16:00 y 18:00–22:30; cierra sábado y domingo.\nTel. +34 934 42 31 42 · 5.665 reseñas en Google. Se come de pie; hay fila y límite de una hora.'},
+    {id:7,n:'Ciudad Condal',c:'t',d:'Rambla de Catalunya, 18',a:41.3888547,o:2.1670033,p:2,r:4.4,x:'Tapas y montaditos.\nQué pedir: montaditos, huevos cabreados, solomillo con foie.\nHorario: Lun–Dom 09:00–01:00.\nTel. +34 933 18 19 97 · 23.790 reseñas en Google. Ruidoso y con fila.'},
+    {id:8,n:'La Cova Fumada',c:'t',d:'Carrer del Baluard, 56',a:41.3793025,o:2.1892183,p:2,r:4.6,x:'Origen de la bomba.\nQué pedir: bomba (la croqueta de patata y carne), calamares, bacalao con tomate.\nHorario: Lun–Vie 09:00–15:00; Sáb 09:00–14:00; cierra domingo.\nTel. +34 932 21 40 61 · 5.803 reseñas en Google. Llega antes de las 12; después puedes esperar horas.'},
+    {id:9,n:'Pastisseria Hofmann',c:'d',d:'Carrer Flassaders, 44',a:41.385079,o:2.1827036,r:4.4,x:'Croissants de mascarpone.\nQué pedir: croissant de mascarpone, croissant de chocolate, flan parisino.\nHorario: Lun–Sáb 09:00–20:00; Dom 09:00–19:00.\nTel. +34 932 68 82 21 · 4.257 reseñas en Google. Casi sin asientos; hay un parque cerca.'},
+    {id:10,n:'Churreria San Roman',c:'d',d:'Banys Nous, 8',a:41.3822384,o:2.1751146,r:4.5,x:'Churros tradicionales.\nQué pedir: churros rellenos de pistacho, de dulce de leche y de crema catalana.\nHorario: Lun–Dom 08:00–21:00.\nTel. +34 934 53 25 82 · 1.466 reseñas en Google. Mejor tomarlos recién hechos y calientes.'},
+    {id:101,n:'Ca l\'Estevet',c:'c',d:'Carrer de Valldonzella, 46',a:41.383282,o:2.164792,r:4.6,p:3,x:'Cocina catalana en el Raval.\nLas reseñas destacan: canelones, paella, carne a la parrilla.\nHorario: Lun 13:00–17:00 y 19:30–23:40; Mar–Jue 13:00–17:00 y 19:30–23:45; Vie–Sáb 13:00–17:00 y 19:30–00:00; Dom 13:00–17:00.\nTel. +34 933 01 29 39 · 2.168 reseñas en Google.'},
+    {id:102,n:'Ca l\'Agut',c:'c',d:'Carrer d\'en Gignàs, 16',a:41.38093,o:2.17991,r:4.7,p:2,x:'Cocina catalana clásica.\nLas reseñas destacan: croquetas, calamares, bacalao.\nHorario: Lun cerrado; Mar–Vie 13:00–15:30 y 19:30–22:00; Sáb 13:00–16:00 y 19:30–22:00; Dom 13:00–16:00.\nTel. +34 933 15 17 09 · 846 reseñas en Google.'},
+    {id:103,n:'Casa Amàlia',c:'c',d:'Ptge. del Mercat, 14',a:41.39627,o:2.16852,r:4.7,p:3,x:'Cocina de mercado en el Eixample.\nLas reseñas destacan: paella, cordero, gambas.\nHorario: Lun–Dom 13:00–22:30.\nTel. +34 934 58 94 58 · 12.335 reseñas en Google.'},
+    {id:104,n:'Bornès Restaurant',c:'c',d:'Carrer de la Carassa, 2',a:41.38451,o:2.18025,r:4.9,p:3,x:'Cocina y coctelería en el Born.\nQué pedir: rape, bacalao con sofrito, pollo cocinado lento, cócteles.\nHorario: Lun–Vie 18:00–01:00; Sáb–Dom 13:00–01:00.\nTel. +34 934 00 27 77 · 849 reseñas en Google. Cocina catalana de autor; reserva.'},
+    {id:105,n:'Casa Leopoldo',c:'c',d:'Carrer de Maria Casas Mira, 24',a:41.37931,o:2.16941,r:4.7,p:3,x:'Cocina tradicional del Raval.\nLas reseñas destacan: paella, rabo de toro, croquetas.\nHorario: Lun–Mar cerrado; Mié 17:00–01:00; Jue–Sáb 13:00–16:00 y 19:00–01:00; Dom 13:00–17:00.\nTel. +34 933 12 73 85 · 958 reseñas en Google.'},
+    {id:106,n:'L\'Antic Bocoi del Gòtic',c:'c',d:'Baixada de Viladecols, 3',a:41.38208,o:2.17954,r:4.7,p:2,x:'Cocina española en el Gótico.\nLas reseñas destacan: sangría, pizza, bacalao.\nHorario: Lun–Sáb 19:00–23:00; Dom cerrado.\nTel. +34 933 10 50 67 · 1.416 reseñas en Google.'},
+    {id:107,n:'La Plata',c:'t',d:'Carrer de la Mercè, 28',a:41.38041,o:2.18059,r:4.7,p:2,x:'Bar de tapas clásico, cerca del puerto.\nLas reseñas destacan: vermut.\nHorario: Lun–Sáb 11:00–15:00 y 18:00–23:00; Dom cerrado.\nTel. +34 611 64 76 88 · 4.168 reseñas en Google.'},
+    {id:108,n:'Tapería Catalana',c:'t',d:'Rambla de Catalunya, 70',a:41.39178,o:2.16287,r:4.8,p:2,x:'Tapas en la Rambla de Catalunya.\nLas reseñas destacan: sangría, calamares, gambas.\nHorario: Lun–Jue 12:00–00:00; Vie–Sáb 12:00–00:30; Dom 12:00–00:00.\nTel. +34 930 38 25 66 · 7.801 reseñas en Google.'},
+    {id:109,n:'Petit Tapas',c:'t',d:'Carrer Ample, 26',a:41.38032,o:2.18005,r:4.8,p:2,x:'Tapas y vinos en el Gótico.\nQué pedir: croquetas de jamón, filete de cerdo, ravioli de trufa, pulpo.\nHorario: Lun–Dom 18:45–01:15 (Vie–Dom hasta 01:30).\nTel. +34 935 84 84 76 · 5.626 reseñas en Google. Reserva con tiempo.'},
+    {id:110,n:'La Tapería Barcelona',c:'t',d:'Plaça de l\'Àngel, 5',a:41.38376,o:2.17859,r:4.7,p:2,x:'Tapas junto a Via Laietana.\nLas reseñas destacan: sangría, croquetas, patatas bravas.\nHorario: Lun–Dom 12:00–00:00.\n5.220 reseñas en Google.'},
+    {id:111,n:'Bodega Biarritz 1881',c:'t',d:'Carrer Nou de Sant Francesc, 7',a:41.37919,o:2.17706,r:4.7,p:2,x:'Tapas, casi 10 mil reseñas.\nHorario: Lun 12:30–23:00; Mar–Mié cerrado; Jue–Dom 12:30–23:00.\n9.598 reseñas en Google.'},
+    {id:112,n:'Gelateria Da Gallo',c:'d',d:'Carrer de Mallorca, 277',a:41.39506,o:2.16383,r:4.9,x:'Gelato artesanal.\nLas reseñas destacan: gelato, pistacho, cannoli.\nHorario: Lun–Jue 12:00–23:00; Vie–Sáb 12:00–00:00; Dom 12:00–23:00.\nTel. +34 936 83 77 67 · 8.540 reseñas en Google.'},
+    {id:113,n:'Bilmonte',c:'d',d:'Carrer del Consell de Cent, 282',a:41.38941,o:2.16364,r:4.9,x:'Helados y postres.\nLas reseñas destacan: gelato, pistacho, helado.\nHorario: Lun–Jue 09:00–00:00; Vie–Sáb 09:00–01:00; Dom 09:00–00:00.\nTel. +34 933 13 69 70 · 1.492 reseñas en Google.'},
+    {id:114,n:'Morreig',c:'d',d:'Carrer de Verdi, 25',a:41.40374,o:2.15694,r:4.8,x:'Helados y pastelería en Gràcia.\nLas reseñas destacan: croissant, pistacho, gelato.\nHorario: Lun–Mar cerrado; Mié–Jue 09:00–21:00; Vie–Sáb 09:00–23:00; Dom 09:00–21:00.\nTel. +34 613 01 84 46 · 1.057 reseñas en Google.'},
+    {id:115,n:'Restaurante Gòtic',c:'c',d:'Carrer d\'en Gignàs, 20',a:41.3810011,o:2.1799682,r:4.8,p:2,x:'Paella y cocina mediterránea.\nQué pedir: paella de marisco, rabo de toro, lentejas con chorizo, albóndigas.\nHorario: Lun–Dom 12:00–24:00.\nTel. +34 632 73 40 63 · 8.089 reseñas en Google. Buen ambiente y relación calidad-precio.'},
+    {id:116,n:'Amaranta Gòtic',c:'c',d:'Baixada de Sant Miquel, 6',a:41.381516,o:2.1767852,r:4.9,p:2,x:'Menú del día y paella en el Gótico.\nQué pedir: paella de marisco, pollo a la brasa, tarta de queso, menú del día.\nHorario: Lun–Jue 09:00–23:00; Vie–Dom 09:00–01:00.\n399 reseñas en Google. También sirve desayunos.'},
+    {id:117,n:'Colección by Sensi',c:'t',d:'Carrer del Regomir, 16',a:41.3810973,o:2.1796502,r:4.8,p:2,x:'Tapas y cócteles en el Gótico.\nQué pedir: ravioli de trufa, sangría, espresso martini.\nHorario: Lun–Dom 17:45–00:30 (Vie–Sáb hasta 00:45).\nTel. +34 938 30 40 07 · 4.027 reseñas en Google. Chupito de la casa al final.'},
+    {id:118,n:'Bodega del Born',c:'t',d:'Carrer dels Mirallers, 14',a:41.3838849,o:2.1813819,r:4.8,p:2,x:'Vermut y tapas en el Born.\nQué pedir: vermut, tapas.\nHorario: Lun–Vie 17:30–23:00; Sáb–Dom 12:30–23:00.\nTel. +34 697 67 38 02 · 996 reseñas en Google. Las paredes están cubiertas de deseos escritos por los clientes.'},
+    {id:119,n:'Flor de Gràcia',c:'d',d:'Carrer de Bruniquer, 9',a:41.4042489,o:2.1598859,r:4.8,p:1,x:'Panadería: croissants y rollos de canela.\nQué pedir: croissant, rollos de canela, pizza tipo focaccia.\nHorario: Lun–Vie 08:00–21:00; Sáb 09:00–21:00; Dom 09:00–15:00.\nTel. +34 607 01 33 00 · 647 reseñas en Google. Casi todo es para llevar; hay un solo banco.'},
+    {id:120,n:'La Colmena',c:'d',d:'Plaça de l\'Àngel, 12',a:41.3838319,o:2.1782333,r:4.5,x:'Pastelería histórica, xuixo de crema.\nQué pedir: xuixo de crema, croissant de chocolate, bombones.\nHorario: Lun–Dom 09:00–21:00.\nTel. +34 933 15 13 56 · 1.829 reseñas en Google. Pastelería familiar muy antigua en la plaza del Ángel.'},
+    {id:121,n:'Fonda Can Portell',c:'c',d:'Passeig de Sant Antoni, 17',a:41.3771069,o:2.1369381,r:4.6,p:3,x:'Cocina mediterránea. A unos 130 m del alojamiento.\nLas reseñas destacan: cordero, paella, patatas bravas.\nHorario: Lun–Mar 13:00–15:30; Mié–Sáb 13:00–15:30 y 19:30–22:00; Dom 13:00–15:30.\nTel. +34 934 90 41 15 · 3.798 reseñas en Google.'},
+    {id:122,n:'La Tere Gastrobar',c:'t',d:'Carrer de Riego, 25',a:41.3765472,o:2.1382406,r:4.6,p:2,x:'Gastrobar y vinos. A unos 160 m del alojamiento.\nLas reseñas destacan: pulpo, cócteles, carbonara.\nHorario: Lun–Jue 13:00–17:00 y 20:00–00:00; Vie–Sáb 13:00–00:30; Dom 13:00–23:00.\nTel. +34 931 06 44 11 · 2.176 reseñas en Google.'},
+    {id:123,n:'Mucho cielo y mucho mar',c:'t',d:'Carrer de Salou, 12',a:41.376041099999995,o:2.1377953,r:4.8,p:2,x:'Tapas y platos de mar. A unos 220 m del alojamiento.\nLas reseñas destacan: hamburguesa, tartar.\nHorario: Lun cerrado; Mar–Mié 19:00–00:00; Jue–Sáb 13:00–16:00 y 19:00–00:00; Dom cerrado.\nTel. +34 631 22 08 70 · 523 reseñas en Google.'},
+    {id:124,n:'Casa Vives',c:'d',d:'Carrer de Sants, 74',a:41.3754887,o:2.1371526,r:4.5,x:'Pastelería de barrio. A unos 290 m del alojamiento.\nLas reseñas destacan: croissant.\nHorario: Lun–Sáb 08:30–20:30; Dom 09:00–15:00.\nTel. +34 934 31 76 79 · 1.402 reseñas en Google.'},
+    {id:125,n:'GOIG Restaurant',c:'c',d:'Carrer del Masnou, 27',a:41.376067299999995,o:2.1403314,r:4.8,p:2,x:'Cocina catalana. A unos 290 m del alojamiento.\nLas reseñas destacan: tortilla.\nHorario: Lun cerrado; Mar–Jue 19:00–23:30; Vie–Sáb 13:00–17:00 y 19:00–00:00; Dom 12:30–17:00.\nTel. +34 619 98 20 56 · 553 reseñas en Google.'},
+    {id:126,n:'Gelati Dino',c:'d',d:'Carrer de Sants, 98',a:41.3755386,o:2.1363012,r:4.6,x:'Helados artesanales. A unos 310 m del alojamiento.\nLas reseñas destacan: helado, pistacho, gelato.\nHorario: Lun–Jue 15:00–22:00; Vie 15:00–23:00; Sáb 13:00–23:00; Dom 13:00–22:00.\nTel. +34 934 31 80 09 · 579 reseñas en Google.'},
+    {id:127,n:'L\'Home dels Nassos',c:'c',d:'Carrer de Melcior de Palau, 62',a:41.3794222,o:2.1338611,r:4.9,x:'Cocina mediterránea. A unos 380 m del alojamiento.\nHorario: Lun–Mar cerrado; Mié–Vie 20:30–23:30; Sáb–Dom 14:00–17:00.\nTel. +34 633 19 76 67 · 406 reseñas en Google.'},
+    {id:128,n:'La Mundana',c:'c',d:'Carrer del Vallespir, 93',a:41.3811259,o:2.1358199,r:4.6,p:3,x:'Cocina fusión mediterránea. A unos 390 m del alojamiento.\nLas reseñas destacan: patatas bravas, gambas, costillas.\nHorario: Lun–Dom 13:00–15:30 y 20:00–23:00.\nTel. +34 934 08 80 23 · 3.128 reseñas en Google.'},
+    {id:129,n:'Bodega 1940',c:'c',d:'Carrer de Panissars, 30',a:41.3766682,o:2.133334,r:4.8,p:2,x:'Cocina mediterránea. A unos 420 m del alojamiento.\nLas reseñas destacan: tiramisú, pulpo, carne a la parrilla.\nHorario: Lun cerrado; Mar 13:00–17:00; Mié 13:00–17:00 y 20:30–22:15; Jue 13:00–17:00 y 19:30–22:00; Vie–Sáb 13:00–17:00 y 19:30–23:00; Dom cerrado.\nTel. +34 611 19 97 52 · 380 reseñas en Google.'},
+    {id:130,n:'Olivos Comida y Vinos Restaurante',c:'c',d:'Carrer de Galileu, 159',a:41.380404999999996,o:2.1338304999999997,r:4.9,p:4,x:'Cocina y vinos. A unos 440 m del alojamiento.\nHorario: Lun cerrado; Mar–Dom 13:00–17:00.\nTel. +34 722 59 36 86 · 763 reseñas en Google.'},
+    {id:131,n:'Bibì e Bibò Heladería',c:'d',d:'Carrer de Sants, 156',a:41.3755624,o:2.1334408,r:4.9,x:'Helados y pastelería. A unos 470 m del alojamiento.\nLas reseñas destacan: helado, gelato, pistacho.\nHorario: Lun–Mar 14:00–20:00; Mié cerrado; Jue 14:00–20:00; Vie 13:00–21:00; Sáb–Dom 12:00–20:00.\nTel. +34 930 64 28 67 · 349 reseñas en Google.'},
+    {id:132,n:'Bar LUTE',c:'t',d:'Carrer de Sant Medir, 9',a:41.374274199999995,o:2.1332326999999998,r:4.7,p:2,x:'Tapas. A unos 570 m del alojamiento.\nLas reseñas destacan: carne a la parrilla, croquetas, tiramisú.\nHorario: Lun–Jue 18:00–23:45; Vie–Sáb 14:00–23:45; Dom cerrado.\nTel. +34 623 05 74 59 · 1.329 reseñas en Google.'},
+    {id:133,n:'MAKES TAPERIA',c:'t',d:'Av. de Madrid, 160',a:41.3802793,o:2.1313098,r:4.9,p:2,x:'Tapas. A unos 610 m del alojamiento.\nLas reseñas destacan: calamares, tortilla, sangría.\nHorario: Lun–Mar cerrado; Mié 19:30–23:30; Jue–Sáb 13:30–16:30 y 19:30–23:30; Dom cerrado.\nTel. +34 931 70 84 76 · 683 reseñas en Google.'},
+    {id:134,n:'La Terraza Miró',c:'c',d:'Carrer de Tarragona, 129',a:41.377438999999995,o:2.1460809,r:4.7,p:2,x:'Cocina española, más de 5 mil reseñas. A unos 680 m del alojamiento.\nLas reseñas destacan: carne a la parrilla, croquetas, patatas bravas.\nHorario: Lun–Jue 12:30–23:30; Vie–Sáb 12:30–00:00; Dom 12:30–23:30.\nTel. +34 658 73 88 88 · 5.148 reseñas en Google.'},
     {id:11,n:'Zara',c:'s',d:'Plaça de Catalunya, 5',a:41.3865,o:2.1700,x:'Zara Flagship Plaça Catalunya.'},
     {id:12,n:'Zara',c:'s',d:'Passeig de Gràcia, 16',a:41.3892,o:2.1675,x:'Zara Gràcia Sur.'},
     {id:13,n:'Zara',c:'s',d:'Rambla de Catalunya, 67',a:41.3915,o:2.1620,x:'Zara Eixample.'},
@@ -1044,7 +1053,9 @@ let restMarkers = {};
 let searchTerm = '';
 let showPins = true;
 let pickMarker = null;
-const cityCenter = (key) => C[key.charAt(0).toUpperCase() + key.slice(1)];
+const EXTRA_CENTERS = { sanramon: [10.0875, -84.4697] };
+const TAB_LABEL = { sanramon: 'San Ramón' };
+const cityCenter = (key) => EXTRA_CENTERS[key] || C[key.charAt(0).toUpperCase() + key.slice(1)];
 
 const mCh = document.getElementById('mc');
 [['', 'Todos'], ...CAT_LIST].forEach(([k, l]) => {
@@ -1077,7 +1088,7 @@ function mSel(id) {
         if(r) {
             const target = r.np && userPos && nearCity() ? [userPos.lat, userPos.lng] : [r.a, r.o];
             map2.flyTo(target, r.np ? 15 : 16, {duration: 0.8});
-            if (restMarkers[id] && detailLayerGroup.hasLayer(restMarkers[id])) restMarkers[id].openPopup();
+            if (restMarkers[id] && detailLayerGroup.hasLayer(restMarkers[id])) setTimeout(() => { if (ms === id && restMarkers[id] && detailLayerGroup.hasLayer(restMarkers[id])) restMarkers[id].openPopup(); }, 850);
         }
     } else map2.closePopup();
     document.querySelector(`#ml .card[data-id="${id}"]`)?.focus({ preventScroll: true });
@@ -1127,7 +1138,7 @@ function mDraw() {
             : `<a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`;
         const distTxt = dist.has(r.id) ? ` · <b>a ${fmtDist(dist.get(r.id))}</b>` : '';
         const d = document.createElement('div'); d.className = 'card'; d.dataset.id = r.id; d.style.setProperty('--c', CC[r.c]); d.setAttribute('aria-pressed', String(r.id === ms));
-        d.innerHTML = `<div class='d'><span class="ico" aria-hidden="true">${CI[r.c] || '📍'}</span><small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${esc(r.n)}${priceTag(r)}</div><div class='su'>${esc(r.d)}${distTxt}</div><div class='ex'>${esc(r.x || 'Lugar añadido manualmente')}<br>${link}${custom ? `<br><button type='button' class='btn-del'>Eliminar lugar</button>` : ''}</div></div>`;
+        d.innerHTML = `<div class='d'><span class="ico" aria-hidden="true">${CI[r.c] || '📍'}</span><small>${CL[r.c] || 'Lugar'}</small></div><div><div class='ti'>${esc(r.n)}${priceTag(r)}</div><div class='su'>${esc(r.d)}${distTxt}</div><div class='ex'>${fmtX(r)}<br>${link}${custom ? `<br><button type='button' class='btn-del'>Eliminar lugar</button>` : ''}</div></div>`;
         d.querySelectorAll('a').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
         d.querySelector('.btn-pin')?.addEventListener('click', e => { e.stopPropagation(); prepStore(r.n); });
         const del = d.querySelector('.btn-del');
@@ -1171,7 +1182,7 @@ function renderDetailCity(cityKey, keepFilter = false) {
     getCityPlaces(cityKey).forEach(r => {
         if (r.np) return;   // sin pin: se busca la tienda más cercana
         const m = L.marker([r.a, r.o], {icon: getRestIcon(r.c, r.id)});
-        m.bindPopup(`<h3>${esc(r.n)}${priceTag(r)}</h3><p style="margin:0 0 6px 0">${esc(r.d)}</p>${esc(r.x || 'Lugar añadido manualmente')}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`);
+        m.bindPopup(`<h3>${esc(r.n)}${priceTag(r)}</h3><p style="margin:0 0 6px 0">${esc(r.d)}</p>${fmtX(r)}<br><a target='_blank' rel='noopener' href='https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(r.n + ', ' + r.d)}'>Ver en Google Maps ↗</a>`, { maxWidth: 300, maxHeight: 190 });
         m.on('click', () => mSel(r.id));
         restMarkers[r.id] = m;
     });
@@ -1331,7 +1342,7 @@ const addHint = document.getElementById('add-hint');
 const ADD_HINT_DEFAULT = addHint.textContent;
 const addQuick = document.getElementById('add-quick');
 let fillOnFix = false;
-const chainsFor = (cityKey) => cityKey === 'roma' ? ['Conad', 'Coop', 'Pam'] : ['Mercadona', 'Carrefour', 'Lidl'];
+const chainsFor = (cityKey) => cityKey === 'roma' ? ['Conad', 'Coop', 'Pam'] : cityKey === 'sanramon' ? ['Más x Menos', 'Auto Mercado', 'Pali'] : ['Mercadona', 'Carrefour', 'Lidl'];
 function renderQuickChains(cityKey) {
     addQuick.innerHTML = '<span>Súper rápido:</span>';
     chainsFor(cityKey).forEach(n => {
@@ -1595,7 +1606,7 @@ function showTab(target) {
         viewGeneral.classList.remove('active-view'); viewDetail.classList.remove('active-view');
         document.title = 'Aeropuerto · ' + BASE_TITLE;
     } else {
-        const label = target.charAt(0).toUpperCase() + target.slice(1);
+        const label = TAB_LABEL[target] || (target.charAt(0).toUpperCase() + target.slice(1));
         viewGeneral.classList.remove('active-view'); viewDetail.classList.add('active-view');
         detailTitle.textContent = label + " en detalle";
         document.title = label + ' · ' + BASE_TITLE;
