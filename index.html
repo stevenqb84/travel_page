@@ -367,6 +367,8 @@ body.modal-open { overflow: hidden; }
                   <input type="search" id="search-box" class="search-input" aria-label="Buscar lugares" placeholder="Buscar lugares, ej: 'Zara'..." autocomplete="off">
                   <button id="toggle-pins" class="btn-toggle-pins">Ocultar Pines</button>
                   <button id="sort-near" class="btn-toggle-pins off" aria-pressed="false">Cerca primero</button>
+                  <button id="sort-price" class="btn-toggle-pins off" aria-pressed="false">Precio ↑</button>
+                  <button id="sort-rate" class="btn-toggle-pins off" aria-pressed="false">★ Calificación</button>
               </div>
 
               <details class="add-place-panel" id="add-place-panel">
@@ -576,6 +578,16 @@ const lugares = {
     {id:116,n:'Taberna La Patosa',c:'t',d:'C. del Humilladero, 3',a:40.4104943,o:-3.7102621,r:4.8,p:2,x:'Tapas caseras en La Latina. Cierra lunes.'},
     {id:117,n:'Santo Bakehouse',c:'d',d:'C. del Espíritu Santo, 25',a:40.4254039,o:-3.7047813,r:4.9,p:1,x:'Panadería y pastelería, caneles. Cierra lunes.'},
     {id:118,n:'Alma Nomad Bakery',c:'d',d:'C. de Sta. Feliciana, 10',a:40.4330935,o:-3.6993644,r:4.7,p:1,x:'Bollería y pan en Chamberí, suele haber fila.'},
+    {id:119,n:'Dolchelatte Café y Helados Artesanos Argentinos',c:'d',d:'C/ del Alcalde Sainz de Baranda, 50',a:40.4165413,o:-3.6717893999999993,r:4.8,x:'Helados argentinos artesanales. A unos 230 m del alojamiento.'},
+    {id:120,n:'EL TALGO BAR',c:'c',d:'C/ del Alcalde Sainz de Baranda, 21',a:40.4170351,o:-3.6753340999999997,r:4.8,p:3,x:'Cocina de bistró. A unos 510 m del alojamiento.'},
+    {id:121,n:'Erre Que Erre Retiro',c:'c',d:'C. de Narváez, 72',a:40.417580799999996,o:-3.6764774000000005,r:4.7,p:2,x:'Cocina española. A unos 620 m del alojamiento.'},
+    {id:122,n:'Heladería Sienna Narváez',c:'d',d:'C. de Narváez, 62',a:40.4186111,o:-3.6763888999999996,r:4.6,x:'Helados y café. A unos 670 m del alojamiento.'},
+    {id:123,n:'Kalúa Helados',c:'d',d:'C. de Ibiza, 21',a:40.418421099999996,o:-3.6760281,r:4.6,x:'Helados y repostería. A unos 640 m del alojamiento.'},
+    {id:124,n:'Con Sazón O\'Donnell',c:'c',d:'C. de Máiquez, 16',a:40.4210706,o:-3.672998,r:4.8,p:2,x:'Cocina casera, más de 8 mil reseñas. A unos 720 m del alojamiento.'},
+    {id:125,n:'La Marmoteka de Narváez',c:'t',d:'C. de Narváez, 52',a:40.419317799999995,o:-3.6763673999999997,r:4.8,p:2,x:'Tapas y raciones. A unos 720 m del alojamiento.'},
+    {id:126,n:'Gaditana Retiro',c:'c',d:'Calle del Dr. Castelo, 26',a:40.4201781,o:-3.6755744999999993,r:4.8,p:3,x:'Pescados y mariscos. A unos 740 m del alojamiento.'},
+    {id:127,n:'Sazón-arte',c:'c',d:'C. de Menorca, 19',a:40.419549499999995,o:-3.6770643,r:4.7,p:2,x:'Cocina de bistró. A unos 780 m del alojamiento.'},
+    {id:128,n:'La Castela',c:'c',d:'Calle del Dr. Castelo, 22',a:40.4203106,o:-3.6766422999999997,r:4.6,p:3,x:'Cocina tradicional y parrilla. A unos 820 m del alojamiento.'},
     {id:11,n:'Zara',c:'s',d:'Plaza de España, 8',a:40.4234,o:-3.7122,x:'Megatienda Edificio España.'},
     {id:12,n:'Zara',c:'s',d:'Gran Vía, 34',a:40.4201,o:-3.7037,x:'Zara Centro Histórico.'},
     {id:13,n:'Zara',c:'s',d:'Calle de la Princesa, 58',a:40.4300,o:-3.7150,x:'Zara zona Argüelles.'},
@@ -715,6 +727,17 @@ const lugares = {
     {id:117,n:'Mastro Donato Pizza Gourmet',c:'t',d:'Via Marmorata, 61',a:41.8793767,o:12.4784417,r:4.8,p:1,x:'Pizza y supplì. Cierra domingo.'},
     {id:118,n:'Two Sizes',c:'d',d:'Via del Governo Vecchio, 88',a:41.8980142,o:12.471566,r:4.7,x:'Tiramisú en vasos de dos tamaños.'},
     {id:119,n:'I Dolci di Nonna Vincenza',c:'d',d:'Via dell\'Arco del Monte, 98',a:41.8940972,o:12.4730667,r:4.5,x:'Cannoli sicilianos y granita.'},
+    {id:120,n:'Pizzería Europa',c:'t',d:'Via Merulana',a:41.895656599999995,o:12.500065999999999,r:4.5,p:1,x:'Pizza al taglio para llevar. A unos 40 m del alojamiento.'},
+    {id:121,n:'Terra Gelato',c:'d',d:'P.za di Santa Maria Maggiore, 9',a:41.8967974,o:12.4995003,r:4.7,x:'Gelato frente a Santa Maria Maggiore. A unos 100 m del alojamiento.'},
+    {id:122,n:'Regoli Pasticceria',c:'d',d:'Via dello Statuto, 60',a:41.8948172,o:12.500949199999999,r:4.5,x:'Pastelería histórica, maritozzi. A unos 150 m del alojamiento.'},
+    {id:123,n:'Osteria Emasi',c:'c',d:'V. Principe Amedeo, 75a/75b',a:41.8984969,o:12.5006953,r:4.7,p:2,x:'Cocina romana. A unos 280 m del alojamiento.'},
+    {id:124,n:'Trattoria Cecio',c:'c',d:'V. Principe Amedeo, 104',a:41.8984299,o:12.5012226,r:4.5,p:2,x:'Trattoria de cocina romana. A unos 290 m del alojamiento.'},
+    {id:125,n:'Pizzeria Acqua & Farina',c:'t',d:'V. Principe Amedeo, 90',a:41.898567400000005,o:12.500934599999999,r:4.6,p:2,x:'Pizza artesanal. A unos 300 m del alojamiento.'},
+    {id:126,n:'Gelateria Gatsby & Gelato San Lorenzo',c:'d',d:'civico 106 lato giardini',a:41.894030699999995,o:12.5040651,r:4.8,x:'Gelato artesanal. A unos 400 m del alojamiento.'},
+    {id:127,n:'Sfizio Pizzeria',c:'t',d:'Via Giovanni Giolitti, 77',a:41.899789299999995,o:12.501370600000001,r:4.7,p:1,x:'Pizza económica, más de 10 mil reseñas. A unos 440 m del alojamiento.'},
+    {id:128,n:'Gelateria Artigianale Il Capriccio di Carla Monti',c:'d',d:'Via Agostino Depretis, 61',a:41.8995799,o:12.4951793,r:4.8,x:'Gelato artesanal. A unos 560 m del alojamiento.'},
+    {id:129,n:'Cacio & Pepe',c:'c',d:'Piazza del Viminale, 1',a:41.8999096,o:12.493418799999999,r:4.7,p:2,x:'Cocina romana. A unos 700 m del alojamiento.'},
+    {id:130,n:'CITAGLIO La Pizza in Teglia',c:'t',d:'Via Palermo, 46',a:41.899864799999996,o:12.493303099999999,r:5.0,p:1,x:'Pizza en bandeja. A unos 700 m del alojamiento.'},
     {id:11,n:'Coliseo y Foro Romano',c:'v',d:'Piazza del Colosseo',a:41.8902,o:12.4922,x:'Reservado. Visita al Coliseo y Foro Romano.'},
     {id:12,n:'Museos Vaticanos',c:'v',d:'Viale Vaticano',a:41.9065,o:12.4536,x:'Reservado.'},
     {id:13,n:'Zara',c:'s',d:'Via del Corso, 189',a:41.9022,o:12.4795,x:'Zara Via del Corso.'},
@@ -774,6 +797,20 @@ const lugares = {
     {id:118,n:'Bodega del Born',c:'t',d:'Carrer dels Mirallers, 14',a:41.3838849,o:2.1813819,r:4.8,p:2,x:'Vermut y tapas en el Born.'},
     {id:119,n:'Flor de Gràcia',c:'d',d:'Carrer de Bruniquer, 9',a:41.4042489,o:2.1598859,r:4.8,p:1,x:'Panadería: croissants y rollos de canela.'},
     {id:120,n:'La Colmena',c:'d',d:'Plaça de l\'Àngel, 12',a:41.3838319,o:2.1782333,r:4.5,x:'Pastelería histórica, xuixo de crema.'},
+    {id:121,n:'Fonda Can Portell',c:'c',d:'Passeig de Sant Antoni, 17',a:41.3771069,o:2.1369381,r:4.6,p:3,x:'Cocina mediterránea. A unos 130 m del alojamiento.'},
+    {id:122,n:'La Tere Gastrobar',c:'t',d:'Carrer de Riego, 25',a:41.3765472,o:2.1382406,r:4.6,p:2,x:'Gastrobar y vinos. A unos 160 m del alojamiento.'},
+    {id:123,n:'Mucho cielo y mucho mar',c:'t',d:'Carrer de Salou, 12',a:41.376041099999995,o:2.1377953,r:4.8,p:2,x:'Tapas y platos de mar. A unos 220 m del alojamiento.'},
+    {id:124,n:'Casa Vives',c:'d',d:'Carrer de Sants, 74',a:41.3754887,o:2.1371526,r:4.5,x:'Pastelería de barrio. A unos 290 m del alojamiento.'},
+    {id:125,n:'GOIG Restaurant',c:'c',d:'Carrer del Masnou, 27',a:41.376067299999995,o:2.1403314,r:4.8,p:2,x:'Cocina catalana. A unos 290 m del alojamiento.'},
+    {id:126,n:'Gelati Dino',c:'d',d:'Carrer de Sants, 98',a:41.3755386,o:2.1363012,r:4.6,x:'Helados artesanales. A unos 310 m del alojamiento.'},
+    {id:127,n:'L\'Home dels Nassos',c:'c',d:'Carrer de Melcior de Palau, 62',a:41.3794222,o:2.1338611,r:4.9,x:'Cocina mediterránea. A unos 380 m del alojamiento.'},
+    {id:128,n:'La Mundana',c:'c',d:'Carrer del Vallespir, 93',a:41.3811259,o:2.1358199,r:4.6,p:3,x:'Cocina fusión mediterránea. A unos 390 m del alojamiento.'},
+    {id:129,n:'Bodega 1940',c:'c',d:'Carrer de Panissars, 30',a:41.3766682,o:2.133334,r:4.8,p:2,x:'Cocina mediterránea. A unos 420 m del alojamiento.'},
+    {id:130,n:'Olivos Comida y Vinos Restaurante',c:'c',d:'Carrer de Galileu, 159',a:41.380404999999996,o:2.1338304999999997,r:4.9,p:4,x:'Cocina y vinos. A unos 440 m del alojamiento.'},
+    {id:131,n:'Bibì e Bibò Heladería',c:'d',d:'Carrer de Sants, 156',a:41.3755624,o:2.1334408,r:4.9,x:'Helados y pastelería. A unos 470 m del alojamiento.'},
+    {id:132,n:'Bar LUTE',c:'t',d:'Carrer de Sant Medir, 9',a:41.374274199999995,o:2.1332326999999998,r:4.7,p:2,x:'Tapas. A unos 570 m del alojamiento.'},
+    {id:133,n:'MAKES TAPERIA',c:'t',d:'Av. de Madrid, 160',a:41.3802793,o:2.1313098,r:4.9,p:2,x:'Tapas. A unos 610 m del alojamiento.'},
+    {id:134,n:'La Terraza Miró',c:'c',d:'Carrer de Tarragona, 129',a:41.377438999999995,o:2.1460809,r:4.7,p:2,x:'Cocina española, más de 5 mil reseñas. A unos 680 m del alojamiento.'},
     {id:11,n:'Zara',c:'s',d:'Plaça de Catalunya, 5',a:41.3865,o:2.1700,x:'Zara Flagship Plaça Catalunya.'},
     {id:12,n:'Zara',c:'s',d:'Passeig de Gràcia, 16',a:41.3892,o:2.1675,x:'Zara Gràcia Sur.'},
     {id:13,n:'Zara',c:'s',d:'Rambla de Catalunya, 67',a:41.3915,o:2.1620,x:'Zara Eixample.'},
@@ -1055,6 +1092,7 @@ function removeCustomPlace(cityKey, id) {
     mDraw();
 }
 
+let sortMode = null;
 function mDraw() {
     mCh.querySelectorAll('.chip').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.k ? catSel.has(b.dataset.k) : catSel.size === 0)));
     if (showPins) staticLayerGroup.addTo(map2); else map2.removeLayer(staticLayerGroup);
@@ -1078,7 +1116,9 @@ function mDraw() {
     const near = nearCity();
     const dist = new Map();
     if (near) shown.forEach(r => { if (!r.np) dist.set(r.id, haversine(userPos, { lat: r.a, lng: r.o })); });
-    if (near && sortNear) shown.sort((x, y) => (dist.has(x.id) ? dist.get(x.id) : 1e12) - (dist.has(y.id) ? dist.get(y.id) : 1e12));
+    if (sortMode === 'price') shown.sort((x, y) => (x.p || 9) - (y.p || 9) || (y.r || 0) - (x.r || 0));
+    else if (sortMode === 'rate') shown.sort((x, y) => (y.r || 0) - (x.r || 0) || (x.p || 9) - (y.p || 9));
+    else if (near && sortNear) shown.sort((x, y) => (dist.has(x.id) ? dist.get(x.id) : 1e12) - (dist.has(y.id) ? dist.get(y.id) : 1e12));
 
     shown.forEach(r => {
         const custom = r.id >= 9000;
@@ -1105,6 +1145,7 @@ function renderDetailCity(cityKey, keepFilter = false) {
     currentDetailCity = cityKey;
     if (!keepFilter) catSel = new Set();
     renderQuickChains(cityKey);
+    sortMode = null; syncSortBtns();
     ms = null; searchTerm = ''; searchBox.value = ''; showPins = true;
     togglePinsBtn.textContent = 'Ocultar Pines';
     togglePinsBtn.classList.remove('off');
@@ -1211,7 +1252,16 @@ function stopLocate() {
     watchId = null; userPos = null; lastDrawPos = null; clearUser(); setLocUi('off'); refreshNear(true);
 }
 locBtns.forEach(b => b.addEventListener('click', () => { if (watchId == null) startLocate(); else stopLocate(); }));
+function sortBtnsMap() { return { price: document.getElementById('sort-price'), rate: document.getElementById('sort-rate') }; }
+function syncSortBtns() {
+    Object.entries(sortBtnsMap()).forEach(([k, b]) => { b.classList.toggle('off', sortMode !== k); b.setAttribute('aria-pressed', String(sortMode === k)); });
+    document.getElementById('sort-near').classList.toggle('off', !sortNear || !!sortMode); document.getElementById('sort-near').setAttribute('aria-pressed', String(sortNear && !sortMode));
+}
+Object.entries(sortBtnsMap()).forEach(([k, b]) => b.addEventListener('click', () => {
+    sortMode = sortMode === k ? null : k; syncSortBtns(); mDraw();
+}));
 sortNearBtn.addEventListener('click', () => {
+    sortMode = null; syncSortBtns();
     sortNear = !sortNear;
     sortNearBtn.classList.toggle('off', !sortNear); sortNearBtn.setAttribute('aria-pressed', String(sortNear));
     if (sortNear && watchId == null) startLocate(); else mDraw();
